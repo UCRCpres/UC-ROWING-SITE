@@ -17,6 +17,9 @@ function getNav(active) {
   <nav>
     <div class="nav-inner">
       <a href="index.html" class="nav-logo"><img src="logo.png" alt="UC Rowing Club" style="height:38px;width:auto;display:block;"></a>
+      <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
       <ul class="nav-links">${links}</ul>
     </div>
   </nav>`;
@@ -29,19 +32,6 @@ function getFooter() {
       <div>
         <div class="footer-brand"><span>UC</span> Rowing Club</div>
         <p class="footer-tagline">Student run. Community driven.<br>Competing at the highest level since 1908.</p>
-      </div>
-      <div>
-        <div class="footer-col-title">Pages</div>
-        <ul class="footer-links">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="training.html">Training</a></li>
-          <li><a href="events.html">Events</a></li>
-          <li><a href="gallery.html">Gallery</a></li>
-          <li><a href="sponsors.html">Sponsors</a></li>
-          <li><a href="forms.html">Forms</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
       </div>
       <div>
         <div class="footer-col-title">Connect</div>
@@ -65,4 +55,20 @@ document.addEventListener('DOMContentLoaded', function() {
   const footerEl = document.getElementById('footer-placeholder');
   if (navEl) navEl.outerHTML = getNav(navEl.dataset.active);
   if (footerEl) footerEl.outerHTML = getFooter();
+
+  // Hamburger toggle
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.nav-hamburger');
+    const link = e.target.closest('.nav-links a');
+    const nav = document.querySelector('nav');
+    if (!nav) return;
+    if (btn) {
+      const open = nav.classList.toggle('nav-open');
+      btn.setAttribute('aria-expanded', open);
+    } else if (link) {
+      nav.classList.remove('nav-open');
+    } else if (!e.target.closest('nav')) {
+      nav.classList.remove('nav-open');
+    }
+  });
 });
