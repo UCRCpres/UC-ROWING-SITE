@@ -58,19 +58,23 @@
 
   .hero h1 {
     font-family: 'Arial Narrow', Arial, sans-serif;
-    font-size: clamp(56px, 9vw, 112px);
+    font-size: clamp(64px, 10vw, 130px);
     font-weight: 700;
     color: var(--white);
     line-height: 0.95;
     letter-spacing: -0.01em;
     text-transform: uppercase;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
   }
 
-  .hero h1 em {
+  .hero-tagline {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 700;
     color: var(--gold);
-    font-style: normal;
-    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.5rem;
   }
 
   .hero-sub {
@@ -113,49 +117,7 @@
     margin-top: 0.2rem;
   }
 
-  /* QUICK LINKS */
-  .quicklinks {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-    border-top: 3px solid var(--gold);
-  }
-
-  .quicklink {
-    background: var(--white);
-    padding: 2rem 1.75rem;
-    text-decoration: none;
-    display: block;
-    transition: background 0.15s;
-    border-right: 1px solid var(--border);
-    border-bottom: 3px solid transparent;
-  }
-
-  .quicklink:last-child { border-right: none; }
-  .quicklink:hover { background: var(--maroon-light); border-bottom-color: var(--maroon); }
-
-  .quicklink-icon { font-size: 26px; margin-bottom: 0.75rem; }
-
-  .quicklink-title {
-    font-family: 'Arial Narrow', Arial, sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--black);
-    margin-bottom: 0.25rem;
-    letter-spacing: 0.02em;
-  }
-
-  .quicklink-desc {
-    font-family: Arial, sans-serif;
-    font-size: 13px;
-    color: var(--gray-mid);
-    line-height: 1.5;
-  }
-
   @media (max-width: 768px) {
-    .quicklinks { grid-template-columns: 1fr 1fr; }
-    .quicklink { border-bottom: 1px solid var(--border); }
     .hero-stats { gap: 1.5rem; }
   }
 </style>
@@ -171,8 +133,9 @@
     <div class="hero-overlay"></div>
     <div class="hero-inner">
       <p class="hero-eyebrow">University of Canterbury · Christchurch, New Zealand</p>
-      <h1>Bleed<em>Maroon.</em></h1>
-      <p class="hero-sub">The UC Rowing Club — student run, community driven, competing at the highest level on the water.</p>
+      <h1>UC Rowing Club</h1>
+      <p class="hero-tagline">Bleed Maroon.</p>
+      <p class="hero-sub">UC Rowing Club — student run, community driven, competing at the highest level on the water.</p>
       <div class="hero-ctas">
         <a href="forms.html" class="btn-gold">Join the club</a>
         <a href="about.html" class="btn-outline" style="color:var(--white); border-color:rgba(255,255,255,0.5);">Learn more</a>
@@ -186,29 +149,7 @@
     </div>
   </div>
 
-  <!-- QUICK LINKS -->
-  <div class="quicklinks">
-    <a href="training.html" class="quicklink">
-      <div class="quicklink-icon">🚣</div>
-      <div class="quicklink-title">Training</div>
-      <div class="quicklink-desc">Six sessions a week. All levels welcome.</div>
-    </a>
-    <a href="events.html" class="quicklink">
-      <div class="quicklink-icon">🏁</div>
-      <div class="quicklink-title">Events</div>
-      <div class="quicklink-desc">Upcoming regattas and race calendar.</div>
-    </a>
-    <a href="forms.html" class="quicklink">
-      <div class="quicklink-icon">📋</div>
-      <div class="quicklink-title">Forms</div>
-      <div class="quicklink-desc">Join the club or register for a regatta.</div>
-    </a>
-    <a href="contact.html" class="quicklink">
-      <div class="quicklink-icon">✉️</div>
-      <div class="quicklink-title">Contact</div>
-      <div class="quicklink-desc">Get in touch with the committee.</div>
-    </a>
-  </div>
+
 </section>
 
 <div id="footer-placeholder"></div>
