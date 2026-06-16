@@ -36,8 +36,7 @@ function getFooter() {
       <div>
         <div class="footer-col-title">Connect</div>
         <ul class="footer-links">
-          <li><a href="#">Instagram</a></li>
-          <li><a href="#">Facebook</a></li>
+          <li><a href="https://www.instagram.com/UCROWINGCLUB" target="_blank">Instagram</a></li>
           <li><a href="#">UC Sport</a></li>
           <li><a href="#">Rowing NZ</a></li>
         </ul>
