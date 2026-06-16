@@ -6,35 +6,93 @@
 <title>Contact — UC Rowing Club</title>
 <link rel="stylesheet" href="style.css">
 <style>
-  .contact-grid {
+  .contact-info-bar {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: start;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-top: 3px solid var(--gold);
+    border-bottom: 3px solid var(--border);
+    margin-bottom: 3rem;
   }
-  .contact-info {
+  .contact-info-item {
+    background: var(--white);
+    padding: 1.75rem 2rem;
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+    align-items: flex-start;
+    gap: 1rem;
   }
-  .contact-item { display: flex; gap: 1rem; align-items: flex-start; }
   .contact-icon {
-    width: 36px; height: 36px; min-width: 36px;
-    background: var(--red-light);
+    width: 38px; height: 38px; min-width: 38px;
+    background: var(--maroon-light);
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
+    font-size: 17px;
   }
   .contact-label {
     font-family: Arial, sans-serif; font-size: 11px;
     font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--red);
-    margin-bottom: 0.2rem;
+    text-transform: uppercase; color: var(--maroon);
+    margin-bottom: 0.25rem;
   }
   .contact-value { font-size: 15px; color: var(--gray-dark); line-height: 1.5; }
+  .contact-value a { color: var(--maroon); text-decoration: none; }
+  .contact-value a:hover { text-decoration: underline; }
+
+  .form-wrap {
+    max-width: 640px;
+    margin: 0 auto 4rem;
+  }
+
+  /* COMMITTEE */
+  .committee-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .committee-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--maroon);
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .committee-photo {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--maroon-light);
+    margin: 0 auto 1rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    color: var(--maroon);
+    overflow: hidden;
+  }
+  .committee-photo img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .committee-role {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.3rem;
+  }
+  .committee-name {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+  }
 
   @media (max-width: 768px) {
-    .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .contact-info-bar { grid-template-columns: 1fr; }
+    .committee-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .committee-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -49,86 +107,124 @@
   </div>
 </div>
 
-<main>
-  <div class="contact-grid">
+<!-- CONTACT INFO BAR -->
+<div class="contact-info-bar">
+  <div class="contact-info-item">
+    <div class="contact-icon">📍</div>
     <div>
-      <p class="section-eyebrow">Get in touch</p>
-      <h2 class="section-title">We'd love to hear from you</h2>
-      <div class="section-rule"></div>
-      <p class="section-body">Whether you want to join, sponsor the club, or just have a question — reach out and we'll get back to you.</p>
-
-      <div class="contact-info">
-        <div class="contact-item">
-          <div class="contact-icon">📍</div>
-          <div>
-            <div class="contact-label">Boat shed</div>
-            <div class="contact-value">Waimakariri River<br>McLeans Island Rd, Christchurch</div>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">✉️</div>
-          <div>
-            <div class="contact-label">General enquiries</div>
-            <div class="contact-value">info@ucrowing.com</div>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">🏅</div>
-          <div>
-            <div class="contact-label">Club captain</div>
-            <div class="contact-value">captain@ucrowing.com</div>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">💼</div>
-          <div>
-            <div class="contact-label">Sponsorship</div>
-            <div class="contact-value">sponsorship@ucrowing.com</div>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">📱</div>
-          <div>
-            <div class="contact-label">Social media</div>
-            <div class="contact-value">@ucrowing on Instagram &amp; Facebook</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <form class="form-box" style="margin-top: 0; border: 1px solid var(--border); border-top: 3px solid var(--red); padding: 2rem;"
-        action="https://formspree.io/f/YOUR_FORM_ID" method="POST"
-        onsubmit="handleSubmit(event)">
-        <div class="form-title">Send a message</div>
-        <div class="form-group">
-          <label>Name *</label>
-          <input type="text" name="name" required placeholder="Your name">
-        </div>
-        <div class="form-group">
-          <label>Email *</label>
-          <input type="email" name="email" required placeholder="your@email.com">
-        </div>
-        <div class="form-group">
-          <label>Subject</label>
-          <select name="subject">
-            <option>Joining the club</option>
-            <option>Sponsorship enquiry</option>
-            <option>Media / press</option>
-            <option>General question</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Message *</label>
-          <textarea name="message" required placeholder="What would you like to know?" style="min-height: 130px;"></textarea>
-        </div>
-        <button type="submit" class="btn-primary" style="width: 100%;">Send message</button>
-        <div id="contact-success" class="form-success">
-          Message received — we'll get back to you shortly.
-        </div>
-      </form>
+      <div class="contact-label">Boat shed</div>
+      <div class="contact-value">Waimakariri River<br>McLeans Island Rd, Christchurch</div>
     </div>
   </div>
+  <div class="contact-info-item">
+    <div class="contact-icon">✉️</div>
+    <div>
+      <div class="contact-label">Email us</div>
+      <div class="contact-value"><a href="mailto:president.ucrc@gmail.com">president.ucrc@gmail.com</a></div>
+    </div>
+  </div>
+  <div class="contact-info-item">
+    <div class="contact-icon">📱</div>
+    <div>
+      <div class="contact-label">Social media</div>
+      <div class="contact-value">@ucrowing on Instagram &amp; Facebook</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- CONTACT FORM -->
+  <div class="form-wrap">
+    <p class="section-eyebrow">Get in touch</p>
+    <h2 class="section-title">Send us a message</h2>
+    <div class="section-rule"></div>
+    <form class="form-box" style="margin-top: 1.5rem;"
+      action="https://formspree.io/f/YOUR_FORM_ID" method="POST"
+      onsubmit="handleSubmit(event)">
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" name="name" required placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" name="email" required placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <select name="subject">
+          <option>Joining the club</option>
+          <option>Sponsorship enquiry</option>
+          <option>Media / press</option>
+          <option>General question</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message *</label>
+        <textarea name="message" required placeholder="What would you like to know?" style="min-height: 130px;"></textarea>
+      </div>
+      <button type="submit" class="btn-primary" style="width: 100%;">Send message</button>
+      <div id="contact-success" class="form-success">
+        Message received — we'll get back to you shortly.
+      </div>
+    </form>
+  </div>
+
+  <hr class="divider">
+
+  <!-- COMMITTEE -->
+  <p class="section-eyebrow">2026 Committee</p>
+  <h2 class="section-title">Meet the team</h2>
+  <div class="section-rule"></div>
+
+  <div class="committee-grid">
+    <div class="committee-card">
+      <div class="committee-photo">👤</div>
+      <div class="committee-role">President</div>
+      <div class="committee-name">Sam Wilson</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-photo">👤</div>
+      <div class="committee-role">Vice-President</div>
+      <div class="committee-name">Charlie Poulter</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-photo">👤</div>
+      <div class="committee-role">Treasurer</div>
+      <div class="committee-name">Jaden Allen</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-photo">👤</div>
+      <div class="committee-role">Secretary</div>
+      <div class="committee-name">Martine Sandberg</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-photo">👤</div>
+      <div class="committee-role">Men's Captain</div>
+      <div class="committee-name">Harry Galvan</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-photo">👤</div>
+      <div class="committee-role">Women's Captain</div>
+      <div class="committee-name">Isabelle Welch</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-photo">👤</div>
+      <div class="committee-role">General Exec</div>
+      <div class="committee-name">David Ritchie</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-photo">👤</div>
+      <div class="committee-role">General Exec</div>
+      <div class="committee-name">Lachie Matla</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-photo">👤</div>
+      <div class="committee-role">General Exec</div>
+      <div class="committee-name">Fergus Johnston</div>
+    </div>
+  </div>
+
 </main>
 
 <div id="footer-placeholder"></div>
