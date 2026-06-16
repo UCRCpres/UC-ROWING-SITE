@@ -11,7 +11,7 @@ function getNav(active) {
     { href: 'login.html', label: 'Members', highlight: true },
   ];
   const links = pages.map(p =>
-    `<li><a href="${p.href}" class="${p.label === active ? 'active' : ''}" ${p.highlight ? 'style="color:var(--red);"' : ''}>${p.label}</a></li>`
+    `<li><a href="${p.href}" class="${p.label === active ? 'active' : ''}" ${p.highlight ? 'style="color:var(--gold);"' : ''}>${p.label}</a></li>`
   ).join('');
   return `
   <nav>
