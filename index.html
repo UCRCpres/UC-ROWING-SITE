@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UC Rowing Club</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .hero {
+    background: var(--black);
+    min-height: 88vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-stripe {
+    position: absolute;
+    left: 0; top: 0;
+    width: 6px; height: 100%;
+    background: var(--red);
+  }
+  .hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+  .hero-eyebrow {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: clamp(56px, 8vw, 104px);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em { color: var(--red); font-style: normal; }
+  .hero-sub {
+    font-size: 18px;
+    color: #AAAAAA;
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .hero-stats {
+    margin-top: 4rem;
+    display: flex;
+    gap: 3rem;
+    border-top: 1px solid #333;
+    padding-top: 2rem;
+    flex-wrap: wrap;
+  }
+  .hero-stat-num {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--red);
+  }
+  .hero-stat-label {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: #888;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* QUICK LINKS */
+  .quicklinks {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+  .quicklink {
+    background: var(--white);
+    padding: 2rem 1.75rem;
+    text-decoration: none;
+    display: block;
+    transition: background 0.15s;
+    border-top: 3px solid transparent;
+  }
+  .quicklink:hover { background: var(--gray-light); border-top-color: var(--red); }
+  .quicklink-icon { font-size: 28px; margin-bottom: 0.75rem; }
+  .quicklink-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 0.25rem;
+  }
+  .quicklink-desc {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-mid);
+    line-height: 1.5;
+  }
+
+  /* NEWS STRIP */
+  .news-strip {
+    background: var(--red);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .news-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--white);
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+  .news-text {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--white);
+  }
+
+  @media (max-width: 768px) {
+    .quicklinks { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder" data-active="Home"></div>
+
+<section style="padding:0;">
+  <div class="hero">
+    <div class="hero-stripe"></div>
+    <div class="hero-inner">
+      <p class="hero-eyebrow">University of Canterbury · Christchurch, New Zealand</p>
+      <h1>Pull<br><em>together.</em></h1>
+      <p class="hero-sub">The UC Rowing Club — student run, community driven, competing at the highest level on the water.</p>
+      <div class="hero-ctas">
+        <a href="forms.html" class="btn-primary">Join the club</a>
+        <a href="about.html" class="btn-outline" style="color:var(--white); border-color:#555;">Learn more</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">1908</div>
+          <div class="hero-stat-label">Founded</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">60+</div>
+          <div class="hero-stat-label">Active members</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">3×</div>
+          <div class="hero-stat-label">South Island champs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="news-strip">
+    <span class="news-label">Latest</span>
+    <span class="news-text">Canterbury Head of the River — 14 September 2026 · Lake Rua Roto, Ruapuna. <a href="events.html" style="color:var(--white); font-weight:700;">See all events →</a></span>
+  </div>
+
+  <div style="max-width:1100px; margin: 3rem auto; padding: 0 2rem;">
+    <div class="quicklinks">
+      <a href="training.html" class="quicklink">
+        <div class="quicklink-icon">🚣</div>
+        <div class="quicklink-title">Training</div>
+        <div class="quicklink-desc">Six sessions a week. All levels welcome.</div>
+      </a>
+      <a href="events.html" class="quicklink">
+        <div class="quicklink-icon">🏁</div>
+        <div class="quicklink-title">Events</div>
+        <div class="quicklink-desc">Upcoming regattas and race calendar.</div>
+      </a>
+      <a href="forms.html" class="quicklink">
+        <div class="quicklink-icon">📋</div>
+        <div class="quicklink-title">Forms</div>
+        <div class="quicklink-desc">Join the club or register for a regatta.</div>
+      </a>
+      <a href="contact.html" class="quicklink">
+        <div class="quicklink-icon">✉️</div>
+        <div class="quicklink-title">Contact</div>
+        <div class="quicklink-desc">Get in touch with the committee.</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="nav.js"></script>
+</body>
+</html>

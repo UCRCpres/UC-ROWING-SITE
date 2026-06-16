@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — UC Rowing Club</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .dash-header {
+    background: var(--black);
+    border-bottom: 3px solid var(--red);
+    padding: 0;
+  }
+  .dash-nav {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+  .dash-logo {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .dash-logo span { color: var(--red); }
+  .dash-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .dash-name {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: #AAA;
+  }
+  .dash-admin-link {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: var(--red);
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .btn-logout {
+    background: none;
+    border: 1px solid #444;
+    color: #AAA;
+    padding: 6px 14px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-logout:hover { border-color: #AAA; color: var(--white); }
+
+  .dash-main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .welcome-bar {
+    margin-bottom: 2.5rem;
+  }
+  .welcome-name {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+  }
+  .welcome-sub {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: var(--gray-mid);
+    margin-top: 0.25rem;
+  }
+
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .dash-card {
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--red);
+  }
+  .dash-card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dash-card-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+  }
+  .dash-card-body { padding: 0; }
+
+  .item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+  }
+  .item-row:last-child { border-bottom: none; }
+
+  .item-name {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: var(--black);
+    font-weight: 600;
+  }
+  .item-detail {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: var(--gray-mid);
+    margin-top: 0.15rem;
+  }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .status-badge.done { color: #2D8C2D; }
+  .status-badge.pending { color: var(--red); }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .status-dot.done { background: #2D8C2D; }
+  .status-dot.pending { background: var(--red); }
+
+  .empty-state {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-mid);
+  }
+
+  .loading-state {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-mid);
+  }
+
+  .summary-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 2rem;
+  }
+  .summary-card {
+    background: var(--white);
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .summary-num {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--black);
+  }
+  .summary-num.red { color: var(--red); }
+  .summary-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    color: var(--gray-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.2rem;
+  }
+
+  @media (max-width: 768px) {
+    .dash-grid { grid-template-columns: 1fr; }
+    .summary-strip { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="dash-header">
+  <div class="dash-nav">
+    <a href="index.html" class="dash-logo"><span>UC</span> Rowing</a>
+    <div class="dash-user">
+      <span class="dash-name" id="user-name-display"></span>
+      <a href="admin.html" class="dash-admin-link" id="admin-link" style="display:none;">Admin panel</a>
+      <button class="btn-logout" onclick="handleLogout()">Log out</button>
+    </div>
+  </div>
+</div>
+
+<div class="dash-main">
+  <div class="welcome-bar">
+    <div class="welcome-name">Welcome back, <span id="first-name">...</span></div>
+    <div class="welcome-sub">Here's your current status with UC Rowing Club.</div>
+  </div>
+
+  <div class="summary-strip">
+    <div class="summary-card">
+      <div class="summary-num red" id="fees-outstanding">—</div>
+      <div class="summary-label">Fees outstanding</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-num red" id="forms-outstanding">—</div>
+      <div class="summary-label">Forms to complete</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-num" id="forms-done">—</div>
+      <div class="summary-label">Forms completed</div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- FEES -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">Fees</div>
+      </div>
+      <div class="dash-card-body" id="fees-list">
+        <div class="loading-state">Loading...</div>
+      </div>
+    </div>
+
+    <!-- FORMS -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">Forms &amp; requirements</div>
+      </div>
+      <div class="dash-card-body" id="forms-list">
+        <div class="loading-state">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { supabase } from './supabase.js'
+
+  // Auth check
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = 'login.html'; }
+
+  const user = session.user
+
+  // Load member profile
+  const { data: member } = await supabase
+    .from('members')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  if (member) {
+    const firstName = (member.full_name || user.email).split(' ')[0]
+    document.getElementById('first-name').textContent = firstName
+    document.getElementById('user-name-display').textContent = member.full_name || user.email
+    if (member.is_admin) {
+      document.getElementById('admin-link').style.display = 'inline'
+    }
+  }
+
+  // Load fees
+  const { data: fees } = await supabase
+    .from('fees')
+    .select('*')
+    .eq('member_id', user.id)
+    .order('due_date')
+
+  const feesList = document.getElementById('fees-list')
+  if (!fees || fees.length === 0) {
+    feesList.innerHTML = '<div class="empty-state">No fees assigned yet — check back soon.</div>'
+    document.getElementById('fees-outstanding').textContent = '0'
+  } else {
+    const unpaid = fees.filter(f => !f.paid)
+    document.getElementById('fees-outstanding').textContent = unpaid.length
+    feesList.innerHTML = fees.map(fee => `
+      <div class="item-row">
+        <div>
+          <div class="item-name">${fee.fee_name}</div>
+          <div class="item-detail">
+            ${fee.amount ? '$' + Number(fee.amount).toFixed(2) : ''}
+            ${fee.due_date ? ' · Due ' + new Date(fee.due_date).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+            ${fee.notes ? ' · ' + fee.notes : ''}
+          </div>
+        </div>
+        <div class="status-badge ${fee.paid ? 'done' : 'pending'}">
+          <div class="status-dot ${fee.paid ? 'done' : 'pending'}"></div>
+          ${fee.paid ? 'Paid' : 'Unpaid'}
+        </div>
+      </div>
+    `).join('')
+  }
+
+  // Load forms
+  const { data: forms } = await supabase
+    .from('form_completions')
+    .select('*')
+    .eq('member_id', user.id)
+    .order('form_name')
+
+  const formsList = document.getElementById('forms-list')
+  if (!forms || forms.length === 0) {
+    formsList.innerHTML = '<div class="empty-state">No forms assigned yet — check back soon.</div>'
+    document.getElementById('forms-outstanding').textContent = '0'
+    document.getElementById('forms-done').textContent = '0'
+  } else {
+    const incomplete = forms.filter(f => !f.completed)
+    const complete = forms.filter(f => f.completed)
+    document.getElementById('forms-outstanding').textContent = incomplete.length
+    document.getElementById('forms-done').textContent = complete.length
+    formsList.innerHTML = forms.map(form => `
+      <div class="item-row">
+        <div>
+          <div class="item-name">${form.form_name}</div>
+          <div class="item-detail">
+            ${form.completed && form.completed_date
+              ? 'Completed ' + new Date(form.completed_date).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' })
+              : form.notes || 'Action required'}
+          </div>
+        </div>
+        <div class="status-badge ${form.completed ? 'done' : 'pending'}">
+          <div class="status-dot ${form.completed ? 'done' : 'pending'}"></div>
+          ${form.completed ? 'Done' : 'To do'}
+        </div>
+      </div>
+    `).join('')
+  }
+
+  window.handleLogout = async function() {
+    await supabase.auth.signOut()
+    window.location.href = 'login.html'
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — UC Rowing Club</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin: 2rem 0;
+  }
+  .gallery-item {
+    background: var(--black);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .gallery-item.wide {
+    grid-column: span 2;
+    grid-row: span 2;
+    aspect-ratio: unset;
+    min-height: 320px;
+  }
+  .gallery-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px;
+  }
+  .gallery-icon { font-size: 28px; opacity: 0.15; }
+  .gallery-hint {
+    font-family: Arial, sans-serif; font-size: 10px;
+    color: #444; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .gallery-note {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-mid);
+    margin-top: 0.5rem;
+    line-height: 1.6;
+  }
+  .how-to {
+    background: var(--gray-light);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    padding: 1.25rem 1.5rem;
+    margin-top: 2rem;
+  }
+  .how-to-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .how-to-steps {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-dark);
+    line-height: 1.8;
+  }
+  @media (max-width: 768px) {
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    .gallery-item.wide { grid-column: span 2; }
+  }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder" data-active="Gallery"></div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <p class="page-eyebrow">UC Rowing Club</p>
+    <h1 class="page-title">Gallery</h1>
+  </div>
+</div>
+
+<main>
+  <p class="section-eyebrow">Photos</p>
+  <h2 class="section-title">Life on the water</h2>
+  <div class="section-rule"></div>
+  <p class="section-body">Training, regattas, and club socials — add your photos below to bring this page to life.</p>
+
+  <div class="gallery-grid">
+    <div class="gallery-item wide">
+      <div class="gallery-placeholder" style="background:#0D0D0D;">
+        <div class="gallery-icon">📸</div>
+        <div class="gallery-hint">Hero photo</div>
+      </div>
+    </div>
+    <div class="gallery-item"><div class="gallery-placeholder" style="background:#111;"><div class="gallery-icon">📸</div></div></div>
+    <div class="gallery-item"><div class="gallery-placeholder" style="background:#1A1A1A;"><div class="gallery-icon">📸</div></div></div>
+    <div class="gallery-item"><div class="gallery-placeholder" style="background:#111;"><div class="gallery-icon">📸</div></div></div>
+    <div class="gallery-item"><div class="gallery-placeholder" style="background:#1A1A1A;"><div class="gallery-icon">📸</div></div></div>
+    <div class="gallery-item"><div class="gallery-placeholder" style="background:#111;"><div class="gallery-icon">📸</div></div></div>
+    <div class="gallery-item"><div class="gallery-placeholder" style="background:#1A1A1A;"><div class="gallery-icon">📸</div></div></div>
+    <div class="gallery-item"><div class="gallery-placeholder" style="background:#111;"><div class="gallery-icon">📸</div></div></div>
+  </div>
+
+  <p class="gallery-note">Got photos? Send them to captain@ucrowing.com and we'll add them to the gallery.</p>
+
+  <div class="how-to">
+    <div class="how-to-title">How to add photos (for editors)</div>
+    <div class="how-to-steps">
+      1. Save your photo as a .jpg or .png file in the same folder as gallery.html.<br>
+      2. Find a <code>&lt;div class="gallery-item"&gt;</code> block in gallery.html.<br>
+      3. Replace the inner div with: <code>&lt;img src="yourphoto.jpg" style="width:100%;height:100%;object-fit:cover;"&gt;</code><br>
+      4. Save the file and refresh the browser to check it looks right.
+    </div>
+  </div>
+
+</main>
+
+<div id="footer-placeholder"></div>
+<script src="nav.js"></script>
+</body>
+</html>

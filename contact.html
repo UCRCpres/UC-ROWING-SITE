@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — UC Rowing Club</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .contact-item { display: flex; gap: 1rem; align-items: flex-start; }
+  .contact-icon {
+    width: 36px; height: 36px; min-width: 36px;
+    background: var(--red-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .contact-label {
+    font-family: Arial, sans-serif; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--red);
+    margin-bottom: 0.2rem;
+  }
+  .contact-value { font-size: 15px; color: var(--gray-dark); line-height: 1.5; }
+
+  @media (max-width: 768px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder" data-active="Contact"></div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <p class="page-eyebrow">UC Rowing Club</p>
+    <h1 class="page-title">Contact</h1>
+  </div>
+</div>
+
+<main>
+  <div class="contact-grid">
+    <div>
+      <p class="section-eyebrow">Get in touch</p>
+      <h2 class="section-title">We'd love to hear from you</h2>
+      <div class="section-rule"></div>
+      <p class="section-body">Whether you want to join, sponsor the club, or just have a question — reach out and we'll get back to you.</p>
+
+      <div class="contact-info">
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-label">Boat shed</div>
+            <div class="contact-value">Waimakariri River<br>McLeans Island Rd, Christchurch</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">✉️</div>
+          <div>
+            <div class="contact-label">General enquiries</div>
+            <div class="contact-value">info@ucrowing.com</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🏅</div>
+          <div>
+            <div class="contact-label">Club captain</div>
+            <div class="contact-value">captain@ucrowing.com</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">💼</div>
+          <div>
+            <div class="contact-label">Sponsorship</div>
+            <div class="contact-value">sponsorship@ucrowing.com</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📱</div>
+          <div>
+            <div class="contact-label">Social media</div>
+            <div class="contact-value">@ucrowing on Instagram &amp; Facebook</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <form class="form-box" style="margin-top: 0; border: 1px solid var(--border); border-top: 3px solid var(--red); padding: 2rem;"
+        action="https://formspree.io/f/YOUR_FORM_ID" method="POST"
+        onsubmit="handleSubmit(event)">
+        <div class="form-title">Send a message</div>
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" name="name" required placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" name="email" required placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <select name="subject">
+            <option>Joining the club</option>
+            <option>Sponsorship enquiry</option>
+            <option>Media / press</option>
+            <option>General question</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message *</label>
+          <textarea name="message" required placeholder="What would you like to know?" style="min-height: 130px;"></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%;">Send message</button>
+        <div id="contact-success" class="form-success">
+          Message received — we'll get back to you shortly.
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<div id="footer-placeholder"></div>
+<script src="nav.js"></script>
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  fetch(form.action, {
+    method: 'POST',
+    body: new FormData(form),
+    headers: { 'Accept': 'application/json' }
+  }).then(r => {
+    if (r.ok) {
+      form.reset();
+      document.getElementById('contact-success').style.display = 'block';
+    }
+  }).catch(() => {
+    document.getElementById('contact-success').style.display = 'block';
+  });
+}
+</script>
+</body>
+</html>

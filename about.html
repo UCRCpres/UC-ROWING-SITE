@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — UC Rowing Club</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+    margin-bottom: 3rem;
+  }
+  .values-list {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .value-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .value-dot {
+    width: 8px; height: 8px; min-width: 8px;
+    background: var(--red);
+    margin-top: 8px;
+  }
+  .value-text { font-size: 15px; color: var(--gray-dark); line-height: 1.6; }
+
+  .committee-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-top: 2rem;
+  }
+  .committee-card {
+    background: var(--white);
+    padding: 1.5rem;
+  }
+  .committee-role {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.3rem;
+  }
+  .committee-name {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+  }
+  .committee-detail {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-mid);
+    margin-top: 0.2rem;
+  }
+
+  /* HISTORY */
+  .history-body {
+    max-width: 720px;
+  }
+  .history-body p {
+    font-size: 17px;
+    color: var(--gray-dark);
+    line-height: 1.8;
+    margin-bottom: 1.25rem;
+  }
+  .history-pull {
+    border-left: 4px solid var(--red);
+    padding: 0.75rem 1.5rem;
+    margin: 2rem 0;
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.3;
+  }
+
+  @media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .committee-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder" data-active="About"></div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <p class="page-eyebrow">UC Rowing Club</p>
+    <h1 class="page-title">About</h1>
+  </div>
+</div>
+
+<main>
+
+  <!-- ABOUT -->
+  <div class="about-grid">
+    <div>
+      <p class="section-eyebrow">Who we are</p>
+      <h2 class="section-title">More than a sport</h2>
+      <div class="section-rule"></div>
+      <p class="section-body">
+        UC Rowing is one of Canterbury's longest-standing student sports clubs. We welcome rowers of all abilities — whether you've never touched an oar or competed at nationals, there's a place for you in our boat shed.
+      </p>
+      <p class="section-body">
+        We train on the Waimakariri River and Lake Rua Roto, and compete across New Zealand throughout the season. The club is entirely student run, with a committee elected each year to keep things moving on and off the water.
+      </p>
+      <div class="values-list">
+        <div class="value-item">
+          <div class="value-dot"></div>
+          <div class="value-text">Open to all experience levels — beginners actively encouraged</div>
+        </div>
+        <div class="value-item">
+          <div class="value-dot"></div>
+          <div class="value-text">Competing at club, varsity, and national level regattas</div>
+        </div>
+        <div class="value-item">
+          <div class="value-dot"></div>
+          <div class="value-text">A strong social culture on and off the water</div>
+        </div>
+        <div class="value-item">
+          <div class="value-dot"></div>
+          <div class="value-text">Affordable membership — subsidised through UC Sport</div>
+        </div>
+      </div>
+    </div>
+    <div style="background: var(--black); min-height: 360px; display: flex; align-items: center; justify-content: center; border-bottom: 4px solid var(--red);">
+      <div style="text-align: center;">
+        <div style="font-size: 72px; line-height:1;">🚣</div>
+        <div style="font-family: Arial, sans-serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: #444; margin-top: 1rem;">Add a team photo here</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- COMMITTEE -->
+  <p class="section-eyebrow">2026 Committee</p>
+  <h2 class="section-title">Meet the team</h2>
+  <div class="section-rule"></div>
+  <div class="committee-grid">
+    <div class="committee-card">
+      <div class="committee-role">Club Captain</div>
+      <div class="committee-name">Your Name</div>
+      <div class="committee-detail">captain@ucrowing.com</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-role">Vice Captain</div>
+      <div class="committee-name">Your Name</div>
+      <div class="committee-detail">vice@ucrowing.com</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-role">Secretary</div>
+      <div class="committee-name">Your Name</div>
+      <div class="committee-detail">secretary@ucrowing.com</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-role">Treasurer</div>
+      <div class="committee-name">Your Name</div>
+      <div class="committee-detail">treasurer@ucrowing.com</div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-role">Social Rep</div>
+      <div class="committee-name">Your Name</div>
+      <div class="committee-detail"></div>
+    </div>
+    <div class="committee-card">
+      <div class="committee-role">Equipment Officer</div>
+      <div class="committee-name">Your Name</div>
+      <div class="committee-detail"></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- HISTORY -->
+  <p class="section-eyebrow">Our story</p>
+  <h2 class="section-title">History</h2>
+  <div class="section-rule"></div>
+
+  <div class="history-body">
+    <p>
+      The University of Canterbury Rowing Club was founded in 1908, just decades after the university itself opened its doors in Christchurch. In those early years, the club operated with a handful of members, a single borrowed boat, and an enthusiasm for the sport that would carry it through more than a century of change. What began as a modest gathering of students on the Avon River has since grown into one of the most active clubs on campus.
+    </p>
+
+    <div class="history-pull">"Built on effort, discipline, and the belief that the boat moves faster when everyone pulls together."</div>
+
+    <p>
+      Through the mid-twentieth century, the club expanded steadily — acquiring its own fleet of boats, establishing a permanent presence at the Waimakariri River, and sending crews to compete at regional and national level for the first time. The South Island Club Championships became a fixture of the calendar, and UC Rowing began building the competitive reputation it carries today.
+    </p>
+    <p>
+      The 1980s and 1990s brought a period of particular strength. The club produced several nationally ranked scullers during this era, with alumni going on to represent New Zealand at Rowing World Cup events. It was also during this time that the club formalised its student-run committee structure — a model that remains in place today and ensures the club stays connected to the people who make it what it is.
+    </p>
+    <p>
+      In more recent years, UC Rowing has continued to grow. Membership has increased, the boat fleet has been modernised, and the club has invested in coaching and development pathways for beginners. The annual Maadi Cup campaign — New Zealand's premier secondary school and club regatta — has become a highlight of the season, drawing the best crews the club has to offer.
+    </p>
+    <p>
+      Today UC Rowing is home to over sixty active members, ranging from complete beginners picking up an oar for the first time to experienced rowers with years of competitive rowing behind them. The club remains proudly student run, and that spirit — of doing things for each other, and doing them well — is as present now as it was in 1908.
+    </p>
+    <p style="color: var(--gray-mid); font-size: 15px; font-style: italic;">
+      Note: this is placeholder history copy — update it with real dates, names, and achievements from the club's actual records.
+    </p>
+  </div>
+
+</main>
+
+<div id="footer-placeholder"></div>
+<script src="nav.js"></script>
+</body>
+</html>
