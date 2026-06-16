@@ -16,7 +16,7 @@ function getNav(active) {
   return `
   <nav>
     <div class="nav-inner">
-      <a href="index.html" class="nav-logo"><span>UC</span> Rowing</a>
+      <a href="index.html" class="nav-logo"><img src="logo.png" alt="UC Rowing Club" style="height:38px;width:auto;display:block;"></a>
       <ul class="nav-links">${links}</ul>
     </div>
   </nav>`;
