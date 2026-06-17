@@ -8,8 +8,7 @@ This guide is for whoever is running the website next. You don't need to know ho
 
 A static website hosted for free on **Netlify**, connected to a database called **Supabase** for the members portal. All the files live in a **GitHub** repository.
 
-**Live site:** `mellow-nasturtium-c24034.netlify.app`
-*(Update this line if a custom domain is ever purchased)*
+**Live site:** `ucrowing.com`
 
 **GitHub repo:** `https://github.com/UCRCpres/UC-ROWING-SITE`
 
@@ -22,8 +21,9 @@ A static website hosted for free on **Netlify**, connected to a database called 
 | **GitHub** | Stores all the website files. Edit here → site updates | github.com |
 | **Netlify** | Hosts the live website. Watches GitHub and auto-deploys | netlify.com |
 | **Supabase** | The members database — login, fees, forms | supabase.com |
+| **Cloudflare** | Manages the domain DNS for ucrowing.com | cloudflare.com |
 
-All three use the **club email** to log in. Do not use personal emails — access needs to survive the handover each year.
+All services use the **club email** to log in. Do not use personal emails — access needs to survive the handover each year.
 
 ---
 
@@ -62,6 +62,7 @@ That's it. No servers, no command line needed.
 | `style.css` | All colours, fonts, spacing — edit this to change the look sitewide |
 | `nav.js` | Navigation bar and footer — edit once, updates every page |
 | `supabase.js` | Supabase connection config — don't touch unless credentials change |
+| `netlify.toml` | Netlify config — handles clean URLs (don't touch) |
 
 ### Photo folders
 
@@ -131,7 +132,7 @@ The forms page embeds Google Forms. If you create new forms each year:
 
 ### 7. Update the README
 
-Update this file with the current Netlify URL, GitHub repo link, and any new services added.
+Update this file with the current live URL, GitHub repo link, and any new services added.
 
 ---
 
@@ -191,15 +192,17 @@ Change these and every page updates automatically.
 
 ## Domain name
 
-*(Complete this section once a domain is purchased)*
+**Domain:** `ucrowing.com`
+**Registered at:** Cloudflare (cloudflare.com) — login with club email
+**Renews:** annually — roughly $12–15 USD/year
+**DNS:** Managed by Cloudflare, pointed to Netlify
 
-The domain is registered at: _______________
-Login email: club email
-It renews annually — set a calendar reminder 1 month before expiry or it will lapse and someone else can buy it.
+Set a calendar reminder 1 month before expiry or it will lapse and someone else can buy it. When you renew, just pay the annual fee in Cloudflare — no other action needed.
 
-When you renew, just pay the annual fee (roughly $15–20 NZD). No other action needed unless the nameservers change.
-
-If the domain ever stops working, log into the registrar and check that the nameservers are still pointed to Netlify.
+If the domain ever stops working:
+1. Log into Cloudflare → `ucrowing.com` → DNS
+2. Check the A record points to `75.2.60.5` and the CNAME for `www` points to the Netlify subdomain
+3. Check both are set to DNS only (grey cloud), not proxied
 
 ---
 
@@ -240,8 +243,8 @@ Go to Supabase → Table Editor → `members` → find their row → set `is_adm
 | **GitHub** | All website files | Invite new president as collaborator on the repo |
 | **Netlify** | Hosting | Log in via club email, hand over club email credentials |
 | **Supabase** | Members database | Invite to UC Rowing Club org, give Owner role |
+| **Cloudflare** | Domain DNS management | Hand over club email credentials |
 | **Google** | Club Gmail + Google Forms | Hand over club email credentials |
-| **Domain registrar** | Domain renewal (when purchased) | Hand over club email credentials |
 
 **Always use the club email, not personal emails.** If a president uses their personal email and leaves, you lose access.
 
