@@ -11,62 +11,32 @@
     flex-direction: column;
     gap: 1px;
     background: var(--border);
-    margin: 2rem 0;
+    margin: 1.5rem 0 2.5rem;
   }
   .event-row {
-    display: grid;
-    grid-template-columns: 80px 1fr auto;
-    gap: 1.5rem;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     background: var(--white);
-    padding: 1.5rem 2rem;
-  }
-  .event-date-box {
-    text-align: center;
-    background: var(--black);
-    padding: 0.5rem;
-  }
-  .event-date-month {
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--red);
-  }
-  .event-date-day {
-    font-family: 'Arial Narrow', Arial, sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1;
+    padding: 1.25rem 1.75rem;
+    gap: 2rem;
   }
   .event-name {
     font-family: 'Arial Narrow', Arial, sans-serif;
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--black);
-    margin-bottom: 0.2rem;
   }
-  .event-detail {
+  .event-date {
     font-family: Arial, sans-serif;
     font-size: 13px;
-    color: var(--gray-mid);
-  }
-  .event-badge {
-    font-family: Arial, sans-serif;
-    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    color: var(--maroon);
     text-transform: uppercase;
-    padding: 4px 12px;
-    border: 1px solid;
+    letter-spacing: 0.06em;
     white-space: nowrap;
   }
-  .badge-upcoming { color: var(--red); border-color: var(--red); }
-  .badge-past { color: #999; border-color: #CCC; }
-  .badge-registration { color: #226622; border-color: #88AA88; background: #EEF5EE; }
 
   .section-separator {
     font-family: Arial, sans-serif;
@@ -75,15 +45,17 @@
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--gray-mid);
-    padding: 0.75rem 2rem;
+    padding: 0.6rem 1.75rem;
     background: var(--gray-light);
     border: 1px solid var(--border);
-    margin-top: 2rem;
   }
 
-  @media (max-width: 768px) {
-    .event-row { grid-template-columns: 64px 1fr; }
-    .event-badge { display: none; }
+  .past .event-name { color: var(--gray-mid); }
+  .past .event-date { color: #999; }
+  .past { opacity: 0.7; }
+
+  @media (max-width: 600px) {
+    .event-row { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
   }
 </style>
 </head>
@@ -94,104 +66,50 @@
 <div class="page-header">
   <div class="page-header-inner">
     <p class="page-eyebrow">UC Rowing Club</p>
-    <h1 class="page-title">Events &amp; Regattas</h1>
+    <h1 class="page-title">Events</h1>
   </div>
 </div>
 
 <main>
 
-  <p class="section-eyebrow">2026 season</p>
-  <h2 class="section-title">Race calendar</h2>
-  <div class="section-rule"></div>
-  <p class="section-body">Our season runs from August through to March, culminating at the Maadi Cup and national championships. Registration for each event is handled through the <a href="forms.html" style="color: var(--red);">club forms page</a>.</p>
-
   <div class="section-separator">Upcoming</div>
   <div class="events-list">
     <div class="event-row">
-      <div class="event-date-box">
-        <div class="event-date-month">Aug</div>
-        <div class="event-date-day">10</div>
-      </div>
-      <div>
-        <div class="event-name">UC Club Time Trials</div>
-        <div class="event-detail">Waimakariri River, Christchurch &nbsp;·&nbsp; Internal club event</div>
-      </div>
-      <span class="event-badge badge-registration">Register →</span>
+      <div class="event-name">Quiz Night</div>
+      <div class="event-date">July 2026</div>
     </div>
     <div class="event-row">
-      <div class="event-date-box">
-        <div class="event-date-month">Sep</div>
-        <div class="event-date-day">14</div>
-      </div>
-      <div>
-        <div class="event-name">Canterbury Head of the River</div>
-        <div class="event-detail">Lake Rua Roto, Ruapuna &nbsp;·&nbsp; Regional regatta</div>
-      </div>
-      <span class="event-badge badge-upcoming">Upcoming</span>
+      <div class="event-name">UC Sprint Regatta</div>
+      <div class="event-date">October 2026</div>
     </div>
     <div class="event-row">
-      <div class="event-date-box">
-        <div class="event-date-month">Oct</div>
-        <div class="event-date-day">5</div>
-      </div>
-      <div>
-        <div class="event-name">Otago Rowing Regatta</div>
-        <div class="event-detail">Kakanui River, Oamaru &nbsp;·&nbsp; South Island club racing</div>
-      </div>
-      <span class="event-badge badge-upcoming">Upcoming</span>
-    </div>
-    <div class="event-row">
-      <div class="event-date-box">
-        <div class="event-date-month">Nov</div>
-        <div class="event-date-day">23</div>
-      </div>
-      <div>
-        <div class="event-name">South Island Club Championships</div>
-        <div class="event-detail">Lake Ruataniwha, Twizel &nbsp;·&nbsp; Major championship</div>
-      </div>
-      <span class="event-badge badge-upcoming">Upcoming</span>
-    </div>
-    <div class="event-row">
-      <div class="event-date-box">
-        <div class="event-date-month">Feb</div>
-        <div class="event-date-day">8</div>
-      </div>
-      <div>
-        <div class="event-name">Maadi Cup</div>
-        <div class="event-detail">Lake Ruataniwha, Twizel &nbsp;·&nbsp; National club regatta</div>
-      </div>
-      <span class="event-badge badge-upcoming">Upcoming</span>
+      <div class="event-name">AGM</div>
+      <div class="event-date">October 2026</div>
     </div>
   </div>
 
-  <div class="section-separator">Past events</div>
+  <div class="section-separator">Past 2026 events</div>
   <div class="events-list">
-    <div class="event-row" style="opacity: 0.55;">
-      <div class="event-date-box" style="background: #333;">
-        <div class="event-date-month">Mar</div>
-        <div class="event-date-day">15</div>
-      </div>
-      <div>
-        <div class="event-name">NZ Rowing Championships</div>
-        <div class="event-detail">Lake Karapiro, Cambridge &nbsp;·&nbsp; 2026 national championships</div>
-      </div>
-      <span class="event-badge badge-past">2026</span>
+    <div class="event-row past">
+      <div class="event-name">Otago Exchange</div>
+      <div class="event-date">8–10 May 2026</div>
     </div>
-    <div class="event-row" style="opacity: 0.55;">
-      <div class="event-date-box" style="background: #333;">
-        <div class="event-date-month">Nov</div>
-        <div class="event-date-day">18</div>
-      </div>
-      <div>
-        <div class="event-name">South Island Club Championships</div>
-        <div class="event-detail">Lake Ruataniwha, Twizel &nbsp;·&nbsp; 2025</div>
-      </div>
-      <span class="event-badge badge-past">2025</span>
+    <div class="event-row past">
+      <div class="event-name">2026 University Rowing Championships</div>
+      <div class="event-date">3–4 April 2026</div>
     </div>
-  </div>
-
-  <div style="margin-top: 2.5rem;">
-    <a href="forms.html" class="btn-primary">Register for a regatta</a>
+    <div class="event-row past">
+      <div class="event-name">UCRC Singlet Night</div>
+      <div class="event-date">1 April 2026</div>
+    </div>
+    <div class="event-row past">
+      <div class="event-name">UCRC ABC Party</div>
+      <div class="event-date">25 February 2026</div>
+    </div>
+    <div class="event-row past">
+      <div class="event-name">UCRC Open Day</div>
+      <div class="event-date">25 February 2026</div>
+    </div>
   </div>
 
 </main>

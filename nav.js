@@ -2,11 +2,9 @@ function getNav(active) {
   const pages = [
     { href: 'index.html', label: 'Home' },
     { href: 'about.html', label: 'About' },
-    { href: 'training.html', label: 'Training' },
+    { href: 'join.html', label: 'Join' },
     { href: 'events.html', label: 'Events' },
     { href: 'gallery.html', label: 'Gallery' },
-    { href: 'sponsors.html', label: 'Sponsors' },
-    { href: 'forms.html', label: 'Forms' },
     { href: 'contact.html', label: 'Contact' },
     { href: 'login.html', label: 'Members', highlight: true },
   ];
@@ -16,7 +14,7 @@ function getNav(active) {
   return `
   <nav>
     <div class="nav-inner">
-      <a href="index.html" class="nav-logo"><img src="logo.png" alt="UC Rowing Club" style="height:38px;width:auto;display:block;"></a>
+      <a href="index.html" class="nav-logo"><img src="general_photos_and_logos/logo.png" alt="UC Rowing Club" style="height:38px;width:auto;display:block;"></a>
       <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -31,20 +29,19 @@ function getFooter() {
     <div class="footer-inner">
       <div>
         <div class="footer-brand"><span>UC</span> Rowing Club</div>
-        <p class="footer-tagline">Student run. Community driven.<br>Competing at the highest level since 1908.</p>
+        <p class="footer-tagline">For students, by students.<br>Competing at the highest level since 1929.</p>
       </div>
       <div>
         <div class="footer-col-title">Connect</div>
         <ul class="footer-links">
           <li><a href="https://www.instagram.com/UCROWINGCLUB" target="_blank">Instagram</a></li>
-          <li><a href="#">UC Sport</a></li>
-          <li><a href="#">Rowing NZ</a></li>
+          <li><a href="https://www.facebook.com/groups/1440492173592829" target="_blank">Facebook</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <div class="footer-copy">© 2026 UC Rowing Club. All rights reserved.</div>
-      <div class="footer-uc">A <span>UC Sport</span> affiliated club · University of Canterbury</div>
+      <div class="footer-uc">University of Canterbury</div>
     </div>
   </footer>`;
 }

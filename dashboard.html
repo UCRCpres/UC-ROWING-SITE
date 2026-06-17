@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="style.css">
 <style>
   .dash-header {
-    background: var(--black);
-    border-bottom: 3px solid var(--red);
+    background: var(--maroon);
+    border-bottom: 3px solid var(--gold);
     padding: 0;
   }
   .dash-nav {
@@ -28,7 +28,7 @@
     text-transform: uppercase;
     text-decoration: none;
   }
-  .dash-logo span { color: var(--red); }
+  .dash-logo span { color: var(--gold); }
   .dash-user {
     display: flex;
     align-items: center;
@@ -37,12 +37,12 @@
   .dash-name {
     font-family: Arial, sans-serif;
     font-size: 13px;
-    color: #AAA;
+    color: rgba(255,255,255,0.7);
   }
   .dash-admin-link {
     font-family: Arial, sans-serif;
     font-size: 12px;
-    color: var(--red);
+    color: var(--gold);
     text-decoration: none;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -50,8 +50,8 @@
   }
   .btn-logout {
     background: none;
-    border: 1px solid #444;
-    color: #AAA;
+    border: 1px solid rgba(255,255,255,0.35);
+    color: rgba(255,255,255,0.7);
     padding: 6px 14px;
     font-family: Arial, sans-serif;
     font-size: 12px;
@@ -60,7 +60,7 @@
     letter-spacing: 0.08em;
     transition: border-color 0.2s, color 0.2s;
   }
-  .btn-logout:hover { border-color: #AAA; color: var(--white); }
+  .btn-logout:hover { border-color: var(--white); color: var(--white); }
 
   .dash-main {
     max-width: 1100px;
@@ -93,7 +93,7 @@
 
   .dash-card {
     border: 1px solid var(--border);
-    border-top: 3px solid var(--red);
+    border-top: 3px solid var(--maroon);
   }
   .dash-card-header {
     padding: 1.25rem 1.5rem;
@@ -146,12 +146,12 @@
     white-space: nowrap;
   }
   .status-badge.done { color: #2D8C2D; }
-  .status-badge.pending { color: var(--red); }
+  .status-badge.pending { color: var(--maroon); }
   .status-dot {
     width: 8px; height: 8px; border-radius: 50%;
   }
   .status-dot.done { background: #2D8C2D; }
-  .status-dot.pending { background: var(--red); }
+  .status-dot.pending { background: var(--maroon); }
 
   .empty-state {
     padding: 2rem 1.5rem;
@@ -187,7 +187,7 @@
     font-weight: 700;
     color: var(--black);
   }
-  .summary-num.red { color: var(--red); }
+  .summary-num.red { color: var(--maroon); }
   .summary-label {
     font-family: Arial, sans-serif;
     font-size: 11px;
@@ -195,6 +195,66 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-top: 0.2rem;
+  }
+
+  .forms-section {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2.5rem;
+  }
+  .forms-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  .forms-tab-btn {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.9rem 2rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    color: var(--gray-mid);
+    transition: color 0.2s;
+  }
+  .forms-tab-btn:hover { color: var(--black); }
+  .forms-tab-btn.active { color: var(--maroon); border-bottom-color: var(--maroon); }
+  .forms-tab-panel { display: none; }
+  .forms-tab-panel.active { display: block; }
+  .google-form-wrap {
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--maroon);
+    overflow: hidden;
+    max-width: 680px;
+  }
+  .google-form-wrap iframe { display: block; width: 100%; border: none; }
+  .placeholder-box {
+    max-width: 680px;
+    border: 1px dashed var(--border);
+    border-top: 3px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  .placeholder-icon { font-size: 36px; margin-bottom: 1rem; opacity: 0.4; }
+  .placeholder-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    margin-bottom: 0.5rem;
+  }
+  .placeholder-desc {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-mid);
+    line-height: 1.6;
   }
 
   @media (max-width: 768px) {
@@ -258,6 +318,36 @@
       </div>
     </div>
   </div>
+
+  <!-- FORMS -->
+  <div class="forms-section">
+    <div class="forms-tabs">
+      <button class="forms-tab-btn active" onclick="switchFormsTab('regatta', this)">Regatta registration</button>
+      <button class="forms-tab-btn" onclick="switchFormsTab('join', this)">Join the club</button>
+    </div>
+
+    <div id="ftab-regatta" class="forms-tab-panel active">
+      <div class="placeholder-box">
+        <div class="placeholder-icon">📋</div>
+        <div class="placeholder-title">Coming soon</div>
+        <div class="placeholder-desc">Regatta registration form will appear here once it's set up.</div>
+      </div>
+    </div>
+
+    <div id="ftab-join" class="forms-tab-panel">
+      <div class="google-form-wrap">
+        <iframe
+          src="https://docs.google.com/forms/d/e/1FAIpQLSf9A9vxZCwTEEShiDROt6yFRMzFQz1Mze_sWGgPfuNZr0yfTQ/viewform?embedded=true"
+          height="2938"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0">
+          Loading…
+        </iframe>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script type="module">
@@ -355,6 +445,13 @@
   window.handleLogout = async function() {
     await supabase.auth.signOut()
     window.location.href = 'login.html'
+  }
+
+  window.switchFormsTab = function(name, btn) {
+    document.querySelectorAll('.forms-tab-panel').forEach(p => p.classList.remove('active'))
+    document.querySelectorAll('.forms-tab-btn').forEach(b => b.classList.remove('active'))
+    document.getElementById('ftab-' + name).classList.add('active')
+    btn.classList.add('active')
   }
 </script>
 </body>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join — UC Rowing Club</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    margin-top: 1.5rem;
+  }
+  .step {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 36px; height: 36px; min-width: 36px;
+    background: var(--maroon);
+    color: var(--white);
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+  }
+  .step-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 0.25rem;
+  }
+  .step-desc {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: var(--gray-mid);
+    line-height: 1.6;
+  }
+
+  .info-box {
+    border-left: 3px solid var(--gold);
+    background: var(--gold-light);
+    padding: 1rem 1.5rem;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: var(--gray-dark);
+    margin-top: 2rem;
+    line-height: 1.6;
+  }
+
+  .google-form-wrap {
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--maroon);
+    overflow: hidden;
+  }
+  .google-form-wrap iframe {
+    display: block;
+    width: 100%;
+    border: none;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder" data-active="Join"></div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <p class="page-eyebrow">UC Rowing Club</p>
+    <h1 class="page-title">Join</h1>
+  </div>
+</div>
+
+<main>
+
+  <p class="section-eyebrow">How it works</p>
+  <h2 class="section-title">Get on the water</h2>
+  <div class="section-rule"></div>
+  <p class="section-body">No experience needed. UC Rowing is open to all UC students — whether you've never touched an oar or rowed at nationals.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Fill in the form</div>
+        <div class="step-desc">Complete the membership form on this page with your details. Takes about two minutes.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Join our Facebook group</div>
+        <div class="step-desc"><a href="https://www.facebook.com/groups/1440492173592829" target="_blank" style="color:var(--maroon);">Join the UCRC Facebook group</a> to stay up to date with sessions, events, and club news.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Come to a session or event</div>
+        <div class="step-desc">Regular training runs during Term 1. We also have events and socials throughout the rest of the year — keep an eye on the Facebook group for what's on.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>Questions?</strong> Email us at <a href="mailto:president.ucrc@gmail.com" style="color:var(--maroon);">president.ucrc@gmail.com</a>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-eyebrow">Membership</p>
+  <h2 class="section-title">Join UC Rowing</h2>
+  <div class="section-rule"></div>
+  <div class="google-form-wrap" style="margin-top:1.5rem; max-width:680px;">
+    <iframe
+      src="https://docs.google.com/forms/d/e/1FAIpQLSf9A9vxZCwTEEShiDROt6yFRMzFQz1Mze_sWGgPfuNZr0yfTQ/viewform?embedded=true"
+      height="2938"
+      frameborder="0"
+      marginheight="0"
+      marginwidth="0">
+      Loading…
+    </iframe>
+  </div>
+
+  <hr class="divider">
+
+  <!-- CODE OF CONDUCT -->
+  <p class="section-eyebrow">Before you join</p>
+  <h2 class="section-title">Code of Conduct</h2>
+  <div class="section-rule"></div>
+  <p class="section-body">All members are expected to read and agree to the club's code of conduct before joining. This includes our river flow pattern and safety guidelines.</p>
+
+  <a href="UCRC Code of Conduct.pdf" target="_blank" class="btn-primary" style="margin-bottom: 2rem; display: inline-block;">Download Code of Conduct (PDF)</a>
+
+  <div style="margin-top: 1.5rem; border: 1px solid var(--border); border-top: 3px solid var(--maroon); padding: 1.5rem;">
+    <p style="font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--maroon); margin-bottom: 1rem;">River Flow Pattern</p>
+    <img src="general_photos_and_logos/Flow_Pattern.jpg" alt="River flow pattern" style="width: 100%; max-width: 640px; display: block;">
+  </div>
+
+</main>
+
+<div id="footer-placeholder"></div>
+<script src="nav.js"></script>
+</body>
+</html>

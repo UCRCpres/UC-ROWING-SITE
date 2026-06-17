@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="style.css">
 <style>
   .dash-header {
-    background: var(--black);
-    border-bottom: 3px solid var(--red);
+    background: var(--maroon);
+    border-bottom: 3px solid var(--gold);
   }
   .dash-nav {
     max-width: 1200px;
@@ -27,7 +27,7 @@
     text-transform: uppercase;
     text-decoration: none;
   }
-  .dash-logo span { color: var(--red); }
+  .dash-logo span { color: var(--gold); }
   .dash-right {
     display: flex;
     align-items: center;
@@ -39,23 +39,23 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--red);
-    border: 1px solid var(--red);
+    color: var(--gold);
+    border: 1px solid var(--gold);
     padding: 3px 10px;
   }
   .btn-logout {
     background: none;
-    border: 1px solid #444;
-    color: #AAA;
+    border: 1px solid rgba(255,255,255,0.35);
+    color: rgba(255,255,255,0.7);
     padding: 6px 14px;
     font-family: Arial, sans-serif;
     font-size: 12px;
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, color 0.2s;
   }
-  .btn-logout:hover { border-color: #AAA; color: var(--white); }
+  .btn-logout:hover { border-color: var(--white); color: var(--white); }
 
   .admin-main {
     max-width: 1200px;
@@ -83,7 +83,7 @@
     color: var(--gray-mid);
     transition: color 0.2s;
   }
-  .admin-tab.active { color: var(--red); border-bottom-color: var(--red); }
+  .admin-tab.active { color: var(--maroon); border-bottom-color: var(--maroon); }
   .admin-panel { display: none; }
   .admin-panel.active { display: block; }
 
@@ -106,7 +106,7 @@
     font-weight: 700;
     color: var(--black);
   }
-  .stat-num.red { color: var(--red); }
+  .stat-num.red { color: var(--maroon); }
   .stat-label {
     font-family: Arial, sans-serif;
     font-size: 11px;
@@ -124,7 +124,7 @@
     font-size: 13px;
   }
   .admin-table th {
-    background: var(--black);
+    background: var(--maroon);
     color: var(--white);
     padding: 0.75rem 1rem;
     text-align: left;
@@ -158,13 +158,13 @@
     border-color: #2D8C2D;
     color: var(--white);
   }
-  .check-btn:hover { border-color: var(--red); }
+  .check-btn:hover { border-color: var(--maroon); }
 
   /* ADD MEMBER FORM */
   .add-form {
     background: var(--white);
     border: 1px solid var(--border);
-    border-top: 3px solid var(--red);
+    border-top: 3px solid var(--maroon);
     padding: 2rem;
     max-width: 600px;
     margin-bottom: 2rem;
@@ -196,7 +196,7 @@
   .modal-overlay.open { display: flex; }
   .modal {
     background: var(--white);
-    border-top: 3px solid var(--red);
+    border-top: 3px solid var(--maroon);
     padding: 2rem;
     width: 90%;
     max-width: 520px;
@@ -245,13 +245,13 @@
     width: 280px;
     outline: none;
   }
-  .search-bar input:focus { border-color: var(--red); }
+  .search-bar input:focus { border-color: var(--maroon); }
 
   .toast {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    background: var(--black);
+    background: var(--maroon);
     color: var(--white);
     font-family: Arial, sans-serif;
     font-size: 13px;
@@ -266,7 +266,7 @@
     cursor: pointer;
     text-decoration: none;
   }
-  .member-name-link:hover { color: var(--red); }
+  .member-name-link:hover { color: var(--maroon); }
 
   @media (max-width: 768px) {
     .stats-strip { grid-template-columns: 1fr 1fr; }
@@ -281,7 +281,7 @@
     <a href="index.html" class="dash-logo"><span>UC</span> Rowing</a>
     <div class="dash-right">
       <span class="admin-badge">Admin</span>
-      <a href="dashboard.html" style="font-family:Arial,sans-serif; font-size:13px; color:#AAA; text-decoration:none;">My dashboard</a>
+      <a href="dashboard.html" style="font-family:Arial,sans-serif; font-size:13px; color:rgba(255,255,255,0.7); text-decoration:none;">My dashboard</a>
       <button class="btn-logout" onclick="handleLogout()">Log out</button>
     </div>
   </div>
@@ -431,7 +431,7 @@
           <input type="checkbox" id="add-admin"> Grant admin access
         </label>
       </div>
-      <div id="add-error" style="color:var(--red); font-size:13px; margin-bottom:0.75rem; display:none;"></div>
+      <div id="add-error" style="color:var(--maroon); font-size:13px; margin-bottom:0.75rem; display:none;"></div>
       <button class="btn-primary" onclick="addMember()">Create member account</button>
     </div>
   </div>
