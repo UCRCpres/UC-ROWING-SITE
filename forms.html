@@ -6,13 +6,40 @@
 <title>Member Forms — UC Rowing Club</title>
 <link rel="stylesheet" href="style.css">
 <style>
+  /* ── TABS ─────────────────────────────────────────────────────────────────
+     Uses .forms-tab-btn / .forms-tab-panel (not .tab-btn / .tab-panel) so
+     these don't conflict with the login modal's tabs in nav.js. */
+  .forms-top-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    min-height: 36px;
+  }
+
+  .btn-edit-page {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--gray-mid);
+    padding: 7px 14px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    border-radius: 2px;
+  }
+  .btn-edit-page:hover { border-color: var(--maroon); color: var(--maroon); }
+
   .forms-tabs {
     display: flex;
-    gap: 0;
+    align-items: flex-end;
     border-bottom: 2px solid var(--border);
     margin-bottom: 2.5rem;
   }
-  .tab-btn {
+  .forms-tab-btn {
     font-family: 'Arial Narrow', Arial, sans-serif;
     font-size: 16px;
     font-weight: 700;
@@ -27,23 +54,53 @@
     color: var(--gray-mid);
     transition: color 0.2s;
   }
-  .tab-btn:hover { color: var(--black); }
-  .tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
+  .forms-tab-btn:hover { color: var(--black); }
+  .forms-tab-btn.active { color: var(--maroon); border-bottom-color: var(--maroon); }
 
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
+  /* Edit mode: tabs get an × and a + at the end */
+  .forms-tab-btn.editable {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 0.9rem;
+  }
+  .tab-del-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--gray-mid);
+    padding: 0 2px;
+    transition: color 0.15s;
+  }
+  .tab-del-btn:hover { color: #CC0000; }
+  .tab-add-btn {
+    font-size: 20px;
+    line-height: 1;
+    background: none;
+    border: 1px dashed var(--border);
+    color: var(--gray-mid);
+    padding: 0.5rem 0.9rem;
+    margin-left: 0.5rem;
+    margin-bottom: -2px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    border-radius: 2px;
+  }
+  .tab-add-btn:hover { border-color: var(--maroon); color: var(--maroon); }
 
+  .forms-tab-panel { display: none; }
+  .forms-tab-panel.active { display: block; }
+
+  /* ── VIEW MODE CONTENT ─────────────────────────────────────────────────── */
   .google-form-wrap {
     border: 1px solid var(--border);
-    border-top: 3px solid var(--red);
+    border-top: 3px solid var(--maroon);
     overflow: hidden;
     max-width: 680px;
   }
-  .google-form-wrap iframe {
-    display: block;
-    width: 100%;
-    border: none;
-  }
+  .google-form-wrap iframe { display: block; width: 100%; border: none; }
 
   .placeholder-box {
     max-width: 680px;
@@ -52,7 +109,6 @@
     padding: 3rem 2rem;
     text-align: center;
   }
-  .placeholder-icon { font-size: 36px; margin-bottom: 1rem; opacity: 0.4; }
   .placeholder-title {
     font-family: 'Arial Narrow', Arial, sans-serif;
     font-size: 20px;
@@ -69,10 +125,181 @@
     max-width: 400px;
     margin: 0 auto;
   }
-  .placeholder-desc code {
-    background: var(--gray-light);
-    padding: 1px 5px;
+
+  /* ── EDIT MODE PANEL ───────────────────────────────────────────────────── */
+  .edit-panel { max-width: 680px; }
+
+  .edit-panel .ep-label {
+    display: block;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray-mid);
+    margin-bottom: 0.35rem;
+    margin-top: 1rem;
+  }
+  .edit-panel .ep-label:first-child { margin-top: 0; }
+
+  .edit-panel input[type="text"],
+  .edit-panel input[type="url"],
+  .edit-panel input[type="number"],
+  .edit-panel textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    outline: none;
+    border-radius: 2px;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+  }
+  .edit-panel input:focus,
+  .edit-panel textarea:focus { border-color: var(--maroon); }
+  .edit-panel textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+  .edit-panel .field-note {
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    color: var(--gray-mid);
+    margin-top: 0.3rem;
+    line-height: 1.4;
+  }
+
+  .edit-form-box {
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--maroon);
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .edit-form-box-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--black);
+    margin-bottom: 1rem;
+  }
+
+  .btn-attach {
+    width: 100%;
+    background: none;
+    border: 1px dashed var(--border);
+    color: var(--gray-mid);
+    padding: 1rem;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    border-radius: 2px;
+    text-align: center;
+  }
+  .btn-attach:hover { border-color: var(--maroon); color: var(--maroon); }
+
+  .btn-remove-form {
+    background: none;
+    border: none;
+    color: #CC0000;
+    font-family: Arial, sans-serif;
     font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 0.5rem;
+    display: inline-block;
+  }
+  .btn-remove-form:hover { text-decoration: underline; }
+
+  .btn-cancel-text {
+    background: none;
+    border: none;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-mid);
+    cursor: pointer;
+    padding: 0;
+  }
+  .btn-cancel-text:hover { color: var(--black); }
+
+  /* ── AUTH PROMPT ───────────────────────────────────────────────────────── */
+  .auth-prompt { text-align: center; padding: 4rem 1rem; }
+  .auth-prompt-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 0.75rem;
+  }
+  .auth-prompt-desc {
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    color: var(--gray-mid);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  /* ── ADD TAB MODAL ─────────────────────────────────────────────────────── */
+  .forms-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .forms-modal-overlay.open { display: flex; }
+  .forms-modal {
+    background: var(--white);
+    border-top: 3px solid var(--maroon);
+    padding: 2rem;
+    width: 90%;
+    max-width: 440px;
+    position: relative;
+  }
+  .forms-modal-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding-right: 2rem;
+  }
+  .forms-modal-close {
+    position: absolute;
+    top: 1.25rem; right: 1.25rem;
+    background: none; border: none;
+    font-size: 18px; cursor: pointer;
+    color: var(--gray-mid);
+  }
+  .forms-modal-close:hover { color: var(--black); }
+  .forms-modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+
+  @media (max-width: 768px) {
+    .forms-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .forms-tab-btn { white-space: nowrap; padding: 0.9rem 1.25rem; }
+    .forms-tab-btn.editable { padding-right: 0.75rem; }
+    .forms-top-bar { flex-wrap: wrap; gap: 0.5rem; }
+    .forms-modal-actions { flex-direction: column; }
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--maroon);
+    color: var(--white);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    padding: 0.75rem 1.25rem;
+    z-index: 500;
+    display: none;
+    border-radius: 2px;
   }
 </style>
 </head>
@@ -83,66 +310,432 @@
 <div class="page-header">
   <div class="page-header-inner">
     <p class="page-eyebrow">UC Rowing Club</p>
-    <h1 class="page-title">Forms</h1>
+    <h1 class="page-title">Member Forms</h1>
   </div>
 </div>
 
 <main>
+  <div id="forms-loading" style="text-align:center; padding:3rem; font-family:Arial,sans-serif; font-size:14px; color:var(--gray-mid);">Loading...</div>
 
-  <div class="forms-tabs">
-    <button class="tab-btn active" onclick="switchTab('join', this)">Join the club</button>
-    <button class="tab-btn" onclick="switchTab('regatta', this)">Regatta registration</button>
+  <div id="forms-auth-prompt" class="auth-prompt" style="display:none;">
+    <div class="auth-prompt-title">Members Only</div>
+    <p class="auth-prompt-desc">Please log in to access member forms.</p>
+    <button class="btn-primary" onclick="window.openLoginModal?.()">Log in to your account</button>
   </div>
 
-  <!-- JOIN FORM -->
-  <div id="tab-join" class="tab-panel active">
-    <p class="section-eyebrow">Membership</p>
-    <h2 class="section-title">Join UC Rowing</h2>
-    <div class="section-rule"></div>
-    <p class="section-body" style="margin-bottom: 2rem;">Fill in your details below and we'll be in touch within 48 hours. No experience necessary.</p>
-
-    <div class="google-form-wrap">
-      <iframe
-        src="https://docs.google.com/forms/d/e/1FAIpQLSf9A9vxZCwTEEShiDROt6yFRMzFQz1Mze_sWGgPfuNZr0yfTQ/viewform?embedded=true"
-        height="2938"
-        frameborder="0"
-        marginheight="0"
-        marginwidth="0">
-        Loading…
-      </iframe>
-    </div>
+  <div id="forms-app" style="display:none;">
+    <div id="forms-top-bar"></div>
+    <div id="forms-tabs-area"></div>
   </div>
-
-  <!-- REGATTA REGISTRATION -->
-  <div id="tab-regatta" class="tab-panel">
-    <p class="section-eyebrow">Events</p>
-    <h2 class="section-title">Regatta registration</h2>
-    <div class="section-rule"></div>
-    <p class="section-body" style="margin-bottom: 2rem;">Register your interest for an upcoming regatta. The captain will confirm crew selections and logistics separately.</p>
-
-    <div class="placeholder-box">
-      <div class="placeholder-icon">📋</div>
-      <div class="placeholder-title">Coming soon</div>
-      <div class="placeholder-desc">
-        Build your regatta registration form in Google Forms, then replace this block with your embed code.<br><br>
-        In <code>forms.html</code>, find the comment <code>&lt;!-- REGATTA EMBED --&gt;</code> and paste your iframe there.
-      </div>
-    </div>
-  </div>
-
 </main>
 
-<!-- REGATTA EMBED -->
+<!-- CUSTOM CONFIRM DIALOG -->
+<div id="confirm-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:600; align-items:center; justify-content:center; padding:1rem;">
+  <div style="background:var(--white); border-top:3px solid var(--maroon); padding:2rem; width:90%; max-width:360px;">
+    <p id="confirm-message" style="font-family:Arial,sans-serif; font-size:15px; color:var(--black); margin:0 0 1.5rem; line-height:1.5;"></p>
+    <div style="display:flex; gap:0.75rem;">
+      <button id="confirm-ok" class="btn-primary"></button>
+      <button id="confirm-cancel" class="btn-secondary">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD TAB MODAL -->
+<div class="forms-modal-overlay" id="add-tab-modal">
+  <div class="forms-modal">
+    <button class="forms-modal-close" onclick="closeAddTabModal()">✕</button>
+    <div class="forms-modal-title">New tab</div>
+    <div class="form-group">
+      <label>Tab name</label>
+      <input type="text" id="new-tab-name" placeholder="e.g. Regatta registration" maxlength="40">
+    </div>
+    <div id="add-tab-error" style="color:var(--maroon);font-size:13px;margin-top:0.5rem;display:none;"></div>
+    <div class="forms-modal-actions">
+      <button class="btn-primary" onclick="confirmAddTab()">Create tab</button>
+      <button class="btn-cancel-text" onclick="closeAddTabModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="forms-toast"></div>
 
 <div id="footer-placeholder"></div>
-<script src="nav.js"></script>
-<script>
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  btn.classList.add('active');
+<script type="module" src="nav.js"></script>
+
+<script type="module">
+import { supabase } from './supabase.js'
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let isAdmin     = false
+let liveTabs    = []   // tabs as stored in Supabase — never modified directly
+let editTabs    = []   // working copy during edit mode
+let activeIndex = 0
+let isEditMode  = false
+
+// ── CUSTOM CONFIRM ────────────────────────────────────────────────────────────
+function customConfirm(message, confirmLabel = 'Confirm') {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('confirm-overlay')
+    document.getElementById('confirm-message').textContent = message
+    document.getElementById('confirm-ok').textContent = confirmLabel
+    overlay.style.display = 'flex'
+
+    function done(result) {
+      overlay.style.display = 'none'
+      document.getElementById('confirm-ok').removeEventListener('click', onOk)
+      document.getElementById('confirm-cancel').removeEventListener('click', onCancel)
+      resolve(result)
+    }
+    function onOk()     { done(true) }
+    function onCancel() { done(false) }
+
+    document.getElementById('confirm-ok').addEventListener('click', onOk)
+    document.getElementById('confirm-cancel').addEventListener('click', onCancel)
+  })
 }
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  // HTML-escape for safe insertion into innerHTML
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function showToast(msg) {
+  const t = document.getElementById('forms-toast')
+  t.textContent = msg
+  t.style.display = 'block'
+  setTimeout(() => t.style.display = 'none', 2800)
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+async function loadTabs() {
+  const { data, error } = await supabase
+    .from('form_tabs')
+    .select('*')
+    .order('sort_order')
+  if (error) { console.error(error); return }
+  liveTabs = data || []
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  renderTopBar()
+  renderTabsArea()
+}
+
+function renderTopBar() {
+  const bar = document.getElementById('forms-top-bar')
+  if (!isAdmin) { bar.innerHTML = ''; return }
+
+  if (isEditMode) {
+    bar.innerHTML = `
+      <div style="display:flex;gap:0.75rem;align-items:center;">
+        <button class="btn-primary" onclick="saveEdit()">Save changes</button>
+        <button class="btn-secondary" onclick="cancelEdit()">Cancel</button>
+      </div>`
+  } else {
+    bar.innerHTML = `<button class="btn-edit-page" onclick="enterEditMode()">✎ Edit page</button>`
+  }
+}
+
+function renderTabsArea() {
+  const area  = document.getElementById('forms-tabs-area')
+  const tabs  = isEditMode ? editTabs : liveTabs
+  const clamp = Math.max(0, Math.min(activeIndex, tabs.length - 1))
+  activeIndex = clamp
+
+  // Empty state
+  if (tabs.length === 0) {
+    area.innerHTML = isEditMode
+      ? `<div class="forms-tabs">
+           <button class="tab-add-btn" onclick="openAddTabModal()">＋ Add first tab</button>
+         </div>
+         <div class="placeholder-box">
+           <div class="placeholder-title">No tabs yet</div>
+           <div class="placeholder-desc">Click the button above to create your first form tab.</div>
+         </div>`
+      : `<div class="placeholder-box">
+           <div class="placeholder-title">No forms yet</div>
+           <div class="placeholder-desc">Nothing has been set up here yet — check back soon.</div>
+         </div>`
+    return
+  }
+
+  // Tab buttons
+  const tabBtns = tabs.map((t, i) => {
+    const active = i === activeIndex ? ' active' : ''
+    if (isEditMode) {
+      return `<button id="tab-btn-${i}" class="forms-tab-btn editable${active}" onclick="setActive(${i})">
+        ${esc(t.tab_label)}
+        <span class="tab-del-btn" onclick="deleteTab(event,${i})" title="Delete this tab">×</span>
+      </button>`
+    }
+    return `<button class="forms-tab-btn${active}" onclick="setActive(${i})">${esc(t.tab_label)}</button>`
+  }).join('')
+
+  const plusBtn = isEditMode
+    ? `<button class="tab-add-btn" onclick="openAddTabModal()" title="Add tab">＋</button>`
+    : ''
+
+  // Active panel
+  const tab = tabs[activeIndex]
+  const panel = isEditMode ? buildEditPanel(tab, activeIndex) : buildViewPanel(tab)
+
+  area.innerHTML = `
+    <div class="forms-tabs">${tabBtns}${plusBtn}</div>
+    <div class="forms-tab-panel active">${panel}</div>`
+}
+
+// ── VIEW PANEL ────────────────────────────────────────────────────────────────
+function buildViewPanel(tab) {
+  const desc = tab.description
+    ? `<p class="section-body" style="margin-bottom:2rem;">${esc(tab.description)}</p>`
+    : ''
+
+  const formContent = tab.embed_url
+    ? `<div class="google-form-wrap">
+         <iframe src="${esc(tab.embed_url)}" height="${parseInt(tab.embed_height) || 800}" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+       </div>
+       ${tab.embed_url ? `<p style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-mid);margin-top:0.75rem;">Form not loading? <a href="${esc(tab.embed_url.replace('?embedded=true',''))}" target="_blank" style="color:var(--maroon);">Open in a new tab →</a></p>` : ''}`
+    : `<div class="placeholder-box">
+         <div class="placeholder-title">Coming soon</div>
+         <div class="placeholder-desc">Form not attached yet.</div>
+       </div>`
+
+  return `
+    <h2 class="section-title">${esc(tab.tab_label)}</h2>
+    <div class="section-rule"></div>
+    ${desc}
+    ${formContent}`
+}
+
+// ── EDIT PANEL ────────────────────────────────────────────────────────────────
+function buildEditPanel(tab, index) {
+  const formBox = tab.embed_url
+    ? `<div class="edit-form-box">
+         <div class="edit-form-box-title">Google Form</div>
+         <label class="ep-label">Embed URL</label>
+         <input type="url" value="${esc(tab.embed_url)}"
+           oninput="updateField(${index},'embed_url',this.value)"
+           placeholder="https://docs.google.com/forms/...">
+         <label class="ep-label" style="margin-top:0.75rem;">Embed height (px)
+           <span style="font-weight:400;text-transform:none;letter-spacing:0;"> — make taller if the form gets cut off</span>
+         </label>
+         <input type="number" value="${parseInt(tab.embed_height) || 800}"
+           oninput="updateField(${index},'embed_height',parseInt(this.value)||800)"
+           style="width:130px;">
+         <br>
+         <button class="btn-remove-form" onclick="removeForm(${index})">✕ Remove form</button>
+       </div>`
+    : `<div class="edit-form-box">
+         <div class="edit-form-box-title">Google Form</div>
+         <div id="attach-area-${index}">
+           <button class="btn-attach" onclick="showAttachInput(${index})">＋ Attach a Google Form</button>
+         </div>
+       </div>`
+
+  return `
+    <div class="edit-panel">
+      <label class="ep-label">Tab name</label>
+      <input type="text" value="${esc(tab.tab_label)}"
+        oninput="updateField(${index},'tab_label',this.value)"
+        placeholder="e.g. Regatta registration" maxlength="40">
+
+      <label class="ep-label" style="margin-top:1rem;">Description
+        <span style="font-weight:400;text-transform:none;letter-spacing:0;"> — optional, shown above the form</span>
+      </label>
+      <textarea oninput="updateField(${index},'description',this.value)"
+        placeholder="Add a short description...">${esc(tab.description || '')}</textarea>
+
+      ${formBox}
+    </div>`
+}
+
+// ── ATTACH FORM INLINE ────────────────────────────────────────────────────────
+window.showAttachInput = function(index) {
+  document.getElementById('attach-area-' + index).innerHTML = `
+    <label class="ep-label">Embed URL</label>
+    <input type="url" id="attach-url-${index}"
+      placeholder="https://docs.google.com/forms/d/e/.../viewform?embedded=true"
+      style="margin-bottom:0.4rem;">
+    <p class="field-note">In Google Forms, click the ⋮ (three dots) → Embed. You'll see a block of code — copy only the long link from inside it. It should start with https:// and end with ?embedded=true</p>
+    <div style="display:flex;gap:0.75rem;align-items:center;margin-top:0.75rem;">
+      <button class="btn-primary" onclick="confirmAttach(${index})" style="font-size:13px;padding:8px 16px;">Attach form</button>
+      <button class="btn-cancel-text" onclick="cancelAttach(${index})">Cancel</button>
+    </div>`
+}
+
+window.confirmAttach = function(index) {
+  const url = (document.getElementById('attach-url-' + index)?.value || '').trim()
+  if (!url) { showToast('Paste a URL first'); return }
+  editTabs[index].embed_url    = url
+  editTabs[index].embed_height = editTabs[index].embed_height || 800
+  renderTabsArea()
+}
+
+window.cancelAttach = function(index) {
+  renderTabsArea()
+}
+
+window.removeForm = async function(index) {
+  if (!await customConfirm('Remove the Google Form from this tab?', 'Remove')) return
+  editTabs[index].embed_url = null
+  renderTabsArea()
+}
+
+// ── FIELD UPDATES (no re-render needed) ──────────────────────────────────────
+window.updateField = function(index, field, value) {
+  const tabs = isEditMode ? editTabs : liveTabs
+  if (!tabs[index]) return
+  tabs[index][field] = value
+
+  // Live-update the tab button label without re-rendering everything
+  if (field === 'tab_label') {
+    const btn = document.getElementById('tab-btn-' + index)
+    if (btn) btn.childNodes[0].textContent = value || 'Untitled'
+  }
+}
+
+// ── TAB NAVIGATION ────────────────────────────────────────────────────────────
+window.setActive = function(i) {
+  activeIndex = i
+  renderTabsArea()
+}
+
+// ── ADD TAB MODAL ─────────────────────────────────────────────────────────────
+window.openAddTabModal = function() {
+  document.getElementById('new-tab-name').value = ''
+  document.getElementById('add-tab-error').style.display = 'none'
+  document.getElementById('add-tab-modal').classList.add('open')
+  setTimeout(() => document.getElementById('new-tab-name').focus(), 50)
+}
+
+window.closeAddTabModal = function() {
+  document.getElementById('add-tab-modal').classList.remove('open')
+}
+
+window.confirmAddTab = function() {
+  const name = document.getElementById('new-tab-name').value.trim()
+  const err  = document.getElementById('add-tab-error')
+  if (!name) {
+    err.textContent = 'Please enter a tab name.'
+    err.style.display = 'block'
+    return
+  }
+  closeAddTabModal()
+  editTabs.push({
+    id: null,
+    tab_label:    name,
+    description:  '',
+    embed_url:    null,
+    embed_height: 800,
+    sort_order:   editTabs.length,
+    _new: true
+  })
+  activeIndex = editTabs.length - 1
+  renderTabsArea()
+}
+
+// Enter on the tab name input submits
+document.getElementById('add-tab-modal').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmAddTab()
+  if (e.key === 'Escape') closeAddTabModal()
+})
+
+// Close modal on backdrop click
+document.getElementById('add-tab-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeAddTabModal()
+})
+
+// ── DELETE TAB ────────────────────────────────────────────────────────────────
+window.deleteTab = async function(e, index) {
+  e.stopPropagation()  // don't trigger setActive
+  const name = editTabs[index]?.tab_label || 'this tab'
+  if (!await customConfirm(`Delete "${name}"? This cannot be undone.`, 'Delete')) return
+  editTabs.splice(index, 1)
+  activeIndex = Math.min(activeIndex, Math.max(0, editTabs.length - 1))
+  renderTabsArea()
+}
+
+// ── EDIT MODE ─────────────────────────────────────────────────────────────────
+window.enterEditMode = function() {
+  editTabs    = JSON.parse(JSON.stringify(liveTabs))
+  isEditMode  = true
+  activeIndex = 0
+  render()
+}
+
+window.cancelEdit = function() {
+  editTabs   = []
+  isEditMode = false
+  render()
+}
+
+window.saveEdit = async function() {
+  // Show saving indicator
+  document.getElementById('forms-top-bar').innerHTML =
+    `<span style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-mid);">Saving…</span>`
+
+  try {
+    // Delete all current rows then reinsert
+    if (liveTabs.length > 0) {
+      await supabase.from('form_tabs').delete().in('id', liveTabs.map(t => t.id))
+    }
+
+    if (editTabs.length > 0) {
+      const rows = editTabs.map((t, i) => ({
+        tab_label:    (t.tab_label || 'Untitled').trim(),
+        description:  (t.description || '').trim(),
+        embed_url:    t.embed_url || null,
+        embed_height: parseInt(t.embed_height) || 800,
+        sort_order:   i
+      }))
+      const { error } = await supabase.from('form_tabs').insert(rows)
+      if (error) throw error
+    }
+
+    await loadTabs()
+    editTabs   = []
+    isEditMode = false
+    activeIndex = Math.min(activeIndex, Math.max(0, liveTabs.length - 1))
+    render()
+    showToast('Changes saved ✓')
+  } catch (err) {
+    showToast('Error saving: ' + (err.message || 'unknown error'))
+    renderTopBar()
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession()
+  document.getElementById('forms-loading').style.display = 'none'
+
+  if (!session) {
+    document.getElementById('forms-auth-prompt').style.display = 'block'
+    return
+  }
+
+  // Check admin status
+  const { data: me } = await supabase
+    .from('members')
+    .select('is_admin')
+    .eq('id', session.user.id)
+    .single()
+  isAdmin = me?.is_admin === true
+
+  await loadTabs()
+
+  document.getElementById('forms-app').style.display = 'block'
+  render()
+}
+
+init()
 </script>
 </body>
 </html>

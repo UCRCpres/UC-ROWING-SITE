@@ -7,67 +7,267 @@
 <title>Photo Gallery — UC Rowing Club</title>
 <link rel="stylesheet" href="style.css">
 <style>
+  /* EDIT MODE STRIP */
+  .btn-edit-page {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--gray-mid);
+    padding: 7px 14px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    border-radius: 2px;
+  }
+  .btn-edit-page:hover { border-color: var(--maroon); color: var(--maroon); }
+
+  .edit-mode-strip {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--maroon-light);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--maroon);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.75rem;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--maroon);
+    font-weight: 700;
+  }
+  .edit-mode-strip .spacer { flex: 1; }
+
+  /* GALLERY GRID */
   .gallery-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 4px;
-    margin: 2rem 0;
+    margin: 1.5rem 0;
   }
+
   .gallery-item {
-    background: var(--black);
     aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
     overflow: hidden;
+    background: var(--black);
+    cursor: pointer;
   }
-  .gallery-item.wide {
-    grid-column: span 2;
-    grid-row: span 2;
-    aspect-ratio: unset;
-    min-height: 320px;
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
   }
-  .gallery-placeholder {
-    width: 100%; height: 100%;
+  .gallery-item:hover img { transform: scale(1.04); }
+
+  /* Caption overlay on hover (view mode) */
+  .photo-caption-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    color: var(--white);
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    padding: 1.5rem 0.75rem 0.6rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .gallery-item:hover .photo-caption-overlay { opacity: 1; }
+
+  /* Edit mode overlays */
+  .photo-delete-btn {
+    position: absolute;
+    top: 6px; right: 6px;
+    background: rgba(0,0,0,0.65);
+    color: var(--white);
+    border: none;
+    width: 28px; height: 28px;
+    font-size: 14px;
+    cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 8px;
+    border-radius: 2px;
+    transition: background 0.15s;
+    z-index: 10;
   }
-  .gallery-icon { font-size: 28px; opacity: 0.15; }
-  .gallery-hint {
-    font-family: Arial, sans-serif; font-size: 10px;
-    color: #444; letter-spacing: 0.1em; text-transform: uppercase;
+  .photo-delete-btn:hover { background: #CC0000; }
+
+  .photo-caption-input {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.7);
+    padding: 0.4rem 0.5rem;
+    z-index: 10;
   }
-  .gallery-note {
+  .photo-caption-input input {
+    width: 100%;
+    background: none;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+    color: var(--white);
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    outline: none;
+    padding: 2px 0;
+  }
+  .photo-caption-input input::placeholder { color: rgba(255,255,255,0.4); }
+  .photo-caption-input input:focus { border-bottom-color: var(--gold); }
+
+  /* Upload button tile */
+  .upload-tile {
+    aspect-ratio: 1;
+    border: 2px dashed var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: var(--gray-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    background: var(--white);
+  }
+  .upload-tile:hover { border-color: var(--maroon); color: var(--maroon); background: var(--maroon-light); }
+  .upload-tile-icon { font-size: 28px; opacity: 0.35; }
+
+  /* Uploading state */
+  .upload-tile.uploading {
+    pointer-events: none;
+    border-color: var(--maroon);
+    color: var(--maroon);
+    background: var(--maroon-light);
+  }
+
+  /* Empty state */
+  .gallery-empty {
+    text-align: center;
+    padding: 4rem 1rem;
+    border: 1px dashed var(--border);
+    margin: 1.5rem 0;
+  }
+  .gallery-empty-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    margin-bottom: 0.4rem;
+  }
+  .gallery-empty-desc {
     font-family: Arial, sans-serif;
     font-size: 13px;
     color: var(--gray-mid);
-    margin-top: 0.5rem;
-    line-height: 1.6;
   }
-  .how-to {
-    background: var(--gray-light);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--red);
-    padding: 1.25rem 1.5rem;
-    margin-top: 2rem;
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 900;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
   }
-  .how-to-title {
-    font-family: 'Arial Narrow', Arial, sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
+  .lightbox.open { display: flex; }
+
+  .lightbox-inner {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  .how-to-steps {
+  .lightbox-inner img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    display: block;
+  }
+  .lightbox-caption {
+    color: rgba(255,255,255,0.7);
     font-family: Arial, sans-serif;
     font-size: 13px;
-    color: var(--gray-dark);
-    line-height: 1.8;
+    margin-top: 0.75rem;
+    text-align: center;
   }
+  .lightbox-counter {
+    color: rgba(255,255,255,0.35);
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    margin-top: 0.25rem;
+    letter-spacing: 0.1em;
+  }
+  .lightbox-close {
+    position: fixed;
+    top: 1.25rem; right: 1.5rem;
+    background: none; border: none;
+    color: var(--white); font-size: 28px;
+    cursor: pointer; line-height: 1;
+    opacity: 0.7; transition: opacity 0.15s;
+  }
+  .lightbox-close:hover { opacity: 1; }
+
+  .lightbox-prev,
+  .lightbox-next {
+    position: fixed;
+    top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--white);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 1rem 0.75rem;
+    transition: background 0.15s;
+    line-height: 1;
+  }
+  .lightbox-prev { left: 0.75rem; }
+  .lightbox-next { right: 0.75rem; }
+  .lightbox-prev:hover,
+  .lightbox-next:hover { background: rgba(255,255,255,0.2); }
+
+  /* CUSTOM CONFIRM */
+  #confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--maroon);
+    color: var(--white);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    padding: 0.75rem 1.25rem;
+    z-index: 500;
+    display: none;
+    border-radius: 2px;
+  }
+
   @media (max-width: 768px) {
-    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-    .gallery-item.wide { grid-column: span 2; }
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 3px; }
+    .lightbox-prev { left: 0.25rem; }
+    .lightbox-next { right: 0.25rem; }
+    .edit-mode-strip { flex-wrap: wrap; row-gap: 0.5rem; }
+    .edit-mode-strip .spacer { display: none; }
   }
 </style>
 </head>
@@ -83,42 +283,285 @@
 </div>
 
 <main>
-  <p class="section-eyebrow">Photos</p>
-  <h2 class="section-title">Life on the water</h2>
-  <div class="section-rule"></div>
-  <p class="section-body">Training, regattas, and club socials — add your photos below to bring this page to life.</p>
-
-  <div class="gallery-grid">
-    <div class="gallery-item wide">
-      <div class="gallery-placeholder" style="background:#0D0D0D;">
-        <div class="gallery-icon">📸</div>
-        <div class="gallery-hint">Hero photo</div>
-      </div>
-    </div>
-    <div class="gallery-item"><div class="gallery-placeholder" style="background:#111;"><div class="gallery-icon">📸</div></div></div>
-    <div class="gallery-item"><div class="gallery-placeholder" style="background:#1A1A1A;"><div class="gallery-icon">📸</div></div></div>
-    <div class="gallery-item"><div class="gallery-placeholder" style="background:#111;"><div class="gallery-icon">📸</div></div></div>
-    <div class="gallery-item"><div class="gallery-placeholder" style="background:#1A1A1A;"><div class="gallery-icon">📸</div></div></div>
-    <div class="gallery-item"><div class="gallery-placeholder" style="background:#111;"><div class="gallery-icon">📸</div></div></div>
-    <div class="gallery-item"><div class="gallery-placeholder" style="background:#1A1A1A;"><div class="gallery-icon">📸</div></div></div>
-    <div class="gallery-item"><div class="gallery-placeholder" style="background:#111;"><div class="gallery-icon">📸</div></div></div>
-  </div>
-
-  <p class="gallery-note">Got photos? Send them to captain@ucrowing.com and we'll add them to the gallery.</p>
-
-  <div class="how-to">
-    <div class="how-to-title">How to add photos (for editors)</div>
-    <div class="how-to-steps">
-      1. Save your photo as a .jpg or .png file in the same folder as gallery.html.<br>
-      2. Find a <code>&lt;div class="gallery-item"&gt;</code> block in gallery.html.<br>
-      3. Replace the inner div with: <code>&lt;img src="yourphoto.jpg" style="width:100%;height:100%;object-fit:cover;"&gt;</code><br>
-      4. Save the file and refresh the browser to check it looks right.
+  <div id="gallery-top-bar"></div>
+  <div id="gallery-content">
+    <div class="gallery-empty">
+      <div class="gallery-empty-title">Loading...</div>
     </div>
   </div>
-
 </main>
 
+<!-- Hidden file input (triggered by upload tile) -->
+<input type="file" id="photo-file-input" accept="image/jpeg,image/png,image/webp,image/heic" multiple style="display:none;">
+
+<!-- CUSTOM CONFIRM DIALOG -->
+<div id="confirm-overlay" style="align-items:center; justify-content:center;">
+  <div style="background:var(--white); border-top:3px solid var(--maroon); padding:2rem; width:90%; max-width:360px;">
+    <p id="confirm-message" style="font-family:Arial,sans-serif; font-size:15px; color:var(--black); margin:0 0 1.5rem; line-height:1.5;"></p>
+    <div style="display:flex; gap:0.75rem;">
+      <button id="confirm-ok" class="btn-primary"></button>
+      <button id="confirm-cancel" class="btn-secondary">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-prev" onclick="lightboxNav(-1)">&#8249;</button>
+  <button class="lightbox-next" onclick="lightboxNav(1)">&#8250;</button>
+  <div class="lightbox-inner">
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+    <div class="lightbox-counter" id="lightbox-counter"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <div id="footer-placeholder"></div>
-<script src="nav.js"></script>
+<script type="module" src="nav.js"></script>
+
+<script type="module">
+import { supabase } from './supabase.js'
+
+let isAdmin    = false
+let photos     = []
+let isEditMode = false
+let lbIndex    = 0
+let uploading  = false
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.display = 'block'
+  setTimeout(() => t.style.display = 'none', 2800)
+}
+
+// ── CUSTOM CONFIRM ────────────────────────────────────────────────────────────
+function customConfirm(message, confirmLabel = 'Confirm') {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('confirm-overlay')
+    document.getElementById('confirm-message').textContent = message
+    document.getElementById('confirm-ok').textContent = confirmLabel
+    overlay.style.display = 'flex'
+    function done(result) {
+      overlay.style.display = 'none'
+      document.getElementById('confirm-ok').removeEventListener('click', onOk)
+      document.getElementById('confirm-cancel').removeEventListener('click', onCancel)
+      resolve(result)
+    }
+    function onOk()     { done(true)  }
+    function onCancel() { done(false) }
+    document.getElementById('confirm-ok').addEventListener('click', onOk)
+    document.getElementById('confirm-cancel').addEventListener('click', onCancel)
+  })
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+async function loadPhotos() {
+  const { data } = await supabase
+    .from('gallery_photos')
+    .select('*')
+    .order('created_at', { ascending: true })
+  photos = data || []
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderTopBar() {
+  const bar = document.getElementById('gallery-top-bar')
+  if (!isAdmin) { bar.innerHTML = ''; return }
+
+  if (isEditMode) {
+    bar.innerHTML = `
+      <div class="edit-mode-strip">
+        <span>Edit mode — changes save immediately</span>
+        <span class="spacer"></span>
+        <button class="btn-secondary" onclick="exitEditMode()">Done editing</button>
+      </div>`
+  } else {
+    bar.innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+        <button class="btn-edit-page" onclick="enterEditMode()">✎ Edit page</button>
+      </div>`
+  }
+}
+
+function renderGallery() {
+  const el = document.getElementById('gallery-content')
+
+  if (photos.length === 0 && !isEditMode) {
+    el.innerHTML = `<div class="gallery-empty">
+      <div class="gallery-empty-title">No photos yet</div>
+      <div class="gallery-empty-desc">Check back soon.</div>
+    </div>`
+    return
+  }
+
+  const tiles = photos.map((p, i) => buildPhotoTile(p, i)).join('')
+  const uploadTile = isEditMode ? buildUploadTile() : ''
+
+  el.innerHTML = `<div class="gallery-grid">${uploadTile}${tiles}</div>`
+}
+
+function buildPhotoTile(p, index) {
+  if (isEditMode) {
+    return `<div class="gallery-item" style="cursor:default;">
+      <img src="${esc(p.url)}" alt="${esc(p.caption)}" loading="lazy">
+      <button class="photo-delete-btn" onclick="deletePhoto('${p.id}', '${esc(p.storage_path)}')">✕</button>
+      <div class="photo-caption-input">
+        <input type="text" value="${esc(p.caption)}" placeholder="Add caption..."
+               onblur="saveCaption('${p.id}', this.value)" maxlength="120">
+      </div>
+    </div>`
+  }
+
+  const caption = p.caption
+    ? `<div class="photo-caption-overlay">${esc(p.caption)}</div>`
+    : ''
+
+  return `<div class="gallery-item" onclick="openLightbox(${index})">
+    <img src="${esc(p.url)}" alt="${esc(p.caption)}" loading="lazy">
+    ${caption}
+  </div>`
+}
+
+function buildUploadTile() {
+  if (uploading) {
+    return `<div class="upload-tile uploading">
+      <div class="upload-tile-icon">⏳</div>
+      <span>Uploading...</span>
+    </div>`
+  }
+  return `<div class="upload-tile" onclick="document.getElementById('photo-file-input').click()">
+    <div class="upload-tile-icon">＋</div>
+    <span>Upload photos</span>
+  </div>`
+}
+
+// ── EDIT MODE ─────────────────────────────────────────────────────────────────
+window.enterEditMode = function() { isEditMode = true;  renderTopBar(); renderGallery(); }
+window.exitEditMode  = function() { isEditMode = false; renderTopBar(); renderGallery(); }
+
+// ── UPLOAD ────────────────────────────────────────────────────────────────────
+document.getElementById('photo-file-input').addEventListener('change', async function() {
+  const files = Array.from(this.files)
+  if (!files.length) return
+  this.value = '' // reset so same file can be re-selected
+
+  const oversized = files.filter(f => f.size > 15 * 1024 * 1024)
+  if (oversized.length) {
+    showToast(`${oversized.map(f => f.name).join(', ')} over 15 MB — skipped`)
+  }
+
+  const toUpload = files.filter(f => f.size <= 15 * 1024 * 1024)
+  if (!toUpload.length) return
+
+  uploading = true
+  renderGallery()
+
+  let done = 0
+  for (const file of toUpload) {
+    const ext  = file.name.split('.').pop().toLowerCase() || 'jpg'
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+    const { error: upErr } = await supabase.storage.from('gallery').upload(path, file)
+    if (upErr) { showToast(`Failed: ${file.name}`); continue }
+
+    const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(path)
+    await supabase.from('gallery_photos').insert({ storage_path: path, url: publicUrl, caption: '' })
+    done++
+  }
+
+  uploading = false
+  await loadPhotos()
+  renderGallery()
+  showToast(done === 1 ? 'Photo uploaded ✓' : `${done} photos uploaded ✓`)
+})
+
+// ── CAPTION ───────────────────────────────────────────────────────────────────
+window.saveCaption = async function(id, value) {
+  const caption = value.trim()
+  const p = photos.find(x => x.id === id)
+  if (!p || p.caption === caption) return // no change
+  await supabase.from('gallery_photos').update({ caption }).eq('id', id)
+  p.caption = caption // update local state silently
+}
+
+// ── DELETE ────────────────────────────────────────────────────────────────────
+window.deletePhoto = async function(id, path) {
+  if (!await customConfirm('Delete this photo? This cannot be undone.', 'Delete photo')) return
+  await supabase.storage.from('gallery').remove([path])
+  await supabase.from('gallery_photos').delete().eq('id', id)
+  await loadPhotos()
+  renderGallery()
+  showToast('Photo deleted')
+}
+
+// ── LIGHTBOX ──────────────────────────────────────────────────────────────────
+window.openLightbox = function(index) {
+  lbIndex = index
+  updateLightbox()
+  document.getElementById('lightbox').classList.add('open')
+  document.body.style.overflow = 'hidden'
+}
+
+window.closeLightbox = function() {
+  document.getElementById('lightbox').classList.remove('open')
+  document.body.style.overflow = ''
+}
+
+window.lightboxNav = function(dir) {
+  lbIndex = (lbIndex + dir + photos.length) % photos.length
+  updateLightbox()
+}
+
+function updateLightbox() {
+  const p = photos[lbIndex]
+  document.getElementById('lightbox-img').src        = p.url
+  document.getElementById('lightbox-img').alt        = p.caption
+  document.getElementById('lightbox-caption').textContent = p.caption || ''
+  document.getElementById('lightbox-counter').textContent =
+    photos.length > 1 ? `${lbIndex + 1} / ${photos.length}` : ''
+  // Hide arrows when only one photo
+  document.querySelector('.lightbox-prev').style.display = photos.length > 1 ? '' : 'none'
+  document.querySelector('.lightbox-next').style.display = photos.length > 1 ? '' : 'none'
+}
+
+// Close lightbox on backdrop click or Escape
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeLightbox()
+})
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox')
+  if (!lb.classList.contains('open')) return
+  if (e.key === 'Escape')      closeLightbox()
+  if (e.key === 'ArrowLeft')   lightboxNav(-1)
+  if (e.key === 'ArrowRight')  lightboxNav(1)
+})
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  await loadPhotos()
+  renderGallery()
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    const { data: me } = await supabase
+      .from('members').select('is_admin').eq('id', session.user.id).single()
+    isAdmin = me?.is_admin === true
+  }
+  renderTopBar()
+}
+
+init()
+</script>
 </body>
 </html>

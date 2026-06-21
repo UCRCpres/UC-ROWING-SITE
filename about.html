@@ -9,8 +9,8 @@
 <style>
   .about-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 3rem;
     align-items: start;
     margin-bottom: 3rem;
   }
@@ -27,15 +27,13 @@
   }
   .value-dot {
     width: 8px; height: 8px; min-width: 8px;
-    background: var(--red);
+    background: var(--maroon);
     margin-top: 8px;
   }
   .value-text { font-size: 15px; color: var(--gray-dark); line-height: 1.6; }
 
   /* HISTORY */
-  .history-body {
-    max-width: 720px;
-  }
+  .history-body { max-width: 100%; }
   .history-body p {
     font-size: 17px;
     color: var(--gray-dark);
@@ -43,7 +41,7 @@
     margin-bottom: 1.25rem;
   }
   .history-pull {
-    border-left: 4px solid var(--red);
+    border-left: 4px solid var(--maroon);
     padding: 0.75rem 1.5rem;
     margin: 2rem 0;
     font-family: 'Arial Narrow', Arial, sans-serif;
@@ -53,8 +51,240 @@
     line-height: 1.3;
   }
 
+  /* SEASON GRID */
+  .season-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 3rem;
+  }
+  .season-cell {
+    background: var(--white);
+    padding: 2rem;
+  }
+  .season-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--maroon);
+    margin-bottom: 0.75rem;
+  }
+  .season-body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: var(--gray-dark);
+    line-height: 1.7;
+    margin: 0;
+    white-space: pre-line;
+  }
+  .season-textarea {
+    width: 100%;
+    min-height: 160px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: var(--gray-dark);
+    line-height: 1.7;
+    border: 1px solid var(--border);
+    padding: 0.6rem 0.75rem;
+    resize: vertical;
+    outline: none;
+    border-radius: 2px;
+    box-sizing: border-box;
+    background: var(--white);
+  }
+  .season-textarea:focus { border-color: var(--maroon); }
+
+  /* FEES GRID */
+  .fees-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    max-width: 600px;
+    margin-bottom: 3rem;
+  }
+  .fees-cell {
+    background: var(--white);
+    padding: 2rem;
+    position: relative;
+  }
+  .fees-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--maroon);
+    margin-bottom: 0.5rem;
+  }
+  .fees-amount {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1;
+  }
+
+  /* Edit mode fee inputs */
+  .fee-title-input {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--maroon);
+    border: none;
+    border-bottom: 1px solid var(--border);
+    outline: none;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    background: none;
+    padding: 2px 0;
+  }
+  .fee-title-input:focus { border-bottom-color: var(--maroon); }
+  .fee-amount-input {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    outline: none;
+    width: 100%;
+    background: none;
+    padding: 2px 0;
+  }
+  .fee-amount-input:focus { border-bottom-color: var(--maroon); }
+
+  .fee-delete-btn {
+    position: absolute;
+    top: 0.6rem; right: 0.6rem;
+    background: none;
+    border: none;
+    color: var(--gray-mid);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 5px;
+  }
+  .fee-delete-btn:hover { color: #CC0000; }
+
+  /* Add fee cell */
+  .fees-add-cell {
+    background: var(--white);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    border: 2px dashed var(--border);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .fees-add-cell:hover { border-color: var(--maroon); background: var(--maroon-light); }
+  .fees-add-icon {
+    font-size: 24px;
+    color: var(--gray-mid);
+    line-height: 1;
+  }
+  .fees-add-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+  }
+  .fees-add-cell:hover .fees-add-icon,
+  .fees-add-cell:hover .fees-add-label { color: var(--maroon); }
+
+  /* Fees heading edit input */
+  .fees-heading-input {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+    line-height: 1.05;
+    border: none;
+    border-bottom: 2px solid var(--border);
+    outline: none;
+    width: 100%;
+    background: none;
+    padding: 0 0 4px;
+    margin-bottom: 1rem;
+  }
+  .fees-heading-input:focus { border-bottom-color: var(--maroon); }
+
+  /* EDIT MODE STRIP */
+  .btn-edit-page {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--gray-mid);
+    padding: 7px 14px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    border-radius: 2px;
+  }
+  .btn-edit-page:hover { border-color: var(--maroon); color: var(--maroon); }
+
+  .edit-mode-strip {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--maroon-light);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--maroon);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.75rem;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--maroon);
+    font-weight: 700;
+  }
+  .edit-mode-strip .spacer { flex: 1; }
+
+  /* CUSTOM CONFIRM */
+  #confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 600;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--maroon);
+    color: var(--white);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    padding: 0.75rem 1.25rem;
+    z-index: 500;
+    display: none;
+    border-radius: 2px;
+  }
+
   @media (max-width: 768px) {
     .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .season-grid { grid-template-columns: 1fr; }
+    .fees-grid { grid-template-columns: 1fr; max-width: 100%; }
+    .edit-mode-strip { flex-wrap: wrap; row-gap: 0.5rem; }
+    .edit-mode-strip .spacer { display: none; }
   }
 </style>
 </head>
@@ -71,11 +301,13 @@
 
 <main>
 
-  <!-- ABOUT -->
+  <div id="about-top-bar"></div>
+
+  <!-- ABOUT — static -->
+  <h2 class="section-title">Who we are</h2>
+  <div class="section-rule"></div>
   <div class="about-grid">
     <div>
-      <h2 class="section-title">Who we are</h2>
-      <div class="section-rule"></div>
       <p class="section-body">
         UC Rowing is one of Canterbury's longest-standing student sports clubs. We welcome rowers of all abilities — whether you've never touched an oar or competed at nationals, there's a place for you at UCRC.
       </p>
@@ -101,62 +333,37 @@
         </div>
       </div>
     </div>
-    <div style="background: var(--black); min-height: 360px; display: flex; align-items: center; justify-content: center; border-bottom: 4px solid var(--red);">
-      <div style="text-align: center;">
-        <div style="font-size: 72px; line-height:1;">🚣</div>
-        <div style="font-family: Arial, sans-serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: #444; margin-top: 1rem;">Add a team photo here</div>
-      </div>
+    <div style="height:360px; overflow:hidden;">
+      <img src="General_photos_and_logos/2023_novice_win.jpg" alt="UCRC 2023 Novice Win"
+           style="width:100%; height:100%; object-fit:cover; display:block;">
     </div>
   </div>
 
   <hr class="divider">
 
-  <!-- THE SEASON -->
+  <!-- THE SEASON — dynamic text, static labels -->
   <h2 class="section-title">The Season</h2>
   <div class="section-rule"></div>
-
-  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); margin-bottom: 3rem;">
-    <div style="background: var(--white); padding: 2rem;">
-      <div style="font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--maroon); margin-bottom: 0.75rem;">Training</div>
-      <p style="font-size: 14px; color: var(--gray-dark); line-height: 1.7; margin: 0;">Training runs during Term 1 at Kerrs Reach (Avon Rowing Club). Sessions are relaxed — come to as many or as few as you like.<br><br>
-        <strong>Mon</strong> 5:30 pm<br>
-        <strong>Wed</strong> 5:30 pm<br>
-        <strong>Sat</strong> 8:30 am<br><br>
-        Transport vans from campus are available for each session.
-      </p>
-    </div>
-    <div style="background: var(--white); padding: 2rem;">
-      <div style="font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--maroon); margin-bottom: 0.75rem;">Regattas</div>
-      <p style="font-size: 14px; color: var(--gray-dark); line-height: 1.7; margin: 0;">Our main event is the <strong>NZ University Rowing Championships</strong> held over Easter. The club organises accommodation, vans, and boats.<br><br>
-        We also compete at the <strong>Otago Exchange</strong> in Dunedin and the <strong>UC Sprint Regatta</strong> here in Christchurch later in the year.
-      </p>
-    </div>
-    <div style="background: var(--white); padding: 2rem;">
-      <div style="font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--maroon); margin-bottom: 0.75rem;">Socials</div>
-      <p style="font-size: 14px; color: var(--gray-dark); line-height: 1.7; margin: 0;">We run a full social calendar throughout the year including Singlet Night, ABC Party, Bow-Ball, BYO, Quiz Night, Court Session, and functions at the Otago Exchange and after Uni Champs.</p>
-    </div>
+  <div class="season-grid" id="season-grid">
+    <div class="season-cell"><div class="season-label">Training</div><p class="season-body" style="color:var(--gray-mid);">Loading...</p></div>
+    <div class="season-cell"><div class="season-label">Regattas</div><p class="season-body" style="color:var(--gray-mid);">Loading...</p></div>
+    <div class="season-cell"><div class="season-label">Socials</div><p class="season-body" style="color:var(--gray-mid);">Loading...</p></div>
   </div>
 
   <hr class="divider">
 
-  <!-- MEMBERSHIP FEES -->
-  <h2 class="section-title">2026 Membership Fees</h2>
+  <!-- MEMBERSHIP FEES — dynamic heading + cells -->
+  <div id="fees-heading-wrap">
+    <h2 class="section-title" id="fees-heading-text">Membership Fees</h2>
+  </div>
   <div class="section-rule"></div>
-
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); max-width: 600px; margin-bottom: 3rem;">
-    <div style="background: var(--white); padding: 2rem;">
-      <div style="font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--maroon); margin-bottom: 0.5rem;">Current Rowers</div>
-      <div style="font-family: 'Arial Narrow', Arial, sans-serif; font-size: 48px; font-weight: 700; color: var(--black); line-height: 1;">$100</div>
-    </div>
-    <div style="background: var(--white); padding: 2rem;">
-      <div style="font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--maroon); margin-bottom: 0.5rem;">Novices</div>
-      <div style="font-family: 'Arial Narrow', Arial, sans-serif; font-size: 48px; font-weight: 700; color: var(--black); line-height: 1;">$60</div>
-    </div>
+  <div class="fees-grid" id="fees-grid">
+    <div class="fees-cell"><div class="fees-label" style="color:var(--gray-mid);">Loading...</div></div>
   </div>
 
   <hr class="divider">
 
-  <!-- HISTORY -->
+  <!-- HISTORY — static -->
   <h2 class="section-title">History</h2>
   <div class="section-rule"></div>
 
@@ -168,8 +375,6 @@
 
     <p>His time at UCRC was marked by immediate dominance. In 2022 he was part of the UC men's eight that won the Hebberley Shield, the most prestigious trophy in New Zealand university rowing, and went on to earn his first Red Coat after sweeping the senior pair, senior four, senior eight, and premier eight at the National Rowing Championships in a single week.</p>
 
-    <div class="history-pull">"From the Avon River to the world podium — Oli Welch is what UCRC produces."</div>
-
     <p>But it was on the world stage where Oli truly announced himself. In 2024, still a student at Canterbury, he won gold in the men's pair at the U23 World Championships in Canada — a sign of things to come. The following year, paired with Ben Taylor for the first time, he dominated the 2025 international season from start to finish. They won World Cup gold in Varese — defeating three-time Olympic champions the Sinkovic brothers of Croatia on their very first race together — before claiming silver in Lucerne and then going to Shanghai and winning the 2025 World Championship gold medal in the men's pair, unbeaten across every round of the competition. Oli also took home a World Championship bronze as part of the New Zealand Mixed Eight that same week.</p>
 
     <p>He arrived at the 2026 season as world number one, winning World Cup gold in Seville in the opening regatta of the year and immediately signalling that the maroon pedigree he built at UCRC was just the beginning.</p>
@@ -177,7 +382,244 @@
 
 </main>
 
+<!-- CUSTOM CONFIRM -->
+<div id="confirm-overlay" style="align-items:center; justify-content:center;">
+  <div style="background:var(--white); border-top:3px solid var(--maroon); padding:2rem; width:90%; max-width:360px;">
+    <p id="confirm-message" style="font-family:Arial,sans-serif; font-size:15px; color:var(--black); margin:0 0 1.5rem; line-height:1.5;"></p>
+    <div style="display:flex; gap:0.75rem;">
+      <button id="confirm-ok" class="btn-primary"></button>
+      <button id="confirm-cancel" class="btn-secondary">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 <div id="footer-placeholder"></div>
-<script src="nav.js"></script>
+<script type="module" src="nav.js"></script>
+
+<script type="module">
+import { supabase } from './supabase.js'
+
+let isAdmin    = false
+let isEditMode = false
+let config     = {}
+let fees       = []
+
+const SEASON_KEYS = ['season_training', 'season_regattas', 'season_socials', 'fees_heading']
+const SEASON_CELLS = [
+  { key: 'season_training', label: 'Training' },
+  { key: 'season_regattas', label: 'Regattas' },
+  { key: 'season_socials',  label: 'Socials'  },
+]
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.display = 'block'
+  setTimeout(() => t.style.display = 'none', 2500)
+}
+
+function customConfirm(message, confirmLabel = 'Confirm') {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('confirm-overlay')
+    document.getElementById('confirm-message').textContent = message
+    document.getElementById('confirm-ok').textContent = confirmLabel
+    overlay.style.display = 'flex'
+    function done(result) {
+      overlay.style.display = 'none'
+      document.getElementById('confirm-ok').removeEventListener('click', onOk)
+      document.getElementById('confirm-cancel').removeEventListener('click', onCancel)
+      resolve(result)
+    }
+    function onOk()     { done(true) }
+    function onCancel() { done(false) }
+    document.getElementById('confirm-ok').addEventListener('click', onOk)
+    document.getElementById('confirm-cancel').addEventListener('click', onCancel)
+  })
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+async function loadData() {
+  const [settingsRes, feesRes] = await Promise.all([
+    supabase.from('site_settings').select('key, value').in('key', SEASON_KEYS),
+    supabase.from('about_fees').select('*').order('sort_order')
+  ])
+
+  config = {}
+  ;(settingsRes.data || []).forEach(row => config[row.key] = row.value)
+  config.season_training ??= ''
+  config.season_regattas ??= ''
+  config.season_socials  ??= ''
+  config.fees_heading    ??= 'Membership Fees'
+
+  fees = feesRes.data || []
+}
+
+// ── SAVE HELPERS ──────────────────────────────────────────────────────────────
+async function saveSetting(key, value) {
+  config[key] = value
+  await supabase.from('site_settings')
+    .upsert({ key, value }, { onConflict: 'key' })
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderTopBar()
+  renderSeasonGrid()
+  renderFeesSection()
+}
+
+function renderTopBar() {
+  const bar = document.getElementById('about-top-bar')
+  if (!isAdmin) { bar.innerHTML = ''; return }
+
+  if (isEditMode) {
+    bar.innerHTML = `
+      <div class="edit-mode-strip">
+        <span>Edit mode — changes save immediately</span>
+        <span class="spacer"></span>
+        <button class="btn-secondary" onclick="exitEditMode()">Done editing</button>
+      </div>`
+  } else {
+    bar.innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1.5rem;">
+        <button class="btn-edit-page" onclick="enterEditMode()">✎ Edit page</button>
+      </div>`
+  }
+}
+
+function renderSeasonGrid() {
+  document.getElementById('season-grid').innerHTML =
+    SEASON_CELLS.map(c => buildSeasonCell(c)).join('')
+}
+
+function buildSeasonCell({ key, label }) {
+  if (isEditMode) {
+    return `<div class="season-cell">
+      <div class="season-label">${label}</div>
+      <textarea class="season-textarea"
+        onblur="onSeasonBlur('${key}', this.value)">${esc(config[key])}</textarea>
+    </div>`
+  }
+  return `<div class="season-cell">
+    <div class="season-label">${label}</div>
+    <p class="season-body">${esc(config[key])}</p>
+  </div>`
+}
+
+function renderFeesSection() {
+  // Heading
+  const wrap = document.getElementById('fees-heading-wrap')
+  if (isEditMode) {
+    wrap.innerHTML = `<input class="fees-heading-input" type="text"
+      value="${esc(config.fees_heading)}"
+      onblur="onFeesHeadingBlur(this.value)">`
+  } else {
+    wrap.innerHTML = `<h2 class="section-title">${esc(config.fees_heading)}</h2>`
+  }
+
+  // Fees grid
+  const grid = document.getElementById('fees-grid')
+  let html = fees.map(f => buildFeeCell(f)).join('')
+
+  if (isEditMode && fees.length < 4) {
+    html += `<div class="fees-add-cell" onclick="addFee()">
+      <div class="fees-add-icon">＋</div>
+      <div class="fees-add-label">Add fee</div>
+    </div>`
+  }
+
+  grid.innerHTML = html || `<div class="fees-cell"><div class="fees-label" style="color:var(--gray-mid);">No fees added yet.</div></div>`
+}
+
+function buildFeeCell(f) {
+  if (isEditMode) {
+    return `<div class="fees-cell">
+      <button class="fee-delete-btn" onclick="deleteFee('${f.id}', '${esc(f.title)}')">✕</button>
+      <input class="fee-title-input" type="text" value="${esc(f.title)}"
+        placeholder="e.g. Current Rowers"
+        onblur="saveFeeField('${f.id}', 'title', this.value)">
+      <input class="fee-amount-input" type="text" value="${esc(f.amount)}"
+        placeholder="$0"
+        onblur="saveFeeField('${f.id}', 'amount', this.value)">
+    </div>`
+  }
+  return `<div class="fees-cell">
+    <div class="fees-label">${esc(f.title)}</div>
+    <div class="fees-amount">${esc(f.amount)}</div>
+  </div>`
+}
+
+// ── EDIT MODE ─────────────────────────────────────────────────────────────────
+window.enterEditMode = function() { isEditMode = true;  renderAll() }
+window.exitEditMode  = function() { isEditMode = false; renderAll() }
+
+// ── SEASON SAVE ───────────────────────────────────────────────────────────────
+window.onSeasonBlur = async function(key, value) {
+  if (config[key] === value) return
+  await saveSetting(key, value)
+  config[key] = value
+  showToast('Saved ✓')
+}
+
+window.onFeesHeadingBlur = async function(value) {
+  if (config.fees_heading === value) return
+  await saveSetting('fees_heading', value)
+  config.fees_heading = value
+  showToast('Saved ✓')
+}
+
+// ── FEES ──────────────────────────────────────────────────────────────────────
+window.addFee = async function() {
+  if (fees.length >= 4) return
+  const sortOrder = fees.length
+  const { data, error } = await supabase.from('about_fees')
+    .insert({ title: 'New fee', amount: '$0', sort_order: sortOrder })
+    .select().single()
+  if (error) { showToast('Error adding fee'); return }
+  fees.push(data)
+  renderFeesSection()
+}
+
+window.saveFeeField = async function(id, field, value) {
+  const fee = fees.find(f => f.id === id)
+  if (!fee || fee[field] === value) return
+  fee[field] = value
+  await supabase.from('about_fees').update({ [field]: value }).eq('id', id)
+  showToast('Saved ✓')
+}
+
+window.deleteFee = async function(id, title) {
+  if (!await customConfirm(`Remove the "${title}" fee?`, 'Remove')) return
+  await supabase.from('about_fees').delete().eq('id', id)
+  fees = fees.filter(f => f.id !== id)
+  renderFeesSection()
+  showToast('Fee removed')
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  await loadData()
+  renderSeasonGrid()
+  renderFeesSection()
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    const { data: me } = await supabase
+      .from('members').select('is_admin').eq('id', session.user.id).single()
+    isAdmin = me?.is_admin === true
+  }
+  renderTopBar()
+}
+
+init()
+</script>
 </body>
 </html>

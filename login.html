@@ -197,9 +197,13 @@
 </div>
 
 <script type="module">
+  // ── LOGIN PAGE LOGIC ────────────────────────────────────────────────────────
+  // Handles three actions: log in, sign up, and reset password.
+  // All auth is handled by Supabase — no passwords are stored on this site.
+  // Members are redirected to dashboard.html after a successful login.
   import { supabase } from './supabase.js'
 
-  // Redirect if already logged in
+  // If the user is already logged in, skip the login page and go straight to their dashboard
   supabase.auth.getSession().then(({ data }) => {
     if (data.session) window.location.href = 'dashboard.html'
   })

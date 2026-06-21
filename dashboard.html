@@ -351,9 +351,17 @@
 </div>
 
 <script type="module">
+  // ── DASHBOARD LOGIC ─────────────────────────────────────────────────────────
+  // This page loads a member's personal data from Supabase and displays it.
+  // It shows: their fees (paid/unpaid), forms they need to complete, and a
+  // summary of outstanding items.
+  // Admins also see a link to the Admin Panel in the top bar.
+  //
+  // Nothing here needs to be changed manually — all data is managed through
+  // the Admin Panel (admin.html).
   import { supabase } from './supabase.js'
 
-  // Auth check
+  // Redirect to login if the user is not logged in
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) { window.location.href = 'login.html'; }
 

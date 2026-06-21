@@ -65,6 +65,60 @@
     border: none;
   }
 
+  .btn-edit-page {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--gray-mid);
+    padding: 7px 14px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    border-radius: 2px;
+  }
+  .btn-edit-page:hover { border-color: var(--maroon); color: var(--maroon); }
+
+  .edit-mode-strip {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--maroon-light);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--maroon);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.75rem;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--maroon);
+    font-weight: 700;
+  }
+  .edit-mode-strip .spacer { flex: 1; }
+
+  .form-edit-panel {
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--maroon);
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    max-width: 680px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--maroon);
+    color: var(--white);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    padding: 0.75rem 1.25rem;
+    z-index: 500;
+    display: none;
+    border-radius: 2px;
+  }
+
 </style>
 </head>
 <body>
@@ -79,6 +133,8 @@
 </div>
 
 <main>
+
+  <div id="join-top-bar"></div>
 
   <p class="section-eyebrow">How it works</p>
   <h2 class="section-title">Get on the water</h2>
@@ -118,16 +174,7 @@
   <p class="section-eyebrow">Membership</p>
   <h2 class="section-title">Join UC Rowing</h2>
   <div class="section-rule"></div>
-  <div class="google-form-wrap" style="margin-top:1.5rem; max-width:680px;">
-    <iframe
-      src="https://docs.google.com/forms/d/e/1FAIpQLSf9A9vxZCwTEEShiDROt6yFRMzFQz1Mze_sWGgPfuNZr0yfTQ/viewform?embedded=true"
-      height="2938"
-      frameborder="0"
-      marginheight="0"
-      marginwidth="0">
-      Loading…
-    </iframe>
-  </div>
+  <div id="join-form-area"></div>
 
   <hr class="divider">
 
@@ -146,7 +193,142 @@
 
 </main>
 
+<div class="toast" id="toast"></div>
 <div id="footer-placeholder"></div>
-<script src="nav.js"></script>
+<script type="module" src="nav.js"></script>
+
+<script type="module">
+import { supabase } from './supabase.js'
+
+let isAdmin    = false
+let isEditMode = false
+let config     = { url: '', height: 2938 }
+
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.display = 'block'
+  setTimeout(() => t.style.display = 'none', 2500)
+}
+
+async function loadConfig() {
+  const { data } = await supabase
+    .from('site_settings')
+    .select('key, value')
+    .in('key', ['join_form_embed_url', 'join_form_height'])
+  if (data) {
+    data.forEach(row => {
+      if (row.key === 'join_form_embed_url') config.url    = row.value
+      if (row.key === 'join_form_height')    config.height = parseInt(row.value) || 2938
+    })
+  }
+}
+
+function renderTopBar() {
+  const bar = document.getElementById('join-top-bar')
+  if (!isAdmin) { bar.innerHTML = ''; return }
+
+  if (isEditMode) {
+    bar.innerHTML = `
+      <div class="edit-mode-strip">
+        <span>Edit mode — changes save immediately</span>
+        <span class="spacer"></span>
+        <button class="btn-secondary" onclick="exitEditMode()">Done editing</button>
+      </div>`
+  } else {
+    bar.innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1.5rem;">
+        <button class="btn-edit-page" onclick="enterEditMode()">✎ Edit page</button>
+      </div>`
+  }
+}
+
+function renderFormArea() {
+  const el = document.getElementById('join-form-area')
+
+  if (isEditMode) {
+    const openUrl = config.url.replace('?embedded=true', '')
+    el.innerHTML = `
+      <div class="form-edit-panel">
+        <div class="form-group">
+          <label>Google Form embed URL</label>
+          <input type="url" id="join-url-input" value="${esc(config.url)}"
+                 placeholder="https://docs.google.com/forms/...?embedded=true">
+          <div class="form-hint">In Google Forms, click the ⋮ (three dots) → Embed. You'll see a block of code — copy only the long link from inside it. It should start with https:// and end with ?embedded=true</div>
+        </div>
+        <div class="form-group" style="max-width:220px;">
+          <label>Form height (px)</label>
+          <input type="number" id="join-height-input" value="${config.height}" min="200" max="9999">
+          <div class="form-hint">Increase if the form is cut off at the bottom</div>
+        </div>
+        <div id="join-save-error" style="color:var(--maroon);font-size:13px;margin-bottom:0.75rem;display:none;"></div>
+        <button class="btn-primary" onclick="saveJoinForm()">Save changes</button>
+      </div>
+      ${renderIframeHTML()}`
+  } else {
+    el.innerHTML = renderIframeHTML()
+  }
+}
+
+function renderIframeHTML() {
+  if (!config.url) {
+    return `<p style="font-family:Arial,sans-serif;font-size:14px;color:var(--gray-mid);margin-top:1.5rem;">No form set up yet.</p>`
+  }
+  const openUrl = config.url.replace('?embedded=true', '').replace('&embedded=true', '')
+  return `
+    <div class="google-form-wrap" style="margin-top:1.5rem;">
+      <iframe src="${esc(config.url)}" height="${config.height}"
+              frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+    </div>
+    <p style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-mid);margin-top:0.75rem;">
+      Form not loading? <a href="${esc(openUrl)}" target="_blank" style="color:var(--maroon);">Open in a new tab</a>
+    </p>`
+}
+
+window.enterEditMode = function() { isEditMode = true;  renderTopBar(); renderFormArea(); }
+window.exitEditMode  = function() { isEditMode = false; renderTopBar(); renderFormArea(); }
+
+window.saveJoinForm = async function() {
+  const url    = document.getElementById('join-url-input').value.trim()
+  const height = parseInt(document.getElementById('join-height-input').value) || 2938
+  const err    = document.getElementById('join-save-error')
+  err.style.display = 'none'
+
+  if (!url) { err.textContent = 'Please enter a form URL.'; err.style.display = 'block'; return }
+
+  const { error } = await supabase.from('site_settings').upsert([
+    { key: 'join_form_embed_url', value: url },
+    { key: 'join_form_height',    value: String(height) }
+  ], { onConflict: 'key' })
+
+  if (error) { err.textContent = error.message; err.style.display = 'block'; return }
+
+  config.url    = url
+  config.height = height
+  renderFormArea()
+  showToast('Form updated ✓')
+}
+
+async function init() {
+  await loadConfig()
+  renderFormArea()
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    const { data: me } = await supabase
+      .from('members').select('is_admin').eq('id', session.user.id).single()
+    isAdmin = me?.is_admin === true
+  }
+  renderTopBar()
+}
+
+init()
+</script>
 </body>
 </html>

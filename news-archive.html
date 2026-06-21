@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Archived news and past updates from the University of Canterbury Rowing Club.">
+<title>News Archive — UC Rowing Club</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .btn-edit-page {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--gray-mid);
+    padding: 7px 14px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    border-radius: 2px;
+  }
+  .btn-edit-page:hover { border-color: var(--maroon); color: var(--maroon); }
+
+  .edit-mode-strip {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--maroon-light);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--maroon);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.75rem;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--maroon);
+    font-weight: 700;
+  }
+  .edit-mode-strip .spacer { flex: 1; }
+
+  .back-link {
+    display: inline-block;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-mid);
+    text-decoration: none;
+    margin-bottom: 2rem;
+  }
+  .back-link:hover { color: var(--maroon); }
+
+  /* ACCORDION LIST */
+  .archive-list {
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--maroon);
+  }
+
+  .archive-item { border-bottom: 1px solid var(--border); }
+  .archive-item:last-child { border-bottom: none; }
+
+  .archive-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.5rem;
+    cursor: pointer;
+    background: var(--white);
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .archive-row:hover { background: var(--gray-light); }
+
+  .archive-row-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+    flex: 1;
+    line-height: 1.2;
+  }
+
+  .archive-row-date {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray-mid);
+    white-space: nowrap;
+  }
+
+  .archive-chevron {
+    font-size: 11px;
+    color: var(--gray-mid);
+    transition: transform 0.2s;
+    min-width: 14px;
+    text-align: center;
+  }
+  .archive-item.open .archive-chevron { transform: rotate(180deg); }
+
+  .btn-unarchive {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--gray-mid);
+    padding: 3px 10px;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-unarchive:hover { border-color: var(--maroon); color: var(--maroon); }
+
+  .archive-body {
+    display: none;
+    padding: 0 1.5rem 1.5rem;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+  }
+  .archive-item.open .archive-body { display: block; }
+
+  .archive-body-meta {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray-mid);
+    margin: 1rem 0 0.75rem;
+  }
+
+  .archive-body-text {
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    color: var(--gray-dark);
+    line-height: 1.75;
+    white-space: pre-line;
+  }
+
+  .archive-body-photo {
+    width: 100%;
+    max-height: 360px;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  /* EMPTY / CUSTOM CONFIRM */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    border: 1px dashed var(--border);
+  }
+  .empty-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    margin-bottom: 0.5rem;
+  }
+  .empty-desc {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-mid);
+  }
+
+  #confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 600;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--maroon);
+    color: var(--white);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    padding: 0.75rem 1.25rem;
+    z-index: 500;
+    display: none;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .archive-row { padding: 1rem; gap: 0.6rem; }
+    .archive-row-title { font-size: 15px; }
+    .archive-row-date { display: none; }
+    .archive-body { padding: 0 1rem 1.25rem; }
+    .edit-mode-strip { flex-wrap: wrap; row-gap: 0.5rem; }
+    .edit-mode-strip .spacer { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder" data-active="News"></div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <p class="page-eyebrow">UC Rowing Club</p>
+    <h1 class="page-title">News Archive</h1>
+  </div>
+</div>
+
+<main>
+  <a href="news.html" class="back-link">← Back to News</a>
+
+  <div id="archive-top-bar"></div>
+  <div id="archive-content">
+    <div class="empty-state"><div class="empty-title">Loading...</div></div>
+  </div>
+</main>
+
+<div id="confirm-overlay" style="align-items:center; justify-content:center;">
+  <div style="background:var(--white); border-top:3px solid var(--maroon); padding:2rem; width:90%; max-width:360px;">
+    <p id="confirm-message" style="font-family:Arial,sans-serif; font-size:15px; color:var(--black); margin:0 0 1.5rem; line-height:1.5;"></p>
+    <div style="display:flex; gap:0.75rem;">
+      <button id="confirm-ok" class="btn-primary"></button>
+      <button id="confirm-cancel" class="btn-secondary">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="footer-placeholder"></div>
+<script type="module" src="nav.js"></script>
+
+<script type="module">
+import { supabase } from './supabase.js'
+
+let isAdmin    = false
+let isEditMode = false
+let posts      = []
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const months = ['January','February','March','April','May','June','July',
+                  'August','September','October','November','December']
+  return `${d} ${months[m - 1]} ${y}`
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.display = 'block'
+  setTimeout(() => t.style.display = 'none', 2500)
+}
+
+function customConfirm(message, confirmLabel = 'Confirm') {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('confirm-overlay')
+    document.getElementById('confirm-message').textContent = message
+    document.getElementById('confirm-ok').textContent = confirmLabel
+    overlay.style.display = 'flex'
+    function done(result) {
+      overlay.style.display = 'none'
+      document.getElementById('confirm-ok').removeEventListener('click', onOk)
+      document.getElementById('confirm-cancel').removeEventListener('click', onCancel)
+      resolve(result)
+    }
+    function onOk()     { done(true) }
+    function onCancel() { done(false) }
+    document.getElementById('confirm-ok').addEventListener('click', onOk)
+    document.getElementById('confirm-cancel').addEventListener('click', onCancel)
+  })
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+async function loadPosts() {
+  const { data } = await supabase
+    .from('news_posts')
+    .select('*')
+    .eq('archived', true)
+    .order('post_date', { ascending: false })
+    .order('created_at', { ascending: false })
+  posts = data || []
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderTopBar() {
+  const bar = document.getElementById('archive-top-bar')
+  if (!isAdmin) { bar.innerHTML = ''; return }
+
+  if (isEditMode) {
+    bar.innerHTML = `
+      <div class="edit-mode-strip">
+        <span>Edit mode — click Unarchive to move a post back to the main news page</span>
+        <span class="spacer"></span>
+        <button class="btn-secondary" onclick="exitEditMode()">Done editing</button>
+      </div>`
+  } else {
+    bar.innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1.25rem;">
+        <button class="btn-edit-page" onclick="enterEditMode()">✎ Edit page</button>
+      </div>`
+  }
+}
+
+function renderPosts() {
+  const el = document.getElementById('archive-content')
+
+  if (posts.length === 0) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-title">No archived posts</div>
+      <div class="empty-desc">Posts you archive from the news page will appear here.</div>
+    </div>`
+    return
+  }
+
+  el.innerHTML = `<div class="archive-list">${posts.map(buildItem).join('')}</div>`
+}
+
+function buildItem(p) {
+  const unarchiveBtn = isEditMode
+    ? `<button class="btn-unarchive" onclick="event.stopPropagation(); unarchivePost('${p.id}', '${esc(p.title)}')">Unarchive</button>`
+    : ''
+
+  return `<div class="archive-item" id="item-${p.id}">
+    <div class="archive-row" onclick="toggleItem('${p.id}')">
+      <div class="archive-row-title">${esc(p.title)}</div>
+      <div class="archive-row-date">${esc(formatDate(p.post_date))}</div>
+      ${unarchiveBtn}
+      <div class="archive-chevron">▼</div>
+    </div>
+    <div class="archive-body">
+      ${p.photo_url ? `<img class="archive-body-photo" src="${esc(p.photo_url)}" alt="">` : ''}
+      <div class="archive-body-meta">${esc(formatDate(p.post_date))} &nbsp;·&nbsp; By ${esc(p.author)}</div>
+      <div class="archive-body-text">${esc(p.body)}</div>
+    </div>
+  </div>`
+}
+
+// ── ACCORDION ─────────────────────────────────────────────────────────────────
+window.toggleItem = function(id) {
+  document.getElementById('item-' + id)?.classList.toggle('open')
+}
+
+// ── EDIT MODE ─────────────────────────────────────────────────────────────────
+window.enterEditMode = function() { isEditMode = true;  renderTopBar(); renderPosts() }
+window.exitEditMode  = function() { isEditMode = false; renderTopBar(); renderPosts() }
+
+// ── UNARCHIVE ─────────────────────────────────────────────────────────────────
+window.unarchivePost = async function(id, title) {
+  if (!await customConfirm(`Move "${title}" back to the main news page?`, 'Unarchive')) return
+  await supabase.from('news_posts').update({ archived: false }).eq('id', id)
+  await loadPosts()
+  renderPosts()
+  showToast('Post moved back to News ✓')
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  await loadPosts()
+  renderPosts()
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    const { data: me } = await supabase
+      .from('members').select('is_admin').eq('id', session.user.id).single()
+    isAdmin = me?.is_admin === true
+  }
+  renderTopBar()
+}
+
+init()
+</script>
+</body>
+</html>

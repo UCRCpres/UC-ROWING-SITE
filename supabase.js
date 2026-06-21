@@ -1,3 +1,16 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// supabase.js — Database connection config
+//
+// This file connects the website to the Supabase database used for the members
+// portal (login, fees, forms, admin panel).
+//
+// You should NOT need to change anything here unless:
+//   - You create a brand new Supabase project (the URL and key would change)
+//   - Supabase rotates the anon key (rare — they'll notify you)
+//
+// To find these values: supabase.com → your project → Settings → API
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
 const SUPABASE_URL = 'https://rdwzgpcynydkpvkhandc.supabase.co'
