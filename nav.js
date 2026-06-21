@@ -22,13 +22,13 @@ import { supabase } from './supabase.js'
 // To add a page to the nav: add a new { href, label } line here.
 // To remove a page: delete its line.
 const basePages = [
-  { href: 'index.html', label: 'Home' },
-  { href: 'about.html', label: 'About' },
-  { href: 'join.html',  label: 'Join' },
-  { href: 'events.html', label: 'Events' },
-  { href: 'news.html',   label: 'News' },
-  { href: 'gallery.html', label: 'Gallery' },
-  { href: 'contact.html', label: 'Contact' },
+  { href: '/',        label: 'Home' },
+  { href: '/about',   label: 'About' },
+  { href: '/join',    label: 'Join' },
+  { href: '/events',  label: 'Events' },
+  { href: '/news',    label: 'News' },
+  { href: '/gallery', label: 'Gallery' },
+  { href: '/contact', label: 'Contact' },
 ]
 
 function buildNav(active, isLoggedIn, isAdmin = false) {
@@ -40,10 +40,10 @@ function buildNav(active, isLoggedIn, isAdmin = false) {
   if (isLoggedIn) {
     // Logged-in members see a Forms link (gold) and a Logout button
     const formsCls = active === 'Forms' ? ' class="active"' : ''
-    links.push(`<li><a href="forms.html"${formsCls} style="color:var(--gold);">Forms</a></li>`)
+    links.push(`<li><a href="/forms"${formsCls} style="color:var(--gold);">Forms</a></li>`)
     // Admins also see an Admin link
     if (isAdmin) {
-      links.push(`<li><a href="admin.html" style="color:var(--gold);">Admin</a></li>`)
+      links.push(`<li><a href="/admin" style="color:var(--gold);">Admin</a></li>`)
     }
     links.push(`<li><a href="#" id="nav-logout-btn" style="color:rgba(255,255,255,0.55);">Logout</a></li>`)
   } else {
@@ -122,7 +122,7 @@ function buildLoginModal() {
       <!-- SIGN UP TAB -->
       <div id="modal-tab-signup" class="tab-panel">
         <p style="font-family:Arial,sans-serif;font-size:12px;color:var(--gray-mid);line-height:1.6;background:var(--gray-light);border-left:3px solid var(--gold);padding:0.65rem 0.85rem;margin-bottom:1rem;">
-          This account is for <strong>existing UCRC members</strong> only. Not a member yet? <a href="join.html" style="color:var(--maroon);">Join the club first</a>.
+          This account is for <strong>existing UCRC members</strong> only. Not a member yet? <a href="/join" style="color:var(--maroon);">Join the club first</a>.
         </p>
         <div class="error-msg" id="modal-signup-error"></div>
         <div class="success-msg" id="modal-signup-success">Check your email to confirm your account, then log in.</div>
@@ -221,7 +221,7 @@ window.modalHandleLogin = async function() {
   } else {
     // After login, always go to the Forms page
     closeLoginModal()
-    window.location.href = 'forms.html'
+    window.location.href = '/forms'
   }
 }
 
@@ -321,7 +321,7 @@ document.querySelector('#nav-login-btn')?.addEventListener('click', e => {
 document.querySelector('#nav-logout-btn')?.addEventListener('click', async e => {
   e.preventDefault()
   await supabase.auth.signOut()
-  window.location.href = 'index.html'
+  window.location.href = '/'
 })
 
 // Hamburger menu (mobile)
