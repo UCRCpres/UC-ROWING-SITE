@@ -1,12 +1,30 @@
-/index.html          /              301
-/about.html          /about         301
-/join.html           /join          301
-/events.html         /events        301
-/news.html           /news          301
-/news-archive.html   /news-archive  301
-/gallery.html        /gallery       301
-/contact.html        /contact       301
-/forms.html          /forms         301
-/admin.html          /admin         301
-/login.html          /login         301
-/dashboard.html      /dashboard     301
+# Force redirect .html URLs to clean URLs (! overrides file serving)
+/index.html          /              301!
+/about.html          /about         301!
+/join.html           /join          301!
+/events.html         /events        301!
+/news.html           /news          301!
+/news-archive.html   /news-archive  301!
+/gallery.html        /gallery       301!
+/contact.html        /contact       301!
+/forms.html          /forms         301!
+/admin.html            /admin           301!
+/login.html            /login           301!
+/dashboard.html        /dashboard       301!
+/fees.html             /fees            301!
+/payment-success.html  /payment-success 301!
+
+# Rewrite clean URLs to serve the .html files (no redirect, just serve)
+/about               /about.html    200
+/join                /join.html     200
+/events              /events.html   200
+/news                /news.html     200
+/news-archive        /news-archive.html  200
+/gallery             /gallery.html  200
+/contact             /contact.html  200
+/forms               /forms.html    200
+/admin               /admin.html          200
+/login               /login.html          200
+/dashboard           /dashboard.html      200
+/fees                /fees.html           200
+/payment-success     /payment-success.html 200

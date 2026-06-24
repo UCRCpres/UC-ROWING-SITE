@@ -6,30 +6,6 @@
 <title>Admin Panel — UC Rowing Club</title>
 <link rel="stylesheet" href="style.css">
 <style>
-  /* STATS STRIP */
-  .stats-strip {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--border);
-    margin-bottom: 2rem;
-  }
-  .stat-card { background: var(--white); padding: 1.5rem; text-align: center; }
-  .stat-num {
-    font-family: 'Arial Narrow', Arial, sans-serif;
-    font-size: 40px;
-    font-weight: 700;
-    color: var(--black);
-  }
-  .stat-num.red { color: var(--maroon); }
-  .stat-label {
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    color: var(--gray-mid);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
   /* ADMIN TABS */
   .admin-tabs {
     display: flex;
@@ -54,6 +30,94 @@
   .admin-tab.active { color: var(--maroon); border-bottom-color: var(--maroon); }
   .admin-panel { display: none; }
   .admin-panel.active { display: block; }
+
+  /* FEES SUB-NAV */
+  .fees-subnav {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.75rem;
+  }
+  .fees-subbtn {
+    padding: 0.5rem 1.1rem;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    color: var(--gray-mid);
+    transition: color 0.2s;
+  }
+  .fees-subbtn.active { color: var(--maroon); border-bottom-color: var(--maroon); }
+  .fees-subpanel { display: none; }
+  .fees-subpanel.active { display: block; }
+
+  /* FEE TYPE LIST */
+  .fee-type-list { border: 1px solid var(--border); border-top: 3px solid var(--maroon); }
+  .fee-type-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+    flex-wrap: wrap;
+  }
+  .fee-type-item:last-child { border-bottom: none; }
+  .fee-type-name {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--black);
+  }
+  .fee-type-meta {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: var(--gray-mid);
+    margin-top: 3px;
+  }
+  .optional-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 1px 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* PAID FEES ARCHIVE */
+  .paid-archive-list { border: 1px solid var(--border); border-top: 3px solid var(--maroon); }
+  .paid-archive-item { border-bottom: 1px solid var(--border); }
+  .paid-archive-item:last-child { border-bottom: none; }
+  .paid-archive-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.25rem;
+    cursor: pointer;
+    background: var(--white);
+    transition: background 0.15s;
+    user-select: none;
+    flex-wrap: wrap;
+  }
+  .paid-archive-row:hover { background: var(--gray-light); }
+  .paid-archive-chevron {
+    font-size: 11px;
+    color: var(--gray-mid);
+    transition: transform 0.2s;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .paid-archive-item.open .paid-archive-chevron { transform: rotate(180deg); }
+  .paid-archive-body { display: none; padding: 1rem 1.25rem; background: var(--gray-light); border-top: 1px solid var(--border); }
+  .paid-archive-item.open .paid-archive-body { display: block; }
 
   /* TABLES */
   .admin-table-wrap { overflow-x: auto; }
@@ -96,7 +160,7 @@
   }
   .dots-btn:hover { background: var(--maroon-light); color: var(--maroon); border-color: var(--border); }
 
-  /* SHARED ROW ACTION MENU — positioned via JS, fixed to viewport so table overflow never clips it */
+  /* SHARED ROW ACTION MENU */
   #row-action-menu {
     display: none;
     position: fixed;
@@ -264,6 +328,37 @@
     line-height: 1.4;
   }
 
+  /* ASSIGN MODAL MEMBER LIST */
+  .assign-member-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--gray-dark);
+  }
+  .assign-member-item:last-child { border-bottom: none; }
+  .assign-member-item.already-assigned { background: var(--gray-light); color: var(--gray-mid); }
+  .assign-member-item input[type=checkbox] { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    border: 1px dashed var(--border);
+  }
+  .empty-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    margin-bottom: 0.4rem;
+  }
+  .empty-desc { font-family: Arial, sans-serif; font-size: 13px; color: var(--gray-mid); }
+
   .toast {
     position: fixed;
     bottom: 2rem;
@@ -279,13 +374,13 @@
   }
 
   @media (max-width: 768px) {
-    .stats-strip { grid-template-columns: 1fr 1fr; }
     .form-inline { grid-template-columns: 1fr; }
     .modal-actions { flex-direction: column; }
     .admin-tabs { flex-wrap: wrap; border-bottom: none; gap: 0; }
     .admin-tab { border-bottom: 2px solid var(--border); padding: 0.6rem 1rem; font-size: 12px; }
     .admin-tab.active { border-bottom-color: var(--maroon); }
     .search-bar { flex-direction: column; align-items: stretch; }
+    .fees-subnav { flex-wrap: wrap; }
   }
 </style>
 </head>
@@ -300,32 +395,11 @@
   </div>
 </div>
 
-<!-- Content is hidden until the auth check below confirms you're an admin -->
 <main id="admin-content" style="display:none;">
-
-  <div class="stats-strip">
-    <div class="stat-card">
-      <div class="stat-num" id="stat-members">—</div>
-      <div class="stat-label">Total members</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num red" id="stat-fees-unpaid">—</div>
-      <div class="stat-label">Unpaid fees</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num red" id="stat-forms-incomplete">—</div>
-      <div class="stat-label">Incomplete forms</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="stat-admins">—</div>
-      <div class="stat-label">Admins</div>
-    </div>
-  </div>
 
   <div class="admin-tabs">
     <button class="admin-tab active" onclick="switchTab('members', this)">Members</button>
     <button class="admin-tab" onclick="switchTab('fees', this)">Fees</button>
-    <button class="admin-tab" onclick="switchTab('forms', this)">Forms</button>
     <button class="admin-tab" onclick="switchTab('add', this)">Add member</button>
   </div>
 
@@ -338,17 +412,11 @@
       <table class="admin-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Year</th>
-            <th>Fees paid</th>
-            <th>Forms done</th>
-            <th>Admin</th>
-            <th></th>
+            <th>Name</th><th>Email</th><th>Year</th><th>Fees paid</th><th>Admin</th><th></th>
           </tr>
         </thead>
         <tbody id="members-tbody">
-          <tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--gray-mid);">Loading...</td></tr>
+          <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-mid);">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -356,49 +424,60 @@
 
   <!-- FEES TAB -->
   <div id="panel-fees" class="admin-panel">
-    <div class="search-bar">
-      <input type="text" id="fee-search" placeholder="Search by name or fee..." oninput="filterFees()">
-      <button class="btn-primary" onclick="openAddFeeModal()">+ Add fee</button>
-    </div>
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Member</th><th>Fee</th><th>Amount</th><th>Due date</th><th>Notes</th><th>Paid</th>
-          </tr>
-        </thead>
-        <tbody id="fees-tbody">
-          <tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--gray-mid);">Loading...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
 
-  <!-- FORMS TAB -->
-  <div id="panel-forms" class="admin-panel">
-    <div class="search-bar">
-      <input type="text" id="form-search" placeholder="Search by name or form..." oninput="filterForms()">
-      <button class="btn-primary" onclick="openAddFormModal()">+ Add form requirement</button>
+    <div class="fees-subnav">
+      <button class="fees-subbtn active" onclick="switchFeesSub('types', this)">Fee types</button>
+      <button class="fees-subbtn" onclick="switchFeesSub('unpaid', this)">Unpaid</button>
+      <button class="fees-subbtn" onclick="switchFeesSub('paid', this)">Paid</button>
     </div>
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Member</th><th>Form</th><th>Notes</th><th>Completed</th>
-          </tr>
-        </thead>
-        <tbody id="forms-tbody">
-          <tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--gray-mid);">Loading...</td></tr>
-        </tbody>
-      </table>
+
+    <!-- Fee Types -->
+    <div id="fees-sub-types" class="fees-subpanel active">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1.25rem;">
+        <button class="btn-primary" onclick="openFeeTypeModal()">+ Create fee</button>
+      </div>
+      <div id="fee-types-list">
+        <div class="empty-state">
+          <div class="empty-title">No fees created yet</div>
+          <div class="empty-desc">Click "+ Create fee" to set up your first fee type.</div>
+        </div>
+      </div>
     </div>
+
+    <!-- Unpaid Fees -->
+    <div id="fees-sub-unpaid" class="fees-subpanel">
+      <div class="search-bar">
+        <input type="text" id="fee-search" placeholder="Search by member or fee name..." oninput="filterUnpaid()">
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Member</th><th>Fee</th><th>Amount</th><th>Due date</th><th>Mark paid</th><th></th></tr>
+          </thead>
+          <tbody id="unpaid-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-mid);">No unpaid fees.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Paid Fees Archive -->
+    <div id="fees-sub-paid" class="fees-subpanel">
+      <div id="paid-fees-content">
+        <div class="empty-state">
+          <div class="empty-title">No paid fees yet</div>
+          <div class="empty-desc">Fees marked as paid will appear here.</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ADD MEMBER TAB -->
   <div id="panel-add" class="admin-panel">
     <div class="add-form">
       <div class="add-form-title">Add a new member</div>
-      <p style="font-size:13px; color:var(--gray-mid); margin-bottom:1.25rem; font-family:Arial,sans-serif;">
+      <p style="font-size:13px;color:var(--gray-mid);margin-bottom:1.25rem;font-family:Arial,sans-serif;">
         Creates a member account. Ask them to use <strong>Members Login → Reset password</strong> to set their own password.
       </p>
       <div class="form-inline">
@@ -426,7 +505,7 @@
       <div class="form-group">
         <label class="checkbox-label"><input type="checkbox" id="add-admin"> Grant admin access</label>
       </div>
-      <div id="add-error" style="color:var(--maroon); font-size:13px; margin-bottom:0.75rem; display:none;"></div>
+      <div id="add-error" style="color:var(--maroon);font-size:13px;margin-bottom:0.75rem;display:none;"></div>
       <button class="btn-primary" onclick="addMember()">Create member account</button>
     </div>
   </div>
@@ -434,17 +513,17 @@
 </main>
 
 <!-- CUSTOM CONFIRM DIALOG -->
-<div id="confirm-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:600; align-items:center; justify-content:center; padding:1rem;">
-  <div style="background:var(--white); border-top:3px solid var(--maroon); padding:2rem; width:90%; max-width:360px;">
-    <p id="confirm-message" style="font-family:Arial,sans-serif; font-size:15px; color:var(--black); margin:0 0 1.5rem; line-height:1.5;"></p>
-    <div style="display:flex; gap:0.75rem;">
+<div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:600;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--white);border-top:3px solid var(--maroon);padding:2rem;width:90%;max-width:360px;">
+    <p id="confirm-message" style="font-family:Arial,sans-serif;font-size:15px;color:var(--black);margin:0 0 1.5rem;line-height:1.5;"></p>
+    <div style="display:flex;gap:0.75rem;">
       <button id="confirm-ok" class="btn-primary"></button>
       <button id="confirm-cancel" class="btn-secondary">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- SINGLE SHARED ROW ACTION MENU — shown/positioned by JS when ⋮ is clicked -->
+<!-- ROW ACTION MENU -->
 <div id="row-action-menu">
   <button onclick="doRowAction('edit')">Edit member</button>
   <button class="danger" onclick="doRowAction('delete')">Delete member</button>
@@ -470,7 +549,7 @@
     <div class="form-group">
       <label>Email</label>
       <input type="email" id="edit-email" placeholder="jane@email.com">
-      <p class="field-note">Updates their profile email. Their Supabase login email (used to sign in) can only be changed via Supabase → Authentication → Users.</p>
+      <p class="field-note">Updates their profile email. Their Supabase login email can only be changed via Supabase → Authentication → Users.</p>
     </div>
     <div class="form-group">
       <label>Year of study</label>
@@ -483,45 +562,65 @@
     <div class="form-group">
       <label class="checkbox-label"><input type="checkbox" id="edit-admin"> Admin access</label>
     </div>
-    <div id="edit-error" style="color:var(--maroon); font-size:13px; margin-top:0.75rem; display:none;"></div>
+    <div id="edit-error" style="color:var(--maroon);font-size:13px;margin-top:0.75rem;display:none;"></div>
     <div class="modal-actions">
       <button class="btn-primary" onclick="saveMemberEdit()">Save changes</button>
     </div>
   </div>
 </div>
 
-<!-- ADD FEE MODAL -->
-<div class="modal-overlay" id="fee-modal">
+<!-- CREATE FEE TYPE MODAL -->
+<div class="modal-overlay" id="fee-type-modal">
   <div class="modal">
-    <button class="modal-close" onclick="closeFeeModal()">✕</button>
-    <div class="modal-title">Add fee</div>
-    <div class="form-group"><label>Member</label><select id="fee-member-select"></select></div>
-    <div class="form-group"><label>Fee name</label><input type="text" id="fee-name-input" placeholder="e.g. Annual membership fee"></div>
-    <div class="form-inline">
-      <div class="form-group"><label>Amount ($)</label><input type="number" id="fee-amount-input" placeholder="150.00" step="0.01"></div>
-      <div class="form-group"><label>Due date</label><input type="date" id="fee-due-input"></div>
+    <button class="modal-close" onclick="closeFeeTypeModal()">✕</button>
+    <div class="modal-title">Create fee</div>
+    <div class="form-group">
+      <label>Fee name</label>
+      <input type="text" id="ft-name" placeholder="e.g. 2026 Membership Fee">
     </div>
-    <div class="form-group"><label>Notes</label><input type="text" id="fee-notes-input" placeholder="Optional"></div>
-    <div class="form-group"><label class="checkbox-label"><input type="checkbox" id="fee-paid-input"> Already paid</label></div>
-    <button class="btn-primary" style="margin-top:0.5rem;" onclick="saveFee()">Save fee</button>
+    <div class="form-inline">
+      <div class="form-group">
+        <label>Amount (NZ$)</label>
+        <input type="number" id="ft-amount" placeholder="100.00" step="0.01" min="0">
+      </div>
+      <div class="form-group">
+        <label>Due date (optional)</label>
+        <input type="date" id="ft-due-date">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description (optional)</label>
+      <input type="text" id="ft-description" placeholder="Short note shown to members">
+    </div>
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input type="checkbox" id="ft-optional">
+        Optional — any member can pay, not required
+      </label>
+    </div>
+    <div style="margin-top:1.25rem;">
+      <button class="btn-primary" onclick="saveFeeType()">Create fee</button>
+    </div>
   </div>
 </div>
 
-<!-- ADD FORM MODAL -->
-<div class="modal-overlay" id="form-modal">
+<!-- ASSIGN MEMBERS MODAL -->
+<div class="modal-overlay" id="assign-modal">
   <div class="modal">
-    <button class="modal-close" onclick="closeFormModal()">✕</button>
-    <div class="modal-title">Add form requirement</div>
-    <div class="form-group"><label>Member</label><select id="form-member-select"></select></div>
-    <div class="form-group"><label>Form name</label><input type="text" id="form-name-input" placeholder="e.g. Membership sign-up form"></div>
-    <div class="form-group"><label>Notes</label><input type="text" id="form-notes-input" placeholder="Optional"></div>
-    <div class="form-group"><label class="checkbox-label"><input type="checkbox" id="form-done-input"> Already completed</label></div>
-    <button class="btn-primary" style="margin-top:0.5rem;" onclick="saveForm()">Save</button>
+    <button class="modal-close" onclick="closeAssignModal()">✕</button>
+    <div class="modal-title" id="assign-modal-title">Assign fee</div>
+    <input type="hidden" id="assign-fee-type-id">
+    <p style="font-size:13px;color:var(--gray-mid);margin-bottom:1rem;font-family:Arial,sans-serif;line-height:1.5;">
+      Select members to assign this fee to. Already-assigned members are shown but locked — remove them from the Unpaid tab if needed.
+    </p>
+    <div id="assign-members-list" style="max-height:320px;overflow-y:auto;border:1px solid var(--border);"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="doAssign()">Assign to selected</button>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-
 <div id="footer-placeholder"></div>
 <script type="module" src="nav.js"></script>
 
@@ -530,7 +629,19 @@ import { supabase } from './supabase.js'
 
 let currentSession = null
 let currentMenuId  = null
-let allMembers = [], allFees = [], allForms = []
+let allMembers = [], allFees = [], allFeeTypes = []
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—'
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  return `${d} ${months[m - 1]} ${y}`
+}
 
 // ── CUSTOM CONFIRM ────────────────────────────────────────────────────────────
 function customConfirm(message, confirmLabel = 'Confirm') {
@@ -539,7 +650,6 @@ function customConfirm(message, confirmLabel = 'Confirm') {
     document.getElementById('confirm-message').textContent = message
     document.getElementById('confirm-ok').textContent = confirmLabel
     overlay.style.display = 'flex'
-
     function done(result) {
       overlay.style.display = 'none'
       document.getElementById('confirm-ok').removeEventListener('click', onOk)
@@ -548,7 +658,6 @@ function customConfirm(message, confirmLabel = 'Confirm') {
     }
     function onOk()     { done(true) }
     function onCancel() { done(false) }
-
     document.getElementById('confirm-ok').addEventListener('click', onOk)
     document.getElementById('confirm-cancel').addEventListener('click', onCancel)
   })
@@ -562,21 +671,29 @@ function showToast(msg) {
   setTimeout(() => t.style.display = 'none', 2500)
 }
 
+// ── TABS ──────────────────────────────────────────────────────────────────────
+window.switchTab = function(name, btn) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'))
+  document.getElementById('panel-' + name).classList.add('active')
+  btn.classList.add('active')
+}
+
+window.switchFeesSub = function(name, btn) {
+  document.querySelectorAll('.fees-subpanel').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.fees-subbtn').forEach(b => b.classList.remove('active'))
+  document.getElementById('fees-sub-' + name).classList.add('active')
+  btn.classList.add('active')
+}
+
 // ── THREE-DOTS ROW MENU ──────────────────────────────────────────────────────
-// Uses a single shared menu element positioned with position:fixed so it can
-// never be clipped by the table's overflow container.
-
 window.openRowMenu = function(id, btnEl) {
-  // If the same button was clicked again, close the menu
   if (currentMenuId === id) { closeRowMenu(); return }
-
   currentMenuId = id
   const menu = document.getElementById('row-action-menu')
   const rect = btnEl.getBoundingClientRect()
-
-  // Position below the button, aligned to its right edge
-  menu.style.top  = (rect.bottom + 4) + 'px'
-  menu.style.left = 'auto'
+  menu.style.top   = (rect.bottom + 4) + 'px'
+  menu.style.left  = 'auto'
   menu.style.right = (window.innerWidth - rect.right) + 'px'
   menu.style.display = 'block'
 }
@@ -593,120 +710,76 @@ window.doRowAction = function(action) {
   if (action === 'delete') confirmDeleteMember(id)
 }
 
-// Close the menu when clicking anywhere outside it
 document.addEventListener('click', function(e) {
-  if (!e.target.closest('#row-action-menu') && !e.target.closest('.dots-btn')) {
-    closeRowMenu()
-  }
+  if (!e.target.closest('#row-action-menu') && !e.target.closest('.dots-btn')) closeRowMenu()
 })
 
 // ── DATA LOADING ─────────────────────────────────────────────────────────────
 async function loadAll() {
-  const { data: members } = await supabase.from('members').select('*').order('full_name')
-  allMembers = members || []
+  const [membersRes, feesRes, feeTypesRes] = await Promise.all([
+    supabase.from('members').select('*').order('full_name'),
+    supabase.from('fees').select('*, members(full_name)').order('due_date'),
+    supabase.from('fee_types').select('*').order('created_at', { ascending: false }),
+  ])
+  allMembers  = membersRes.data  || []
+  allFees     = feesRes.data     || []
+  allFeeTypes = feeTypesRes.data || []
 
-  const { data: fees } = await supabase.from('fees').select('*, members(full_name, email)').order('due_date')
-  allFees = fees || []
-
-  const { data: forms } = await supabase.from('form_completions').select('*, members(full_name, email)').order('form_name')
-  allForms = forms || []
-
-  updateStats()
   renderMembers(allMembers)
-  renderFees(allFees)
-  renderForms(allForms)
-  populateMemberSelects()
+  renderFeeTypes()
+  renderUnpaidFees(allFees.filter(f => !f.paid))
+  renderPaidFees(allFees.filter(f => f.paid))
 }
 
-function updateStats() {
-  document.getElementById('stat-members').textContent = allMembers.length
-  document.getElementById('stat-fees-unpaid').textContent = allFees.filter(f => !f.paid).length
-  document.getElementById('stat-forms-incomplete').textContent = allForms.filter(f => !f.completed).length
-  document.getElementById('stat-admins').textContent = allMembers.filter(m => m.is_admin).length
-}
-
+// ── MEMBERS ───────────────────────────────────────────────────────────────────
 function renderMembers(members) {
   const tbody = document.getElementById('members-tbody')
   if (!members.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--gray-mid);">No members yet.</td></tr>'
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-mid);">No members yet.</td></tr>'
     return
   }
   tbody.innerHTML = members.map(m => {
-    const mFees  = allFees.filter(f => f.member_id === m.id)
-    const mForms = allForms.filter(f => f.member_id === m.id)
-    const badge  = m.is_admin ? '<span class="admin-badge-small">Admin</span>' : ''
+    const mFees = allFees.filter(f => f.member_id === m.id)
+    const badge = m.is_admin ? '<span class="admin-badge-small">Admin</span>' : ''
     return `<tr>
-      <td>${m.full_name || '—'}${badge}</td>
-      <td>${m.email}</td>
-      <td>${m.year_of_study || '—'}</td>
+      <td>${esc(m.full_name || '—')}${badge}</td>
+      <td>${esc(m.email)}</td>
+      <td>${esc(m.year_of_study || '—')}</td>
       <td>${mFees.filter(f => f.paid).length}/${mFees.length}</td>
-      <td>${mForms.filter(f => f.completed).length}/${mForms.length}</td>
       <td>
         <div class="check-btn ${m.is_admin ? 'checked' : ''}" onclick="toggleAdmin('${m.id}', ${m.is_admin})">
           ${m.is_admin ? '✓' : ''}
         </div>
       </td>
-      <td>
-        <button class="dots-btn" onclick="openRowMenu('${m.id}', this)" title="Actions">⋮</button>
-      </td>
+      <td><button class="dots-btn" onclick="openRowMenu('${m.id}', this)" title="Actions">⋮</button></td>
     </tr>`
   }).join('')
 }
 
-function renderFees(fees) {
-  const tbody = document.getElementById('fees-tbody')
-  if (!fees.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-mid);">No fees added yet.</td></tr>'
-    return
-  }
-  tbody.innerHTML = fees.map(f => `<tr>
-    <td>${f.members?.full_name || f.members?.email || '—'}</td>
-    <td>${f.fee_name}</td>
-    <td>${f.amount ? '$' + Number(f.amount).toFixed(2) : '—'}</td>
-    <td>${f.due_date ? new Date(f.due_date).toLocaleDateString('en-NZ', {day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
-    <td>${f.notes || '—'}</td>
-    <td>
-      <div class="check-btn ${f.paid ? 'checked' : ''}" onclick="toggleFee('${f.id}', ${f.paid})">
-        ${f.paid ? '✓' : ''}
-      </div>
-    </td>
-  </tr>`).join('')
+window.filterMembers = function() {
+  const q = document.getElementById('member-search').value.toLowerCase()
+  renderMembers(allMembers.filter(m =>
+    (m.full_name || '').toLowerCase().includes(q) || m.email.toLowerCase().includes(q)
+  ))
 }
 
-function renderForms(forms) {
-  const tbody = document.getElementById('forms-tbody')
-  if (!forms.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--gray-mid);">No form requirements added yet.</td></tr>'
-    return
-  }
-  tbody.innerHTML = forms.map(f => `<tr>
-    <td>${f.members?.full_name || f.members?.email || '—'}</td>
-    <td>${f.form_name}</td>
-    <td>${f.notes || '—'}</td>
-    <td>
-      <div class="check-btn ${f.completed ? 'checked' : ''}" onclick="toggleFormComplete('${f.id}', ${f.completed})">
-        ${f.completed ? '✓' : ''}
-      </div>
-    </td>
-  </tr>`).join('')
-}
-
-function populateMemberSelects() {
-  const opts = allMembers.map(m => `<option value="${m.id}">${m.full_name || m.email}</option>`).join('')
-  document.getElementById('fee-member-select').innerHTML = opts
-  document.getElementById('form-member-select').innerHTML = opts
+window.toggleAdmin = async function(id, current) {
+  if (id === currentSession.user.id) { showToast("Can't change your own admin status"); return }
+  await supabase.from('members').update({ is_admin: !current }).eq('id', id)
+  showToast(current ? 'Admin removed' : 'Admin granted')
+  loadAll()
 }
 
 // ── EDIT MEMBER ───────────────────────────────────────────────────────────────
 function openMemberEdit(id) {
   const m = allMembers.find(x => x.id === id)
   if (!m) return
-  document.getElementById('edit-member-id').value  = m.id
-  document.getElementById('edit-name').value        = m.full_name || ''
-  document.getElementById('edit-email').value       = m.email || ''
-  document.getElementById('edit-phone').value       = m.phone || ''
-  document.getElementById('edit-year').value        = m.year_of_study || ''
-  document.getElementById('edit-admin').checked     = m.is_admin || false
+  document.getElementById('edit-member-id').value = m.id
+  document.getElementById('edit-name').value       = m.full_name || ''
+  document.getElementById('edit-email').value      = m.email || ''
+  document.getElementById('edit-phone').value      = m.phone || ''
+  document.getElementById('edit-year').value       = m.year_of_study || ''
+  document.getElementById('edit-admin').checked    = m.is_admin || false
   document.getElementById('edit-error').style.display = 'none'
   document.getElementById('member-modal').classList.add('open')
 }
@@ -734,12 +807,10 @@ window.saveMemberEdit = async function() {
 
   const { error } = await supabase.from('members').update({
     full_name: name || null, email: email || null,
-    phone: phone || null, year_of_study: year || null,
-    is_admin: isAdmin,
+    phone: phone || null, year_of_study: year || null, is_admin: isAdmin,
   }).eq('id', id)
 
   if (error) { err.textContent = error.message; err.style.display = 'block'; return }
-
   window.closeMemberModal()
   showToast('Changes saved ✓')
   loadAll()
@@ -750,14 +821,12 @@ async function confirmDeleteMember(id) {
   const m = allMembers.find(x => x.id === id)
   if (!m) return
   if (id === currentSession.user.id) { showToast("You can't delete your own account"); return }
-
   const name = m.full_name || m.email
   const ok = await customConfirm(
     `Remove ${name} from the members list? This deletes their fees and form records. Their login account will still exist in Supabase Auth.`,
     'Delete member'
   )
   if (!ok) return
-
   await Promise.all([
     supabase.from('fees').delete().eq('member_id', id),
     supabase.from('form_completions').delete().eq('member_id', id),
@@ -768,70 +837,234 @@ async function confirmDeleteMember(id) {
 }
 window.confirmDeleteMember = confirmDeleteMember
 
-// ── TOGGLE ADMIN ──────────────────────────────────────────────────────────────
-window.toggleAdmin = async function(id, current) {
-  if (id === currentSession.user.id) { showToast("Can't change your own admin status"); return }
-  await supabase.from('members').update({ is_admin: !current }).eq('id', id)
-  showToast(current ? 'Admin removed' : 'Admin granted')
+// ── FEE TYPES ─────────────────────────────────────────────────────────────────
+function renderFeeTypes() {
+  const el = document.getElementById('fee-types-list')
+  if (!allFeeTypes.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-title">No fees created yet</div>
+      <div class="empty-desc">Click "+ Create fee" to set up your first fee type.</div>
+    </div>`
+    return
+  }
+  el.innerHTML = `<div class="fee-type-list">${allFeeTypes.map(ft => {
+    const due   = ft.due_date ? ` &nbsp;·&nbsp; Due ${formatDate(ft.due_date)}` : ''
+    const opt   = ft.is_optional ? '<span class="optional-badge">Optional</span>' : ''
+    const count = allFees.filter(f => f.fee_type_id === ft.id).length
+    return `<div class="fee-type-item">
+      <div style="flex:1;min-width:0;">
+        <div class="fee-type-name">${esc(ft.name)} ${opt}</div>
+        <div class="fee-type-meta">NZ$${Number(ft.amount).toFixed(2)}${due} &nbsp;·&nbsp; ${count} member${count !== 1 ? 's' : ''} assigned</div>
+      </div>
+      <button class="btn-secondary" style="font-size:12px;padding:6px 14px;white-space:nowrap;flex-shrink:0;"
+        onclick="openAssignModal('${ft.id}')">Assign</button>
+      <button onclick="deleteFeeType('${ft.id}', '${esc(ft.name)}')"
+        style="background:none;border:none;cursor:pointer;font-size:22px;line-height:1;color:var(--gray-mid);padding:4px 6px;flex-shrink:0;"
+        title="Delete">×</button>
+    </div>`
+  }).join('')}</div>`
+}
+
+window.openFeeTypeModal = function() {
+  document.getElementById('ft-name').value        = ''
+  document.getElementById('ft-amount').value      = ''
+  document.getElementById('ft-due-date').value    = ''
+  document.getElementById('ft-description').value = ''
+  document.getElementById('ft-optional').checked  = false
+  document.getElementById('fee-type-modal').classList.add('open')
+}
+window.closeFeeTypeModal = function() {
+  document.getElementById('fee-type-modal').classList.remove('open')
+}
+
+window.saveFeeType = async function() {
+  const name     = document.getElementById('ft-name').value.trim()
+  const amount   = parseFloat(document.getElementById('ft-amount').value)
+  const dueDate  = document.getElementById('ft-due-date').value || null
+  const desc     = document.getElementById('ft-description').value.trim() || null
+  const optional = document.getElementById('ft-optional').checked
+
+  if (!name)                        { showToast('Fee name is required'); return }
+  if (isNaN(amount) || amount <= 0) { showToast('Enter a valid amount'); return }
+
+  const { error } = await supabase.from('fee_types').insert({
+    name, amount, due_date: dueDate, description: desc, is_optional: optional
+  })
+  if (error) { showToast('Error: ' + error.message); return }
+
+  window.closeFeeTypeModal()
+  showToast('Fee created ✓')
   loadAll()
 }
 
-// ── FEES ──────────────────────────────────────────────────────────────────────
-window.toggleFee = async function(id, current) {
+window.deleteFeeType = async function(id, name) {
+  const count = allFees.filter(f => f.fee_type_id === id).length
+  let msg = `Delete fee type "${name}"?`
+  if (count > 0) msg += ` The ${count} existing fee record${count > 1 ? 's' : ''} will remain but lose their link to this type.`
+  if (!await customConfirm(msg, 'Delete')) return
+  const { error } = await supabase.from('fee_types').delete().eq('id', id)
+  if (error) { showToast('Error: ' + error.message); return }
+  showToast('Fee type deleted')
+  loadAll()
+}
+
+// ── ASSIGN MEMBERS ────────────────────────────────────────────────────────────
+window.openAssignModal = function(feeTypeId) {
+  const ft = allFeeTypes.find(f => f.id === feeTypeId)
+  if (!ft) return
+
+  document.getElementById('assign-modal-title').textContent = 'Assign — ' + ft.name
+  document.getElementById('assign-fee-type-id').value = feeTypeId
+
+  const assignedFees    = allFees.filter(f => f.fee_type_id === feeTypeId)
+  const assignedByMember = Object.fromEntries(assignedFees.map(f => [f.member_id, f]))
+
+  const list = document.getElementById('assign-members-list')
+  if (!allMembers.length) {
+    list.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--gray-mid);font-family:Arial,sans-serif;font-size:13px;">No members yet.</div>'
+  } else {
+    list.innerHTML = allMembers.map(m => {
+      const existingFee = assignedByMember[m.id]
+      const already = !!existingFee
+      const label = already
+        ? (existingFee.paid
+            ? ' &nbsp;<span style="color:#2D8C2D;font-size:11px;font-weight:700;">Paid ✓</span>'
+            : ' &nbsp;<span style="color:var(--gray-mid);font-size:11px;">Assigned</span>')
+        : ''
+      return `<div class="assign-member-item${already ? ' already-assigned' : ''}">
+        <input type="checkbox" id="am-${m.id}" value="${m.id}" class="assign-member-cb"
+          ${already ? 'checked disabled' : ''}>
+        <label for="am-${m.id}" style="cursor:${already ? 'default' : 'pointer'};flex:1;">
+          ${esc(m.full_name || m.email)}${label}
+        </label>
+      </div>`
+    }).join('')
+  }
+
+  document.getElementById('assign-modal').classList.add('open')
+}
+
+window.closeAssignModal = function() {
+  document.getElementById('assign-modal').classList.remove('open')
+}
+
+window.doAssign = async function() {
+  const feeTypeId = document.getElementById('assign-fee-type-id').value
+  const ft = allFeeTypes.find(f => f.id === feeTypeId)
+  if (!ft) return
+
+  const selected = [...document.querySelectorAll('.assign-member-cb:checked:not(:disabled)')]
+  if (!selected.length) { showToast('No new members selected'); return }
+
+  const records = selected.map(cb => ({
+    member_id:   cb.value,
+    fee_type_id: feeTypeId,
+    fee_name:    ft.name,
+    amount:      ft.amount,
+    due_date:    ft.due_date || null,
+    paid:        false,
+  }))
+
+  const { error } = await supabase.from('fees').insert(records)
+  if (error) { showToast('Error: ' + error.message); return }
+
+  window.closeAssignModal()
+  showToast(`Fee assigned to ${selected.length} member${selected.length > 1 ? 's' : ''} ✓`)
+  loadAll()
+}
+
+// ── UNPAID FEES ───────────────────────────────────────────────────────────────
+function renderUnpaidFees(fees) {
+  const tbody = document.getElementById('unpaid-tbody')
+  const sorted = [...fees].sort((a, b) =>
+    (a.members?.full_name || '').localeCompare(b.members?.full_name || '')
+  )
+  if (!sorted.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-mid);">No unpaid fees.</td></tr>'
+    return
+  }
+  tbody.innerHTML = sorted.map(f => `<tr>
+    <td>${esc(f.members?.full_name || '—')}</td>
+    <td>${esc(f.fee_name)}</td>
+    <td>${f.amount ? 'NZ$' + Number(f.amount).toFixed(2) : '—'}</td>
+    <td>${f.due_date ? formatDate(f.due_date) : '—'}</td>
+    <td><div class="check-btn" onclick="markFeePaid('${f.id}')" title="Mark as paid"></div></td>
+    <td>
+      <button onclick="deleteFeeAssignment('${f.id}', '${esc(f.fee_name)}', '${esc(f.members?.full_name || 'this member')}')"
+        style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--gray-mid);padding:3px 8px;line-height:1;"
+        title="Remove">×</button>
+    </td>
+  </tr>`).join('')
+}
+
+window.filterUnpaid = function() {
+  const q = document.getElementById('fee-search').value.toLowerCase()
+  renderUnpaidFees(allFees.filter(f =>
+    !f.paid && (
+      (f.fee_name || '').toLowerCase().includes(q) ||
+      (f.members?.full_name || '').toLowerCase().includes(q)
+    )
+  ))
+}
+
+window.markFeePaid = async function(id) {
   await supabase.from('fees').update({
-    paid: !current,
-    paid_date: !current ? new Date().toISOString().split('T')[0] : null
+    paid: true,
+    paid_date: new Date().toISOString().split('T')[0],
   }).eq('id', id)
-  showToast(current ? 'Marked unpaid' : 'Marked paid ✓')
+  showToast('Marked as paid ✓')
   loadAll()
 }
 
-window.openAddFeeModal = function() { document.getElementById('fee-modal').classList.add('open') }
-window.closeFeeModal   = function() { document.getElementById('fee-modal').classList.remove('open') }
-window.saveFee = async function() {
-  const memberId = document.getElementById('fee-member-select').value
-  const feeName  = document.getElementById('fee-name-input').value
-  const amount   = document.getElementById('fee-amount-input').value
-  const dueDate  = document.getElementById('fee-due-input').value
-  const notes    = document.getElementById('fee-notes-input').value
-  const paid     = document.getElementById('fee-paid-input').checked
-  if (!feeName) { showToast('Fee name is required'); return }
-  await supabase.from('fees').insert({
-    member_id: memberId, fee_name: feeName,
-    amount: amount || null, due_date: dueDate || null,
-    notes: notes || null, paid,
-    paid_date: paid ? new Date().toISOString().split('T')[0] : null
-  })
-  window.closeFeeModal()
-  showToast('Fee added ✓')
+window.deleteFeeAssignment = async function(id, feeName, memberName) {
+  if (!await customConfirm(`Remove "${feeName}" for ${memberName}?`, 'Delete')) return
+  await supabase.from('fees').delete().eq('id', id)
+  showToast('Fee removed')
   loadAll()
 }
 
-// ── FORMS ─────────────────────────────────────────────────────────────────────
-window.toggleFormComplete = async function(id, current) {
-  await supabase.from('form_completions').update({
-    completed: !current,
-    completed_date: !current ? new Date().toISOString().split('T')[0] : null
+// ── PAID FEES ARCHIVE ─────────────────────────────────────────────────────────
+function renderPaidFees(fees) {
+  const el = document.getElementById('paid-fees-content')
+  if (!fees.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-title">No paid fees yet</div>
+      <div class="empty-desc">Fees marked as paid will appear here.</div>
+    </div>`
+    return
+  }
+  const sorted = [...fees].sort((a, b) =>
+    (b.paid_date || '').localeCompare(a.paid_date || '')
+  )
+  el.innerHTML = `<div class="paid-archive-list">${sorted.map(f => {
+    const method = f.blink_payment_id ? 'Online via Blink Pay' : 'Manually recorded'
+    return `<div class="paid-archive-item" id="pa-${f.id}">
+      <div class="paid-archive-row" onclick="togglePaidItem('${f.id}')">
+        <span style="font-family:Arial,sans-serif;font-size:14px;font-weight:700;color:var(--black);">${esc(f.members?.full_name || '—')}</span>
+        <span style="color:var(--gray-mid);margin:0 0.4rem;">—</span>
+        <span style="font-family:Arial,sans-serif;font-size:14px;color:var(--gray-dark);">${esc(f.fee_name)}</span>
+        <span style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-mid);margin-left:auto;padding-left:1rem;white-space:nowrap;">NZ$${Number(f.amount || 0).toFixed(2)}</span>
+        <span class="paid-archive-chevron" style="margin-left:0.75rem;">▼</span>
+      </div>
+      <div class="paid-archive-body">
+        <div style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-dark);margin-bottom:0.4rem;">Paid: ${f.paid_date ? formatDate(f.paid_date) : '—'}</div>
+        <div style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-dark);margin-bottom:0.85rem;">Method: ${method}</div>
+        <button class="btn-secondary" style="font-size:11px;padding:5px 12px;" onclick="markFeeUnpaid('${f.id}')">Mark as unpaid</button>
+      </div>
+    </div>`
+  }).join('')}</div>`
+}
+
+window.togglePaidItem = function(id) {
+  document.getElementById('pa-' + id)?.classList.toggle('open')
+}
+
+window.markFeeUnpaid = async function(id) {
+  if (!await customConfirm('Move this fee back to unpaid?', 'Mark unpaid')) return
+  await supabase.from('fees').update({
+    paid: false, paid_date: null, blink_payment_id: null
   }).eq('id', id)
-  showToast(current ? 'Marked incomplete' : 'Marked complete ✓')
-  loadAll()
-}
-
-window.openAddFormModal = function() { document.getElementById('form-modal').classList.add('open') }
-window.closeFormModal   = function() { document.getElementById('form-modal').classList.remove('open') }
-window.saveForm = async function() {
-  const memberId  = document.getElementById('form-member-select').value
-  const formName  = document.getElementById('form-name-input').value
-  const notes     = document.getElementById('form-notes-input').value
-  const completed = document.getElementById('form-done-input').checked
-  if (!formName) { showToast('Form name is required'); return }
-  await supabase.from('form_completions').insert({
-    member_id: memberId, form_name: formName,
-    notes: notes || null, completed,
-    completed_date: completed ? new Date().toISOString().split('T')[0] : null
-  })
-  window.closeFormModal()
-  showToast('Form requirement added ✓')
+  showToast('Moved back to unpaid')
   loadAll()
 }
 
@@ -855,58 +1088,30 @@ window.addMember = async function() {
 
   if (data.user) {
     await supabase.from('members').insert({
-      id: data.user.id, email, full_name: name, phone,
-      year_of_study: year, is_admin: isAdmin
+      id: data.user.id, email, full_name: name, phone, year_of_study: year, is_admin: isAdmin
     })
   }
   showToast('Member added!')
-  document.getElementById('add-name').value = ''
-  document.getElementById('add-email').value = ''
-  document.getElementById('add-phone').value = ''
-  document.getElementById('add-year').value = ''
+  document.getElementById('add-name').value    = ''
+  document.getElementById('add-email').value   = ''
+  document.getElementById('add-phone').value   = ''
+  document.getElementById('add-year').value    = ''
   document.getElementById('add-admin').checked = false
   loadAll()
-}
-
-// ── SEARCH ────────────────────────────────────────────────────────────────────
-window.filterMembers = function() {
-  const q = document.getElementById('member-search').value.toLowerCase()
-  renderMembers(allMembers.filter(m =>
-    (m.full_name || '').toLowerCase().includes(q) || m.email.toLowerCase().includes(q)
-  ))
-}
-window.filterFees = function() {
-  const q = document.getElementById('fee-search').value.toLowerCase()
-  renderFees(allFees.filter(f =>
-    f.fee_name.toLowerCase().includes(q) || (f.members?.full_name || '').toLowerCase().includes(q)
-  ))
-}
-window.filterForms = function() {
-  const q = document.getElementById('form-search').value.toLowerCase()
-  renderForms(allForms.filter(f =>
-    f.form_name.toLowerCase().includes(q) || (f.members?.full_name || '').toLowerCase().includes(q)
-  ))
-}
-
-window.switchTab = function(name, btn) {
-  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'))
-  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'))
-  document.getElementById('panel-' + name).classList.add('active')
-  btn.classList.add('active')
 }
 
 // ── MODAL BACKDROP CLOSE ──────────────────────────────────────────────────────
 document.getElementById('member-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) window.closeMemberModal()
 })
-document.getElementById('fee-modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) window.closeFeeModal()
+document.getElementById('fee-type-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) window.closeFeeTypeModal()
 })
-document.getElementById('form-modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) window.closeFormModal()
+document.getElementById('assign-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) window.closeAssignModal()
 })
 
-// ── AUTH CHECK — runs last, only reveals the page if you're a confirmed admin ──
+// ── AUTH CHECK ────────────────────────────────────────────────────────────────
 async function init() {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) { window.location.href = 'index.html'; return }

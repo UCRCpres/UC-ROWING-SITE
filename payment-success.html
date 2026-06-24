@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment — UC Rowing Club</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .status-box {
+    max-width: 540px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 4rem 1.5rem;
+  }
+  .status-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 30px;
+    color: white;
+  }
+  .status-icon.success  { background: #2D8C2D; }
+  .status-icon.pending  { background: var(--gold); font-size: 22px; }
+  .status-icon.error    { background: #c0392b; }
+  .status-icon.loading  { background: var(--gray-mid); font-size: 20px; animation: spin 1.2s linear infinite; }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .status-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 1rem;
+  }
+  .status-text {
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    color: var(--gray-mid);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+  .status-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder" data-active="Fees"></div>
+
+<main>
+  <div class="status-box" id="status-box">
+    <div class="status-icon loading" id="status-icon">↻</div>
+    <div class="status-title" id="status-title">Confirming payment…</div>
+    <p class="status-text" id="status-text">Please wait while we confirm your payment with the bank.</p>
+    <div class="status-actions" id="status-actions"></div>
+  </div>
+</main>
+
+<div id="footer-placeholder"></div>
+<script type="module" src="nav.js"></script>
+
+<script type="module">
+import { supabase } from './supabase.js'
+
+function setStatus(type, title, text, actions = '') {
+  const icons = { success: '✓', pending: '⏳', error: '✕', loading: '↻' }
+  document.getElementById('status-icon').className = `status-icon ${type}`
+  document.getElementById('status-icon').textContent = icons[type] || '?'
+  document.getElementById('status-title').textContent = title
+  document.getElementById('status-text').innerHTML = text
+  document.getElementById('status-actions').innerHTML = actions
+}
+
+async function checkPayment() {
+  const qpid  = sessionStorage.getItem('blink_qpid')
+  const feeId = sessionStorage.getItem('blink_fee_id')
+
+  // Handle Blink error redirect (e.g. user cancelled at bank)
+  const urlParams = new URLSearchParams(window.location.search)
+  const blinkError = urlParams.get('error')
+
+  if (blinkError) {
+    sessionStorage.removeItem('blink_qpid')
+    sessionStorage.removeItem('blink_fee_id')
+    setStatus('error', 'Payment cancelled',
+      'Your payment was not completed. No money has been taken.',
+      `<a href="fees.html" class="btn-primary" style="text-decoration:none;">Back to fees</a>`)
+    return
+  }
+
+  if (!qpid || !feeId) {
+    setStatus('pending', 'Nothing to confirm',
+      'If you just made a payment, check your fees page to see if it has been recorded.',
+      `<a href="fees.html" class="btn-primary" style="text-decoration:none;">View my fees</a>`)
+    return
+  }
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) {
+    setStatus('error', 'Not logged in',
+      'Please log in and check your fees page.',
+      `<a href="fees.html" class="btn-primary" style="text-decoration:none;">View my fees</a>`)
+    return
+  }
+
+  try {
+    const resp = await fetch('/.netlify/functions/check-blink-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ quick_payment_id: qpid, fee_id: feeId }),
+    })
+
+    const result = await resp.json()
+
+    // Clear sessionStorage now that we've used the values
+    sessionStorage.removeItem('blink_qpid')
+    sessionStorage.removeItem('blink_fee_id')
+
+    if (result.paid) {
+      setStatus('success', 'Payment received',
+        'Your payment has been confirmed and your fees have been updated.',
+        `<a href="fees.html" class="btn-primary" style="text-decoration:none;">View my fees</a>
+         <a href="forms.html" class="btn-secondary" style="text-decoration:none;">Go to forms</a>`)
+    } else if (result.status === 'Pending' || result.status === 'AcceptedSettlementInProcess') {
+      setStatus('pending', 'Payment processing',
+        'Your payment is being processed by your bank. Your fees page will update shortly — check back in a few minutes.',
+        `<a href="fees.html" class="btn-primary" style="text-decoration:none;">View my fees</a>`)
+    } else if (result.status === 'Rejected') {
+      setStatus('error', 'Payment declined',
+        'Your bank declined the payment. No money has been taken. Please try again or contact us if you need help.',
+        `<a href="fees.html" class="btn-primary" style="text-decoration:none;">Try again</a>
+         <a href="contact.html" class="btn-secondary" style="text-decoration:none;">Contact us</a>`)
+    } else {
+      setStatus('pending', 'Status unknown',
+        'We couldn\'t confirm your payment status right now. Check your fees page — if the payment went through it will appear there.',
+        `<a href="fees.html" class="btn-primary" style="text-decoration:none;">View my fees</a>`)
+    }
+
+  } catch (err) {
+    setStatus('error', 'Something went wrong',
+      'We couldn\'t check your payment status. Please check your fees page or contact us.',
+      `<a href="fees.html" class="btn-primary" style="text-decoration:none;">View my fees</a>`)
+  }
+}
+
+checkPayment()
+</script>
+</body>
+</html>
