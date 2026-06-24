@@ -157,7 +157,7 @@ exports.handler = async (event) => {
       },
       amount: {
         currency: 'NZD',
-        total:    Number(feeAmount).toFixed(2),
+        total:    parseFloat(Number(feeAmount).toFixed(2)),
       },
       pcr: {
         particulars: 'UC Rowing',
