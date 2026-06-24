@@ -168,11 +168,19 @@ exports.handler = async (event) => {
   })
 
   const payment = await blinkRes.json()
+  console.log('Blink quick-payment response:', JSON.stringify(payment))
 
   if (!blinkRes.ok || !payment.quick_payment_id) {
     console.error('Blink quick-payment creation failed:', JSON.stringify(payment))
     return { statusCode: 502, body: JSON.stringify({ error: 'Payment setup failed' }) }
   }
+
+  // Force sandbox gateway URL when not in production (response may return production domain)
+  let gatewayUrl = payment.redirect_uri
+  if (process.env.BLINK_ENV !== 'production' && gatewayUrl) {
+    gatewayUrl = gatewayUrl.replace('https://debit.blinkpay.co.nz', 'https://sandbox.debit.blinkpay.co.nz')
+  }
+  console.log('Gateway URL:', gatewayUrl)
 
   // Save the quick_payment_id so we can check status on return
   await supabase
@@ -184,7 +192,7 @@ exports.handler = async (event) => {
     statusCode: 200,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      url:              payment.redirect_uri,
+      url:              gatewayUrl,
       quick_payment_id: payment.quick_payment_id,
       fee_id:           feeId,
     }),
