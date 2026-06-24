@@ -136,7 +136,7 @@ exports.handler = async (event) => {
     blinkToken = await getBlinkToken()
   } catch (err) {
     console.error('Blink token error:', err)
-    return { statusCode: 502, body: JSON.stringify({ error: 'Payment service unavailable' }) }
+    return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'Payment service unavailable — ' + err.message }) }
   }
 
   // PCR fields — these appear on the bank statement
