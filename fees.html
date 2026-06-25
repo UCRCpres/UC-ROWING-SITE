@@ -199,7 +199,7 @@ function showToast(msg) {
 
 async function loadData() {
   const [feesRes, typesRes] = await Promise.all([
-    supabase.from('fees').select('*, fee_types(is_optional)').eq('member_id', userId).order('due_date', { ascending: true, nullsFirst: false }),
+    supabase.from('fees').select('*, fee_types(is_optional, description)').eq('member_id', userId).order('due_date', { ascending: true, nullsFirst: false }),
     supabase.from('fee_types').select('*').eq('is_optional', true).order('created_at', { ascending: false })
   ])
   myFees          = feesRes.data  || []
@@ -207,63 +207,55 @@ async function loadData() {
 }
 
 function render() {
-  const unpaid = myFees.filter(f => !f.paid && !f.fee_types?.is_optional)
-  const paid   = myFees.filter(f => f.paid).sort((a, b) =>
+  const unpaidRequired = myFees.filter(f => !f.paid && !f.fee_types?.is_optional)
+  const paid           = myFees.filter(f => f.paid).sort((a, b) =>
     (b.paid_date || '').localeCompare(a.paid_date || '')
   )
 
-  // Optional fees: types this member hasn't paid yet
-  const paidTypeIds = paid.map(f => f.fee_type_id).filter(Boolean)
-  const optionalAvailable = optionalFeeTypes.filter(ft => !paidTypeIds.includes(ft.id))
+  // Optional fee types this member hasn't paid yet
+  const paidTypeIds      = paid.map(f => f.fee_type_id).filter(Boolean)
+  const optionalUnpaid   = optionalFeeTypes.filter(ft => !paidTypeIds.includes(ft.id))
+
+  const totalOutstanding = unpaidRequired.length + optionalUnpaid.length
 
   let html = ''
 
-  // OUTSTANDING FEES
+  // OUTSTANDING FEES (required + optional combined)
   html += `<div class="fees-section">
     <div class="fees-section-title">Outstanding fees</div>`
 
-  if (!unpaid.length) {
+  if (!totalOutstanding) {
     html += `<div class="empty-section">You have no outstanding fees — you're all good!</div>`
   } else {
-    html += unpaid.map(f => {
-      const due = f.due_date ? ` &nbsp;·&nbsp; Due ${formatDate(f.due_date)}` : ''
+    html += unpaidRequired.map(f => {
+      const due  = f.due_date ? ` &nbsp;·&nbsp; Due ${formatDate(f.due_date)}` : ''
+      const desc = f.fee_types?.description ? ` &nbsp;·&nbsp; ${esc(f.fee_types.description)}` : ''
       return `<div class="fee-card">
         <div class="fee-card-info">
           <div class="fee-card-name">${esc(f.fee_name)}</div>
-          <div class="fee-card-meta">NZ$${Number(f.amount || 0).toFixed(2)}${due}</div>
+          <div class="fee-card-meta">NZ$${Number(f.amount || 0).toFixed(2)}${due}${desc}</div>
         </div>
         <button class="btn-pay" id="pay-btn-${f.id}" onclick="payFee('${f.id}', null)">
           Pay now &mdash; NZ$${Number(f.amount || 0).toFixed(2)}
         </button>
       </div>`
     }).join('')
-  }
-  html += `</div>`
 
-  // OPTIONAL FEES
-  if (optionalAvailable.length) {
-    html += `<div class="fees-section">
-      <div class="fees-section-title">Optional payments</div>
-      <p style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-mid);margin-bottom:1.1rem;line-height:1.6;">
-        These aren't required, but you're welcome to contribute if you'd like to.
-      </p>`
-
-    html += optionalAvailable.map(ft => {
+    html += optionalUnpaid.map(ft => {
       const due  = ft.due_date ? ` &nbsp;·&nbsp; Due ${formatDate(ft.due_date)}` : ''
       const desc = ft.description ? ` &nbsp;·&nbsp; ${esc(ft.description)}` : ''
-      return `<div class="fee-card optional">
+      return `<div class="fee-card">
         <div class="fee-card-info">
-          <div class="fee-card-name">${esc(ft.name)}<span class="optional-badge">Optional</span></div>
+          <div class="fee-card-name">${esc(ft.name)}</div>
           <div class="fee-card-meta">NZ$${Number(ft.amount || 0).toFixed(2)}${due}${desc}</div>
         </div>
         <button class="btn-pay" id="pay-btn-opt-${ft.id}" onclick="payFee(null, '${ft.id}')">
-          Pay &mdash; NZ$${Number(ft.amount || 0).toFixed(2)}
+          Pay now &mdash; NZ$${Number(ft.amount || 0).toFixed(2)}
         </button>
       </div>`
     }).join('')
-
-    html += `</div>`
   }
+  html += `</div>`
 
   // PAYMENT HISTORY
   if (paid.length) {

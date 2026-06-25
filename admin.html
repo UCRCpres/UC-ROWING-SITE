@@ -119,6 +119,71 @@
   .paid-archive-body { display: none; padding: 1rem 1.25rem; background: var(--gray-light); border-top: 1px solid var(--border); }
   .paid-archive-item.open .paid-archive-body { display: block; }
 
+  /* FEE ARCHIVE ACCORDION */
+  .fee-archive-list { border: 1px solid var(--border); border-top: 3px solid var(--maroon); }
+  .fee-archive-item { border-bottom: 1px solid var(--border); }
+  .fee-archive-item:last-child { border-bottom: none; }
+  .fee-archive-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    background: var(--white);
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .fee-archive-row:hover { background: var(--gray-light); }
+  .fee-archive-name {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+    flex: 1;
+  }
+  .fee-archive-meta {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: var(--gray-mid);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .fee-archive-chevron {
+    font-size: 11px;
+    color: var(--gray-mid);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .fee-archive-item.open .fee-archive-chevron { transform: rotate(180deg); }
+  .fee-archive-body { display: none; padding: 1rem 1.25rem; background: var(--gray-light); border-top: 1px solid var(--border); }
+  .fee-archive-item.open .fee-archive-body { display: block; }
+
+  /* FEES FILTER BAR */
+  .fees-filter-bar {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .fees-filter-bar input[type="text"],
+  .fees-filter-bar select,
+  .fees-filter-bar input[type="date"] {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    padding: 7px 10px;
+    background: var(--white);
+    color: var(--gray-dark);
+    height: 34px;
+    box-sizing: border-box;
+  }
+  .fees-filter-bar input[type="text"] { flex: 1; min-width: 140px; }
+  .fees-filter-bar .filter-sep { color: var(--gray-mid); font-size: 12px; white-space: nowrap; }
+
   /* TABLES */
   .admin-table-wrap { overflow-x: auto; }
   .admin-table {
@@ -342,6 +407,8 @@
   .assign-member-item:last-child { border-bottom: none; }
   .assign-member-item.already-assigned { background: var(--gray-light); color: var(--gray-mid); }
   .assign-member-item input[type=checkbox] { width: 16px; height: 16px; flex-shrink: 0; }
+  .assign-amount-input { width: 80px; border: 1px solid var(--border); padding: 4px 7px; font-family: Arial, sans-serif; font-size: 13px; display: none; flex-shrink: 0; }
+  .custom-amounts-on .assign-amount-input { display: block; }
 
   /* EMPTY STATE */
   .empty-state {
@@ -405,14 +472,15 @@
 
   <!-- MEMBERS TAB -->
   <div id="panel-members" class="admin-panel active">
-    <div class="search-bar">
+    <div class="fees-filter-bar">
       <input type="text" id="member-search" placeholder="Search by name or email..." oninput="filterMembers()">
+      <button id="active-filter-btn" class="btn-secondary" onclick="toggleActiveFilter()" style="font-size:12px;padding:6px 14px;white-space:nowrap;height:34px;">Show active only</button>
     </div>
     <div class="admin-table-wrap">
       <table class="admin-table">
         <thead>
           <tr>
-            <th>Name</th><th>Email</th><th>Year</th><th>Fees paid</th><th>Admin</th><th></th>
+            <th>Name</th><th>Email</th><th>Year</th><th>Fees paid</th><th>Active</th><th>Admin</th><th></th>
           </tr>
         </thead>
         <tbody id="members-tbody">
@@ -429,6 +497,7 @@
       <button class="fees-subbtn active" onclick="switchFeesSub('types', this)">Fee types</button>
       <button class="fees-subbtn" onclick="switchFeesSub('unpaid', this)">Unpaid</button>
       <button class="fees-subbtn" onclick="switchFeesSub('paid', this)">Paid</button>
+      <button class="fees-subbtn" onclick="switchFeesSub('archive', this)">Archive</button>
     </div>
 
     <!-- Fee Types -->
@@ -446,8 +515,12 @@
 
     <!-- Unpaid Fees -->
     <div id="fees-sub-unpaid" class="fees-subpanel">
-      <div class="search-bar">
+      <div class="fees-filter-bar">
         <input type="text" id="fee-search" placeholder="Search by member or fee name..." oninput="filterUnpaid()">
+        <select id="fee-type-filter" onchange="filterUnpaid()">
+          <option value="">All fee types</option>
+        </select>
+        <button class="btn-secondary" onclick="exportUnpaid()" style="font-size:12px;padding:6px 14px;white-space:nowrap;height:34px;">⬇ Export CSV</button>
       </div>
       <div class="admin-table-wrap">
         <table class="admin-table">
@@ -463,10 +536,35 @@
 
     <!-- Paid Fees Archive -->
     <div id="fees-sub-paid" class="fees-subpanel">
-      <div id="paid-fees-content">
+      <div class="fees-filter-bar">
+        <select id="paid-fee-type-filter" onchange="filterPaid()">
+          <option value="">All fee types</option>
+        </select>
+        <span class="filter-sep">Paid between</span>
+        <input type="date" id="paid-from-date" onchange="filterPaid()">
+        <span class="filter-sep">and</span>
+        <input type="date" id="paid-to-date" onchange="filterPaid()">
+        <button class="btn-secondary" onclick="exportPaid()" style="font-size:12px;padding:6px 14px;white-space:nowrap;height:34px;">⬇ Export CSV</button>
+        <button class="btn-primary" onclick="openArchiveModal()" style="font-size:12px;padding:6px 14px;white-space:nowrap;height:34px;">Archive fee</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Member</th><th>Fee</th><th>Amount</th><th>Paid date</th><th>Method</th><th></th></tr>
+          </thead>
+          <tbody id="paid-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-mid);">No paid fees yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Fee Archive -->
+    <div id="fees-sub-archive" class="fees-subpanel">
+      <div id="fee-archive-list">
         <div class="empty-state">
-          <div class="empty-title">No paid fees yet</div>
-          <div class="empty-desc">Fees marked as paid will appear here.</div>
+          <div class="empty-title">No archived fees</div>
+          <div class="empty-desc">Use "Archive fee" on the Paid tab to move completed fees here.</div>
         </div>
       </div>
     </div>
@@ -579,7 +677,7 @@
       <input type="text" id="ft-name" placeholder="e.g. 2026 Membership Fee">
     </div>
     <div class="form-inline">
-      <div class="form-group">
+      <div class="form-group" id="ft-amount-wrap">
         <label>Amount (NZ$)</label>
         <input type="number" id="ft-amount" placeholder="100.00" step="0.01" min="0">
       </div>
@@ -595,7 +693,13 @@
     <div class="form-group">
       <label class="checkbox-label">
         <input type="checkbox" id="ft-optional">
-        Optional — any member can pay, not required
+        Assigned to all — visible to all members
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input type="checkbox" id="ft-custom-amounts" onchange="const a=document.getElementById('ft-amount');a.disabled=this.checked;a.placeholder=this.checked?'Set in assign section':'100.00';if(this.checked)a.value=''">
+        Custom amounts — each member pays a different amount when assigned
       </label>
     </div>
     <div style="margin-top:1.25rem;">
@@ -620,6 +724,28 @@
   </div>
 </div>
 
+<!-- ARCHIVE FEE MODAL -->
+<div class="modal-overlay" id="archive-fee-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeArchiveModal()">✕</button>
+    <div class="modal-title">Archive a fee</div>
+    <p style="font-size:13px;color:var(--gray-mid);margin-bottom:1.25rem;font-family:Arial,sans-serif;line-height:1.5;">
+      Select a fee to archive. All payment records for that fee will move to the Archive tab.
+      Members can still see their own payment history on their fees page.
+    </p>
+    <div class="form-group">
+      <label>Fee to archive</label>
+      <select id="archive-fee-select" style="width:100%;padding:10px;font-family:Arial,sans-serif;font-size:14px;border:1px solid var(--border);">
+        <option value="">Select a fee...</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="doArchiveFee()">Archive</button>
+      <button class="btn-secondary" onclick="closeArchiveModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <div id="footer-placeholder"></div>
 <script type="module" src="nav.js"></script>
@@ -629,7 +755,8 @@ import { supabase } from './supabase.js'
 
 let currentSession = null
 let currentMenuId  = null
-let allMembers = [], allFees = [], allFeeTypes = []
+let allMembers = [], allFees = [], allFeeTypes = [], allArchives = []
+let currentUnpaid = [], currentPaid = []
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function esc(s) {
@@ -716,26 +843,42 @@ document.addEventListener('click', function(e) {
 
 // ── DATA LOADING ─────────────────────────────────────────────────────────────
 async function loadAll() {
-  const [membersRes, feesRes, feeTypesRes] = await Promise.all([
+  const [membersRes, feesRes, feeTypesRes, archivesRes] = await Promise.all([
     supabase.from('members').select('*').order('full_name'),
     supabase.from('fees').select('*, members(full_name)').order('due_date'),
     supabase.from('fee_types').select('*').order('created_at', { ascending: false }),
+    supabase.from('fee_archives').select('*').order('archived_at', { ascending: false }),
   ])
   allMembers  = membersRes.data  || []
   allFees     = feesRes.data     || []
   allFeeTypes = feeTypesRes.data || []
+  allArchives = archivesRes.data || []
 
   renderMembers(allMembers)
   renderFeeTypes()
-  renderUnpaidFees(allFees.filter(f => !f.paid))
-  renderPaidFees(allFees.filter(f => f.paid))
+  const optionalTypeIds = new Set(allFeeTypes.filter(ft => ft.is_optional).map(ft => ft.id))
+  renderUnpaidFees(allFees.filter(f => !f.paid && !optionalTypeIds.has(f.fee_type_id)))
+  renderPaidFees(allFees.filter(f => f.paid && !f.archive_id))
+  renderArchive()
+
+  // Unpaid filter — by current fee types (only non-optional required fees)
+  const unpaidFeeTypes = allFeeTypes.filter(ft => !ft.is_optional)
+  const unpaidFilter = document.getElementById('fee-type-filter')
+  if (unpaidFilter) unpaidFilter.innerHTML = '<option value="">All fee types</option>' +
+    unpaidFeeTypes.map(ft => `<option value="${ft.id}">${esc(ft.name)}</option>`).join('')
+
+  // Paid filter — built from actual paid (non-archived) fee names so deleted types still show
+  const paidFeeNames = [...new Set(allFees.filter(f => f.paid && !f.archive_id).map(f => f.fee_name).filter(Boolean))].sort()
+  const paidFilter = document.getElementById('paid-fee-type-filter')
+  if (paidFilter) paidFilter.innerHTML = '<option value="">All fee types</option>' +
+    paidFeeNames.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('')
 }
 
 // ── MEMBERS ───────────────────────────────────────────────────────────────────
 function renderMembers(members) {
   const tbody = document.getElementById('members-tbody')
   if (!members.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-mid);">No members yet.</td></tr>'
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--gray-mid);">No members yet.</td></tr>'
     return
   }
   tbody.innerHTML = members.map(m => {
@@ -747,6 +890,11 @@ function renderMembers(members) {
       <td>${esc(m.year_of_study || '—')}</td>
       <td>${mFees.filter(f => f.paid).length}/${mFees.length}</td>
       <td>
+        <div class="check-btn ${m.is_active !== false ? 'checked' : ''}" onclick="toggleActive('${m.id}', ${m.is_active !== false})" title="${m.is_active !== false ? 'Active' : 'Inactive'}">
+          ${m.is_active !== false ? '✓' : ''}
+        </div>
+      </td>
+      <td>
         <div class="check-btn ${m.is_admin ? 'checked' : ''}" onclick="toggleAdmin('${m.id}', ${m.is_admin})">
           ${m.is_admin ? '✓' : ''}
         </div>
@@ -756,17 +904,35 @@ function renderMembers(members) {
   }).join('')
 }
 
+let showActiveOnly = false
+
 window.filterMembers = function() {
   const q = document.getElementById('member-search').value.toLowerCase()
-  renderMembers(allMembers.filter(m =>
-    (m.full_name || '').toLowerCase().includes(q) || m.email.toLowerCase().includes(q)
-  ))
+  renderMembers(allMembers.filter(m => {
+    if (showActiveOnly && m.is_active === false) return false
+    return (m.full_name || '').toLowerCase().includes(q) || m.email.toLowerCase().includes(q)
+  }))
+}
+
+window.toggleActiveFilter = function() {
+  showActiveOnly = !showActiveOnly
+  const btn = document.getElementById('active-filter-btn')
+  btn.textContent = showActiveOnly ? 'Show all members' : 'Show active only'
+  btn.style.background = showActiveOnly ? 'var(--maroon)' : ''
+  btn.style.color      = showActiveOnly ? 'var(--white)' : ''
+  btn.style.border     = showActiveOnly ? '1px solid var(--maroon)' : ''
+  filterMembers()
 }
 
 window.toggleAdmin = async function(id, current) {
   if (id === currentSession.user.id) { showToast("Can't change your own admin status"); return }
   await supabase.from('members').update({ is_admin: !current }).eq('id', id)
   showToast(current ? 'Admin removed' : 'Admin granted')
+  loadAll()
+}
+
+window.toggleActive = async function(id, current) {
+  await supabase.from('members').update({ is_active: !current }).eq('id', id)
   loadAll()
 }
 
@@ -849,12 +1015,12 @@ function renderFeeTypes() {
   }
   el.innerHTML = `<div class="fee-type-list">${allFeeTypes.map(ft => {
     const due   = ft.due_date ? ` &nbsp;·&nbsp; Due ${formatDate(ft.due_date)}` : ''
-    const opt   = ft.is_optional ? '<span class="optional-badge">Optional</span>' : ''
+    const opt   = ft.is_optional ? '<span class="optional-badge">Assigned to all</span>' : ''
     const count = allFees.filter(f => f.fee_type_id === ft.id).length
     return `<div class="fee-type-item">
       <div style="flex:1;min-width:0;">
         <div class="fee-type-name">${esc(ft.name)} ${opt}</div>
-        <div class="fee-type-meta">NZ$${Number(ft.amount).toFixed(2)}${due} &nbsp;·&nbsp; ${count} member${count !== 1 ? 's' : ''} assigned</div>
+        <div class="fee-type-meta">NZ$${Number(ft.amount).toFixed(2)}${due} &nbsp;·&nbsp; ${count} member${count !== 1 ? 's' : ''} assigned${ft.description ? ' &nbsp;·&nbsp; ' + esc(ft.description) : ''}</div>
       </div>
       <button class="btn-secondary" style="font-size:12px;padding:6px 14px;white-space:nowrap;flex-shrink:0;"
         onclick="openAssignModal('${ft.id}')">Assign</button>
@@ -870,7 +1036,10 @@ window.openFeeTypeModal = function() {
   document.getElementById('ft-amount').value      = ''
   document.getElementById('ft-due-date').value    = ''
   document.getElementById('ft-description').value = ''
-  document.getElementById('ft-optional').checked  = false
+  document.getElementById('ft-optional').checked        = false
+  document.getElementById('ft-custom-amounts').checked  = false
+  document.getElementById('ft-amount').disabled          = false
+  document.getElementById('ft-amount').placeholder       = '100.00'
   document.getElementById('fee-type-modal').classList.add('open')
 }
 window.closeFeeTypeModal = function() {
@@ -882,13 +1051,14 @@ window.saveFeeType = async function() {
   const amount   = parseFloat(document.getElementById('ft-amount').value)
   const dueDate  = document.getElementById('ft-due-date').value || null
   const desc     = document.getElementById('ft-description').value.trim() || null
-  const optional = document.getElementById('ft-optional').checked
+  const optional       = document.getElementById('ft-optional').checked
+  const customAmounts  = document.getElementById('ft-custom-amounts').checked
 
-  if (!name)                        { showToast('Fee name is required'); return }
-  if (isNaN(amount) || amount <= 0) { showToast('Enter a valid amount'); return }
+  if (!name) { showToast('Fee name is required'); return }
+  if (!customAmounts && (isNaN(amount) || amount <= 0)) { showToast('Enter a valid amount'); return }
 
   const { error } = await supabase.from('fee_types').insert({
-    name, amount, due_date: dueDate, description: desc, is_optional: optional
+    name, amount: customAmounts ? null : amount, due_date: dueDate, description: desc, is_optional: optional, custom_amounts: customAmounts
   })
   if (error) { showToast('Error: ' + error.message); return }
 
@@ -916,14 +1086,18 @@ window.openAssignModal = function(feeTypeId) {
   document.getElementById('assign-modal-title').textContent = 'Assign — ' + ft.name
   document.getElementById('assign-fee-type-id').value = feeTypeId
 
-  const assignedFees    = allFees.filter(f => f.fee_type_id === feeTypeId)
-  const assignedByMember = Object.fromEntries(assignedFees.map(f => [f.member_id, f]))
-
   const list = document.getElementById('assign-members-list')
-  if (!allMembers.length) {
-    list.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--gray-mid);font-family:Arial,sans-serif;font-size:13px;">No members yet.</div>'
+  list.classList.toggle('custom-amounts-on', !!ft.custom_amounts)
+
+  const assignedFees     = allFees.filter(f => f.fee_type_id === feeTypeId)
+  const assignedByMember = Object.fromEntries(assignedFees.map(f => [f.member_id, f]))
+  const defaultAmount    = Number(ft.amount || 0).toFixed(2)
+
+  const activeMembers = allMembers.filter(m => m.is_active !== false)
+  if (!activeMembers.length) {
+    list.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--gray-mid);font-family:Arial,sans-serif;font-size:13px;">No active members.</div>'
   } else {
-    list.innerHTML = allMembers.map(m => {
+    list.innerHTML = activeMembers.map(m => {
       const existingFee = assignedByMember[m.id]
       const already = !!existingFee
       const label = already
@@ -937,12 +1111,14 @@ window.openAssignModal = function(feeTypeId) {
         <label for="am-${m.id}" style="cursor:${already ? 'default' : 'pointer'};flex:1;">
           ${esc(m.full_name || m.email)}${label}
         </label>
+        ${already ? '' : `<input type="number" class="assign-amount-input" value="${defaultAmount}" step="0.01" min="0" placeholder="${defaultAmount}">`}
       </div>`
     }).join('')
   }
 
   document.getElementById('assign-modal').classList.add('open')
 }
+
 
 window.closeAssignModal = function() {
   document.getElementById('assign-modal').classList.remove('open')
@@ -956,14 +1132,19 @@ window.doAssign = async function() {
   const selected = [...document.querySelectorAll('.assign-member-cb:checked:not(:disabled)')]
   if (!selected.length) { showToast('No new members selected'); return }
 
-  const records = selected.map(cb => ({
-    member_id:   cb.value,
-    fee_type_id: feeTypeId,
-    fee_name:    ft.name,
-    amount:      ft.amount,
-    due_date:    ft.due_date || null,
-    paid:        false,
-  }))
+  const customAmounts = !!ft.custom_amounts
+  const records = selected.map(cb => {
+    const amountInput = cb.closest('.assign-member-item')?.querySelector('.assign-amount-input')
+    const amount = customAmounts && amountInput ? (parseFloat(amountInput.value) || ft.amount) : ft.amount
+    return {
+      member_id:   cb.value,
+      fee_type_id: feeTypeId,
+      fee_name:    ft.name,
+      amount,
+      due_date:    ft.due_date || null,
+      paid:        false,
+    }
+  })
 
   const { error } = await supabase.from('fees').insert(records)
   if (error) { showToast('Error: ' + error.message); return }
@@ -975,6 +1156,7 @@ window.doAssign = async function() {
 
 // ── UNPAID FEES ───────────────────────────────────────────────────────────────
 function renderUnpaidFees(fees) {
+  currentUnpaid = fees
   const tbody = document.getElementById('unpaid-tbody')
   const sorted = [...fees].sort((a, b) =>
     (a.members?.full_name || '').localeCompare(b.members?.full_name || '')
@@ -998,16 +1180,35 @@ function renderUnpaidFees(fees) {
 }
 
 window.filterUnpaid = function() {
-  const q = document.getElementById('fee-search').value.toLowerCase()
+  const q          = document.getElementById('fee-search').value.toLowerCase()
+  const typeFilter = document.getElementById('fee-type-filter').value
+  const optionalTypeIds = new Set(allFeeTypes.filter(ft => ft.is_optional).map(ft => ft.id))
   renderUnpaidFees(allFees.filter(f =>
-    !f.paid && (
-      (f.fee_name || '').toLowerCase().includes(q) ||
-      (f.members?.full_name || '').toLowerCase().includes(q)
-    )
+    !f.paid &&
+    !optionalTypeIds.has(f.fee_type_id) &&
+    (!typeFilter || f.fee_type_id === typeFilter) &&
+    ((f.fee_name || '').toLowerCase().includes(q) ||
+     (f.members?.full_name || '').toLowerCase().includes(q))
   ))
 }
 
+window.filterPaid = function() {
+  const nameFilter = document.getElementById('paid-fee-type-filter').value
+  const fromDate   = document.getElementById('paid-from-date').value
+  const toDate     = document.getElementById('paid-to-date').value
+  renderPaidFees(allFees.filter(f => {
+    if (!f.paid || f.archive_id) return false
+    if (nameFilter && f.fee_name !== nameFilter) return false
+    if (fromDate && (f.paid_date || '') < fromDate) return false
+    if (toDate   && (f.paid_date || '') > toDate)   return false
+    return true
+  }))
+}
+
 window.markFeePaid = async function(id) {
+  const fee = allFees.find(f => f.id === id)
+  const label = fee ? `"${fee.fee_name}" for ${fee.members?.full_name || 'this member'}` : 'this fee'
+  if (!await customConfirm(`Mark ${label} as paid?`, 'Mark as paid')) return
   await supabase.from('fees').update({
     paid: true,
     paid_date: new Date().toISOString().split('T')[0],
@@ -1023,40 +1224,32 @@ window.deleteFeeAssignment = async function(id, feeName, memberName) {
   loadAll()
 }
 
-// ── PAID FEES ARCHIVE ─────────────────────────────────────────────────────────
+// ── PAID FEES ─────────────────────────────────────────────────────────────────
 function renderPaidFees(fees) {
-  const el = document.getElementById('paid-fees-content')
-  if (!fees.length) {
-    el.innerHTML = `<div class="empty-state">
-      <div class="empty-title">No paid fees yet</div>
-      <div class="empty-desc">Fees marked as paid will appear here.</div>
-    </div>`
-    return
-  }
+  currentPaid = fees
+  const tbody = document.getElementById('paid-tbody')
   const sorted = [...fees].sort((a, b) =>
     (b.paid_date || '').localeCompare(a.paid_date || '')
   )
-  el.innerHTML = `<div class="paid-archive-list">${sorted.map(f => {
-    const method = f.blink_payment_id ? 'Online via Blink Pay' : 'Manually recorded'
-    return `<div class="paid-archive-item" id="pa-${f.id}">
-      <div class="paid-archive-row" onclick="togglePaidItem('${f.id}')">
-        <span style="font-family:Arial,sans-serif;font-size:14px;font-weight:700;color:var(--black);">${esc(f.members?.full_name || '—')}</span>
-        <span style="color:var(--gray-mid);margin:0 0.4rem;">—</span>
-        <span style="font-family:Arial,sans-serif;font-size:14px;color:var(--gray-dark);">${esc(f.fee_name)}</span>
-        <span style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-mid);margin-left:auto;padding-left:1rem;white-space:nowrap;">NZ$${Number(f.amount || 0).toFixed(2)}</span>
-        <span class="paid-archive-chevron" style="margin-left:0.75rem;">▼</span>
-      </div>
-      <div class="paid-archive-body">
-        <div style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-dark);margin-bottom:0.4rem;">Paid: ${f.paid_date ? formatDate(f.paid_date) : '—'}</div>
-        <div style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-dark);margin-bottom:0.85rem;">Method: ${method}</div>
-        <button class="btn-secondary" style="font-size:11px;padding:5px 12px;" onclick="markFeeUnpaid('${f.id}')">Mark as unpaid</button>
-      </div>
-    </div>`
-  }).join('')}</div>`
-}
-
-window.togglePaidItem = function(id) {
-  document.getElementById('pa-' + id)?.classList.toggle('open')
+  if (!sorted.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-mid);">No paid fees.</td></tr>'
+    return
+  }
+  tbody.innerHTML = sorted.map(f => {
+    const method = f.blink_payment_id ? 'Blink Pay' : 'Manual'
+    return `<tr>
+      <td>${esc(f.members?.full_name || '—')}</td>
+      <td>${esc(f.fee_name)}</td>
+      <td>${f.amount ? 'NZ$' + Number(f.amount).toFixed(2) : '—'}</td>
+      <td>${f.paid_date ? formatDate(f.paid_date) : '—'}</td>
+      <td>${method}</td>
+      <td>
+        <button onclick="markFeeUnpaid('${f.id}')"
+          style="background:none;border:1px solid var(--border);cursor:pointer;font-family:Arial,sans-serif;font-size:11px;color:var(--gray-mid);padding:3px 10px;white-space:nowrap;"
+          title="Mark as unpaid">↩ Unpaid</button>
+      </td>
+    </tr>`
+  }).join('')
 }
 
 window.markFeeUnpaid = async function(id) {
@@ -1067,6 +1260,131 @@ window.markFeeUnpaid = async function(id) {
   showToast('Moved back to unpaid')
   loadAll()
 }
+
+// ── CSV EXPORT ────────────────────────────────────────────────────────────────
+function exportCSV(rows, filename) {
+  const csv  = rows.map(r => r.map(c => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\n')
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' })
+  const url  = URL.createObjectURL(blob)
+  const a    = document.createElement('a')
+  a.href = url; a.download = filename
+  document.body.appendChild(a); a.click()
+  document.body.removeChild(a); URL.revokeObjectURL(url)
+}
+
+window.exportUnpaid = function() {
+  const headers = ['Member', 'Fee', 'Amount (NZD)', 'Due Date']
+  const rows = currentUnpaid.map(f => [
+    f.members?.full_name || '',
+    f.fee_name || '',
+    Number(f.amount || 0).toFixed(2),
+    f.due_date || ''
+  ])
+  exportCSV([headers, ...rows], `unpaid-fees-${new Date().toISOString().split('T')[0]}.csv`)
+}
+
+window.exportPaid = function() {
+  const headers = ['Member', 'Fee', 'Amount (NZD)', 'Paid Date', 'Method']
+  const rows = currentPaid.map(f => [
+    f.members?.full_name || '',
+    f.fee_name || '',
+    Number(f.amount || 0).toFixed(2),
+    f.paid_date || '',
+    f.blink_payment_id ? 'Online via Blink Pay' : 'Manually recorded'
+  ])
+  exportCSV([headers, ...rows], `paid-fees-${new Date().toISOString().split('T')[0]}.csv`)
+}
+
+// ── FEE ARCHIVE ───────────────────────────────────────────────────────────────
+function renderArchive() {
+  const el = document.getElementById('fee-archive-list')
+  if (!allArchives.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-title">No archived fees</div>
+      <div class="empty-desc">Use "Archive fee" on the Paid tab to move completed fees here.</div>
+    </div>`
+    return
+  }
+  el.innerHTML = `<div class="fee-archive-list">${allArchives.map(arc => {
+    const fees  = allFees.filter(f => f.archive_id === arc.id)
+    const count = fees.length
+    return `<div class="fee-archive-item" id="farc-${arc.id}">
+      <div class="fee-archive-row" onclick="toggleArchiveItem('${arc.id}')">
+        <span class="fee-archive-name">${esc(arc.fee_name)}</span>
+        <span class="fee-archive-meta">${formatDate(arc.archived_at)} &nbsp;·&nbsp; ${count} payment${count !== 1 ? 's' : ''}</span>
+        <span class="fee-archive-chevron">▼</span>
+      </div>
+      <div class="fee-archive-body">
+        ${count ? `<div class="admin-table-wrap"><table class="admin-table">
+          <thead><tr><th>Member</th><th>Amount</th><th>Paid date</th><th>Method</th></tr></thead>
+          <tbody>${fees.map(f => `<tr>
+            <td>${esc(f.members?.full_name || '—')}</td>
+            <td>${f.amount ? 'NZ$' + Number(f.amount).toFixed(2) : '—'}</td>
+            <td>${f.paid_date ? formatDate(f.paid_date) : '—'}</td>
+            <td>${f.blink_payment_id ? 'Blink Pay' : 'Manual'}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>` : '<p style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-mid);">No payment records found.</p>'}
+      </div>
+    </div>`
+  }).join('')}</div>`
+}
+
+window.toggleArchiveItem = function(id) {
+  document.getElementById('farc-' + id)?.classList.toggle('open')
+}
+
+window.openArchiveModal = function() {
+  const paidUnarchived = allFees.filter(f => f.paid && !f.archive_id)
+  const names = [...new Set(paidUnarchived.map(f => f.fee_name).filter(Boolean))].sort()
+  if (!names.length) {
+    showToast('No paid fees to archive')
+    return
+  }
+  const sel = document.getElementById('archive-fee-select')
+  sel.innerHTML = '<option value="">Select a fee...</option>' +
+    names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('')
+  document.getElementById('archive-fee-modal').classList.add('open')
+}
+
+window.closeArchiveModal = function() {
+  document.getElementById('archive-fee-modal').classList.remove('open')
+}
+
+window.doArchiveFee = async function() {
+  const feeName = document.getElementById('archive-fee-select').value
+  if (!feeName) { showToast('Please select a fee'); return }
+
+  const toArchive = allFees.filter(f => f.paid && !f.archive_id && f.fee_name === feeName)
+  if (!toArchive.length) { showToast('No paid records found for that fee'); return }
+
+  const confirmed = await customConfirm(
+    `Archive "${feeName}"? This will move ${toArchive.length} payment record${toArchive.length !== 1 ? 's' : ''} to the Archive tab.`,
+    'Archive'
+  )
+  if (!confirmed) return
+
+  closeArchiveModal()
+
+  const { data: archive, error: arcErr } = await supabase
+    .from('fee_archives')
+    .insert({ fee_name: feeName, archived_at: new Date().toISOString().split('T')[0] })
+    .select()
+    .single()
+
+  if (arcErr || !archive) { showToast('Archive failed — ' + (arcErr?.message || 'unknown error')); return }
+
+  const ids = toArchive.map(f => f.id)
+  const { error: updateErr } = await supabase
+    .from('fees')
+    .update({ archive_id: archive.id })
+    .in('id', ids)
+
+  if (updateErr) { showToast('Archive failed — ' + updateErr.message); return }
+
+  showToast(`"${feeName}" archived ✓`)
+  loadAll()
+}
+
 
 // ── ADD MEMBER ────────────────────────────────────────────────────────────────
 window.addMember = async function() {
