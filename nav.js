@@ -141,6 +141,10 @@ function buildLoginModal() {
           <input type="tel" id="modal-signup-phone" placeholder="021 000 0000">
         </div>
         <div class="form-group">
+          <label>Student ID</label>
+          <input type="text" id="modal-signup-studentid" placeholder="e.g. 12345678">
+        </div>
+        <div class="form-group">
           <label>Year of study</label>
           <select id="modal-signup-year">
             <option value="">Select...</option>
@@ -231,8 +235,9 @@ window.modalHandleSignup = async function() {
   const name     = document.getElementById('modal-signup-name').value
   const email    = document.getElementById('modal-signup-email').value
   const password = document.getElementById('modal-signup-password').value
-  const phone    = document.getElementById('modal-signup-phone').value
-  const year     = document.getElementById('modal-signup-year').value
+  const phone     = document.getElementById('modal-signup-phone').value
+  const studentId = document.getElementById('modal-signup-studentid').value.trim()
+  const year      = document.getElementById('modal-signup-year').value
   const err      = document.getElementById('modal-signup-error')
   const success  = document.getElementById('modal-signup-success')
   const spinner  = document.getElementById('modal-signup-spinner')
@@ -258,6 +263,7 @@ window.modalHandleSignup = async function() {
       email,
       full_name: name,
       phone,
+      student_id: studentId || null,
       year_of_study: year
     })
   }

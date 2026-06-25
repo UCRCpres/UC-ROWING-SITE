@@ -20,7 +20,7 @@ A static website hosted for free on **Netlify**, connected to a database called 
 |---|---|---|
 | **GitHub** | Stores all the website files. Edit here → site updates | github.com |
 | **Netlify** | Hosts the live website. Watches GitHub and auto-deploys | netlify.com |
-| **Supabase** | The members database — login, fees, forms | supabase.com |
+| **Supabase** | The members database — login, fees, forms, exec team photos | supabase.com |
 | **Cloudflare** | Manages the domain DNS for ucrowing.com | cloudflare.com |
 
 All services use the **club email** to log in. Do not use personal emails — access needs to survive the handover each year.
@@ -51,16 +51,18 @@ That's it. No servers, no command line needed.
 |---|---|
 | `index.html` | Home page — hero photo, stats, quick links |
 | `about.html` | About the club + history + notable alumni |
-| `contact.html` | Contact info + exec team committee cards |
+| `contact.html` | Contact info + exec team (managed via website edit mode) |
 | `events.html` | Race calendar and regattas |
 | `gallery.html` | Photo gallery |
 | `join.html` | Join the club page |
+| `news.html` | Club news — admins can add/edit/delete posts via edit mode |
+| `fees.html` | Members-only fees page — shows outstanding fees and payment history |
 | `forms.html` | Google Forms embeds (join + regatta registration) |
-| `login.html` | Member login / signup |
-| `dashboard.html` | Member dashboard (fees, forms status) |
+| `login.html` | Member login / signup (legacy fallback — login is now a modal) |
+| `dashboard.html` | Legacy member dashboard — currently unused |
 | `admin.html` | Admin panel for committee |
 | `style.css` | All colours, fonts, spacing — edit this to change the look sitewide |
-| `nav.js` | Navigation bar and footer — edit once, updates every page |
+| `nav.js` | Navigation bar, footer, and login modal — edit once, updates every page |
 | `supabase.js` | Supabase connection config — don't touch unless credentials change |
 | `netlify.toml` | Netlify config — handles clean URLs (don't touch) |
 
@@ -69,39 +71,25 @@ That's it. No servers, no command line needed.
 | Folder | What's in it |
 |---|---|
 | `general_photos_and_logos/` | Hero photo, sponsor logos, club logo, background images |
-| `Profile_Pics/` | Committee headshots |
+| `Profile_Pics/` | Legacy committee headshots (exec team photos are now stored in Supabase) |
 
 ---
 
 ## Things to update every year
 
-### 1. Committee cards (`contact.html`)
+### 1. Exec team (contact.html)
 
-Find the section starting with `<!-- COMMITTEE -->`. Each card looks like this:
+The exec team is managed directly on the website — no code editing needed.
 
-```html
-<div class="committee-card">
-  <div class="committee-photo"><img src="Profile_Pics/sam.jpg" alt="Sam Wilson"></div>
-  <div class="committee-info">
-    <div class="committee-role">President</div>
-    <div class="committee-name">Sam Wilson</div>
-  </div>
-</div>
-```
+1. Log in as an admin
+2. Go to the **Contact** page
+3. Click **✎ Edit page**
+4. Use **✎** on each card to edit name, role, or photo
+5. Use **＋ Add member** to add someone new — upload a photo and use the crop tool to frame it
+6. Use **↑ ↓** to reorder, **×** to remove
+7. Changes save immediately
 
-- Change the name and role to the new person
-- Add their photo to the `Profile_Pics/` folder and update the `src` path
-- If there's no photo yet, use the placeholder block:
-
-```html
-<div class="committee-photo">
-  <div class="committee-photo-placeholder">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-  </div>
-</div>
-```
-
-Also update the year label — search for `2026 Committee` and change it to the current year.
+Also update the year label — search for `2026 Committee` in `contact.html` and change it to the current year.
 
 ### 2. Events / race calendar (`events.html`)
 
@@ -115,7 +103,7 @@ Three stats sit on the hero — active members, Hebberley Shield wins, and found
 
 Sponsor logos live in `general_photos_and_logos/`. To update:
 - Add the new logo file to that folder
-- Find the old `<img src="general_photos_and_logos/OLDLOGO.png">` in `sponsors.html` and update the filename
+- Find the old `<img src="general_photos_and_logos/OLDLOGO.png">` and update the filename
 
 ### 5. Hero photo (`index.html`)
 
@@ -130,7 +118,7 @@ The forms page embeds Google Forms. If you create new forms each year:
 2. Open `forms.html` in VS Code
 3. Find the old `<iframe src="https://docs.google.com/forms/...">` and replace it with the new one
 
-### 7. Update the README
+### 7. Update this README
 
 Update this file with the current live URL, GitHub repo link, and any new services added.
 
@@ -139,30 +127,9 @@ Update this file with the current live URL, GitHub repo link, and any new servic
 ## How to add photos to the gallery (`gallery.html`)
 
 1. Resize your photo first — aim for under 500KB. Use [Squoosh](https://squoosh.app) (free, in the browser)
-2. Add the photo to the `general_photos_and_logos/` folder in VS Code
-3. Open `gallery.html` and find the gallery grid
-4. Copy one of the existing blocks and update the filename:
-
-```html
-<div class="gallery-item">
-  <img src="general_photos_and_logos/yourphoto.jpg" style="width:100%;height:100%;object-fit:cover;">
-</div>
-```
-
-5. Save and commit
-
----
-
-## How to add a committee photo
-
-1. Get a headshot — portrait, head and shoulders works best
-2. Rename it `firstname_lastname.jpg` (e.g. `sam_wilson.jpg`)
-3. Drop it into the `Profile_Pics/` folder
-4. In `contact.html` find that person's card and update the `src`:
-
-```html
-<img src="Profile_Pics/sam_wilson.jpg" alt="Sam Wilson">
-```
+2. Log in as admin, go to the **Gallery** page, click **✎ Edit page**
+3. Click the **＋** tile to upload directly from your computer
+4. Add a caption if you want, then close edit mode
 
 ---
 
@@ -217,22 +184,82 @@ If the domain ever stops working:
 *See separate Supabase handover notes for full detail.*
 
 ### What it does
-Members sign up at `login.html`, see their fees and forms on `dashboard.html`, and admins manage everything from `admin.html`.
+Members sign up via the login modal on any page, see their fees on `fees.html`, fill in forms on `forms.html`, and admins manage everything from `admin.html`.
 
 ### At the start of each season
-- Go to Supabase → Table Editor → `fees` and add fees for all members
+- Go to Supabase → Table Editor → `fees` and assign fees for all members (or use the Fees tab in the admin panel)
 - Go to `form_completions` and add the forms members need to complete
-- Consider archiving or clearing last year's completed records
+- Consider archiving last year's paid fee rounds using the Archive tab in the admin panel
+- Set inactive members to `is_active = false` so they stop appearing in fee assignment
 
 ### Making someone admin
-Go to Supabase → Table Editor → `members` → find their row → set `is_admin` to `true`.
+Go to Admin panel → Members tab → click ⋮ next to their name → Edit member → toggle Admin on.
 
 ### Database tables
+
 | Table | What it stores |
 |---|---|
-| `members` | Member profiles — name, email, year of study, admin status |
-| `fees` | Fees assigned to each member — amount, due date, paid status |
+| `members` | Member profiles — name, email, phone, student ID, year of study, admin status, active status |
+| `fees` | Fees assigned to each member — amount, due date, paid status, member name snapshot |
+| `fee_types` | Reusable fee templates — name, description, amount, optional/required, custom amounts flag |
+| `fee_archives` | Archived completed fee rounds — grouped by fee name, preserved permanently |
 | `form_completions` | Forms assigned to each member — name, completed status |
+| `form_tabs` | Config for the tabs on the forms page |
+| `news_posts` | Club news articles |
+| `events` | Club events — auto-split into upcoming/past by date |
+| `gallery_photos` | Photo metadata — actual files in Supabase Storage bucket `gallery` |
+| `exec_team` | Exec team members shown on the Contact page — name, role, photo URL, sort order |
+
+### Supabase Storage buckets
+
+| Bucket | What's in it |
+|---|---|
+| `gallery` | Gallery photo files |
+| `exec-photos` | Exec team profile photos (cropped square JPEGs) |
+
+---
+
+## Blink Pay (online fee payments)
+
+Members can pay fees online through Blink Pay (NZ internet banking). The integration runs as a Netlify serverless function.
+
+### How it works
+
+1. Member clicks "Pay now" on `fees.html`
+2. `fees.html` calls `/.netlify/functions/create-blink-payment` with the fee ID and a Supabase auth token
+3. The function verifies the member's session, fetches the fee amount, and calls the Blink Pay API to create a quick payment
+4. Blink returns a `redirect_uri` — the member is sent there to complete payment via their bank
+5. After payment, Blink redirects back to `payment-success.html`
+6. `payment-success.html` polls the same Netlify function to confirm the payment status, then marks the fee as paid in Supabase
+
+### Files
+
+| File | Purpose |
+|---|---|
+| `netlify/functions/create-blink-payment.js` | Creates the Blink quick payment and confirms status on return |
+| `payment-success.html` | Landing page after the member pays — confirms and marks fee paid |
+
+### Environment variables (set in Netlify → Site settings → Environment variables)
+
+| Variable | Value |
+|---|---|
+| `BLINK_ENV` | `sandbox` (test) or `production` (live) |
+| `BLINK_CLIENT_ID` | From Blink Pay dashboard |
+| `BLINK_CLIENT_SECRET` | From Blink Pay dashboard |
+| `SUPABASE_URL` | `https://rdwzgpcynydkpvkhandc.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | From Supabase → Settings → API → service_role key |
+
+### Switching to production
+
+1. Register the club at [blinkpay.co.nz](https://blinkpay.co.nz) to get production credentials
+2. In Netlify → Environment variables, update `BLINK_CLIENT_ID` and `BLINK_CLIENT_SECRET` with production values
+3. Change `BLINK_ENV` from `sandbox` to `production`
+4. Redeploy (push any small change to trigger a new build)
+
+**Sandbox API base:** `https://sandbox.debit.blinkpay.co.nz`
+**Production API base:** `https://debit.blinkpay.co.nz`
+
+The function caches the Blink OAuth token in memory (refreshes 5 min before expiry) to avoid rate limits on warm Lambda invocations.
 
 ---
 
@@ -252,7 +279,7 @@ Go to Supabase → Table Editor → `members` → find their row → set `is_adm
 
 ## Social media links
 
-Update these in `nav.js` inside the `getFooter()` function when handles change:
+Update these in `nav.js` inside the `buildFooter()` function when handles change:
 
 - **Instagram:** @UCROWINGCLUB
 - **Facebook group:** https://www.facebook.com/groups/1440492173592829

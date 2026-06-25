@@ -480,7 +480,7 @@
       <table class="admin-table">
         <thead>
           <tr>
-            <th>Name</th><th>Email</th><th>Year</th><th>Fees paid</th><th>Active</th><th>Admin</th><th></th>
+            <th>Name</th><th>Email</th><th>Student ID</th><th>Year</th><th>Active</th><th>Admin</th><th></th>
           </tr>
         </thead>
         <tbody id="members-tbody">
@@ -537,6 +537,7 @@
     <!-- Paid Fees Archive -->
     <div id="fees-sub-paid" class="fees-subpanel">
       <div class="fees-filter-bar">
+        <input type="text" id="paid-search" placeholder="Search by member or fee..." oninput="filterPaid()">
         <select id="paid-fee-type-filter" onchange="filterPaid()">
           <option value="">All fee types</option>
         </select>
@@ -592,6 +593,10 @@
           <input type="tel" id="add-phone" placeholder="021 000 0000">
         </div>
         <div class="form-group">
+          <label>Student ID</label>
+          <input type="text" id="add-studentid" placeholder="e.g. 12345678">
+        </div>
+        <div class="form-group">
           <label>Year of study</label>
           <select id="add-year">
             <option value="">Select...</option>
@@ -645,6 +650,10 @@
       </div>
     </div>
     <div class="form-group">
+      <label>Student ID</label>
+      <input type="text" id="edit-studentid" placeholder="e.g. 12345678">
+    </div>
+    <div class="form-group">
       <label>Email</label>
       <input type="email" id="edit-email" placeholder="jane@email.com">
       <p class="field-note">Updates their profile email. Their Supabase login email can only be changed via Supabase → Authentication → Users.</p>
@@ -658,7 +667,7 @@
       </select>
     </div>
     <div class="form-group">
-      <label class="checkbox-label"><input type="checkbox" id="edit-admin"> Admin access</label>
+      <label class="checkbox-label" style="display:inline-flex;align-items:center;gap:0.5rem;">Admin access <input type="checkbox" id="edit-admin"></label>
     </div>
     <div id="edit-error" style="color:var(--maroon);font-size:13px;margin-top:0.75rem;display:none;"></div>
     <div class="modal-actions">
@@ -882,13 +891,12 @@ function renderMembers(members) {
     return
   }
   tbody.innerHTML = members.map(m => {
-    const mFees = allFees.filter(f => f.member_id === m.id)
     const badge = m.is_admin ? '<span class="admin-badge-small">Admin</span>' : ''
     return `<tr>
       <td>${esc(m.full_name || '—')}${badge}</td>
       <td>${esc(m.email)}</td>
+      <td>${esc(m.student_id || '—')}</td>
       <td>${esc(m.year_of_study || '—')}</td>
-      <td>${mFees.filter(f => f.paid).length}/${mFees.length}</td>
       <td>
         <div class="check-btn ${m.is_active !== false ? 'checked' : ''}" onclick="toggleActive('${m.id}', ${m.is_active !== false})" title="${m.is_active !== false ? 'Active' : 'Inactive'}">
           ${m.is_active !== false ? '✓' : ''}
@@ -926,6 +934,10 @@ window.toggleActiveFilter = function() {
 
 window.toggleAdmin = async function(id, current) {
   if (id === currentSession.user.id) { showToast("Can't change your own admin status"); return }
+  const m = allMembers.find(x => x.id === id)
+  const name = m?.full_name || 'this member'
+  const action = current ? 'Remove admin rights' : 'Grant admin rights'
+  if (!await customConfirm(`${action} for ${name}?`, action)) return
   await supabase.from('members').update({ is_admin: !current }).eq('id', id)
   showToast(current ? 'Admin removed' : 'Admin granted')
   loadAll()
@@ -944,6 +956,7 @@ function openMemberEdit(id) {
   document.getElementById('edit-name').value       = m.full_name || ''
   document.getElementById('edit-email').value      = m.email || ''
   document.getElementById('edit-phone').value      = m.phone || ''
+  document.getElementById('edit-studentid').value  = m.student_id || ''
   document.getElementById('edit-year').value       = m.year_of_study || ''
   document.getElementById('edit-admin').checked    = m.is_admin || false
   document.getElementById('edit-error').style.display = 'none'
@@ -971,9 +984,10 @@ window.saveMemberEdit = async function() {
     return
   }
 
+  const studentId = document.getElementById('edit-studentid').value.trim()
   const { error } = await supabase.from('members').update({
     full_name: name || null, email: email || null,
-    phone: phone || null, year_of_study: year || null, is_admin: isAdmin,
+    phone: phone || null, student_id: studentId || null, year_of_study: year || null, is_admin: isAdmin,
   }).eq('id', id)
 
   if (error) { err.textContent = error.message; err.style.display = 'block'; return }
@@ -989,12 +1003,12 @@ async function confirmDeleteMember(id) {
   if (id === currentSession.user.id) { showToast("You can't delete your own account"); return }
   const name = m.full_name || m.email
   const ok = await customConfirm(
-    `Remove ${name} from the members list? This deletes their fees and form records. Their login account will still exist in Supabase Auth.`,
+    `Remove ${name} from the members list? Their unpaid fees and form records will be deleted. Paid and archived payment records will be kept. Their login account will still exist in Supabase Auth.`,
     'Delete member'
   )
   if (!ok) return
   await Promise.all([
-    supabase.from('fees').delete().eq('member_id', id),
+    supabase.from('fees').delete().eq('member_id', id).eq('paid', false),
     supabase.from('form_completions').delete().eq('member_id', id),
   ])
   await supabase.from('members').delete().eq('id', id)
@@ -1135,9 +1149,11 @@ window.doAssign = async function() {
   const customAmounts = !!ft.custom_amounts
   const records = selected.map(cb => {
     const amountInput = cb.closest('.assign-member-item')?.querySelector('.assign-amount-input')
-    const amount = customAmounts && amountInput ? (parseFloat(amountInput.value) || ft.amount) : ft.amount
+    const amount      = customAmounts && amountInput ? (parseFloat(amountInput.value) || ft.amount) : ft.amount
+    const member      = allMembers.find(m => m.id === cb.value)
     return {
       member_id:   cb.value,
+      member_name: member?.full_name || null,
       fee_type_id: feeTypeId,
       fee_name:    ft.name,
       amount,
@@ -1166,13 +1182,13 @@ function renderUnpaidFees(fees) {
     return
   }
   tbody.innerHTML = sorted.map(f => `<tr>
-    <td>${esc(f.members?.full_name || '—')}</td>
+    <td>${esc(f.member_name || f.members?.full_name || '—')}</td>
     <td>${esc(f.fee_name)}</td>
     <td>${f.amount ? 'NZ$' + Number(f.amount).toFixed(2) : '—'}</td>
     <td>${f.due_date ? formatDate(f.due_date) : '—'}</td>
     <td><div class="check-btn" onclick="markFeePaid('${f.id}')" title="Mark as paid"></div></td>
     <td>
-      <button onclick="deleteFeeAssignment('${f.id}', '${esc(f.fee_name)}', '${esc(f.members?.full_name || 'this member')}')"
+      <button onclick="deleteFeeAssignment('${f.id}', '${esc(f.fee_name)}', '${esc(f.member_name || f.members?.full_name || 'this member')}')"
         style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--gray-mid);padding:3px 8px;line-height:1;"
         title="Remove">×</button>
     </td>
@@ -1188,11 +1204,12 @@ window.filterUnpaid = function() {
     !optionalTypeIds.has(f.fee_type_id) &&
     (!typeFilter || f.fee_type_id === typeFilter) &&
     ((f.fee_name || '').toLowerCase().includes(q) ||
-     (f.members?.full_name || '').toLowerCase().includes(q))
+     (f.member_name || f.members?.full_name || '').toLowerCase().includes(q))
   ))
 }
 
 window.filterPaid = function() {
+  const q          = document.getElementById('paid-search').value.toLowerCase()
   const nameFilter = document.getElementById('paid-fee-type-filter').value
   const fromDate   = document.getElementById('paid-from-date').value
   const toDate     = document.getElementById('paid-to-date').value
@@ -1201,6 +1218,7 @@ window.filterPaid = function() {
     if (nameFilter && f.fee_name !== nameFilter) return false
     if (fromDate && (f.paid_date || '') < fromDate) return false
     if (toDate   && (f.paid_date || '') > toDate)   return false
+    if (q && !(f.member_name || f.members?.full_name || '').toLowerCase().includes(q) && !(f.fee_name || '').toLowerCase().includes(q)) return false
     return true
   }))
 }
@@ -1238,7 +1256,7 @@ function renderPaidFees(fees) {
   tbody.innerHTML = sorted.map(f => {
     const method = f.blink_payment_id ? 'Blink Pay' : 'Manual'
     return `<tr>
-      <td>${esc(f.members?.full_name || '—')}</td>
+      <td>${esc(f.member_name || f.members?.full_name || '—')}</td>
       <td>${esc(f.fee_name)}</td>
       <td>${f.amount ? 'NZ$' + Number(f.amount).toFixed(2) : '—'}</td>
       <td>${f.paid_date ? formatDate(f.paid_date) : '—'}</td>
@@ -1275,7 +1293,7 @@ function exportCSV(rows, filename) {
 window.exportUnpaid = function() {
   const headers = ['Member', 'Fee', 'Amount (NZD)', 'Due Date']
   const rows = currentUnpaid.map(f => [
-    f.members?.full_name || '',
+    f.member_name || f.members?.full_name || '',
     f.fee_name || '',
     Number(f.amount || 0).toFixed(2),
     f.due_date || ''
@@ -1286,7 +1304,7 @@ window.exportUnpaid = function() {
 window.exportPaid = function() {
   const headers = ['Member', 'Fee', 'Amount (NZD)', 'Paid Date', 'Method']
   const rows = currentPaid.map(f => [
-    f.members?.full_name || '',
+    f.member_name || f.members?.full_name || '',
     f.fee_name || '',
     Number(f.amount || 0).toFixed(2),
     f.paid_date || '',
@@ -1318,7 +1336,7 @@ function renderArchive() {
         ${count ? `<div class="admin-table-wrap"><table class="admin-table">
           <thead><tr><th>Member</th><th>Amount</th><th>Paid date</th><th>Method</th></tr></thead>
           <tbody>${fees.map(f => `<tr>
-            <td>${esc(f.members?.full_name || '—')}</td>
+            <td>${esc(f.member_name || f.members?.full_name || '—')}</td>
             <td>${f.amount ? 'NZ$' + Number(f.amount).toFixed(2) : '—'}</td>
             <td>${f.paid_date ? formatDate(f.paid_date) : '—'}</td>
             <td>${f.blink_payment_id ? 'Blink Pay' : 'Manual'}</td>
@@ -1388,10 +1406,11 @@ window.doArchiveFee = async function() {
 
 // ── ADD MEMBER ────────────────────────────────────────────────────────────────
 window.addMember = async function() {
-  const name    = document.getElementById('add-name').value
-  const email   = document.getElementById('add-email').value
-  const phone   = document.getElementById('add-phone').value
-  const year    = document.getElementById('add-year').value
+  const name      = document.getElementById('add-name').value
+  const email     = document.getElementById('add-email').value
+  const phone     = document.getElementById('add-phone').value
+  const studentId = document.getElementById('add-studentid').value.trim()
+  const year      = document.getElementById('add-year').value
   const isAdmin = document.getElementById('add-admin').checked
   const err     = document.getElementById('add-error')
   err.style.display = 'none'
@@ -1406,15 +1425,16 @@ window.addMember = async function() {
 
   if (data.user) {
     await supabase.from('members').insert({
-      id: data.user.id, email, full_name: name, phone, year_of_study: year, is_admin: isAdmin
+      id: data.user.id, email, full_name: name, phone, student_id: studentId || null, year_of_study: year, is_admin: isAdmin
     })
   }
   showToast('Member added!')
-  document.getElementById('add-name').value    = ''
-  document.getElementById('add-email').value   = ''
-  document.getElementById('add-phone').value   = ''
-  document.getElementById('add-year').value    = ''
-  document.getElementById('add-admin').checked = false
+  document.getElementById('add-name').value      = ''
+  document.getElementById('add-email').value     = ''
+  document.getElementById('add-phone').value     = ''
+  document.getElementById('add-studentid').value = ''
+  document.getElementById('add-year').value      = ''
+  document.getElementById('add-admin').checked   = false
   loadAll()
 }
 
