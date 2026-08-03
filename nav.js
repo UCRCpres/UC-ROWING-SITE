@@ -86,7 +86,7 @@ function buildFooter() {
     </div>
     <div class="footer-bottom">
       <div class="footer-copy">© 2026 UC Rowing Club. All rights reserved.</div>
-      <div class="footer-uc">University of Canterbury</div>
+      <div class="footer-uc"><a href="privacy.html" style="color:inherit;opacity:0.7;">Privacy Policy</a> &nbsp;·&nbsp; University of Canterbury</div>
     </div>
   </footer>`
 }

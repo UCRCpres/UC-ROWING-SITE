@@ -15,6 +15,7 @@ The person giving instructions is **Sam Wilson**, current club president. Sam is
 | Website files | Plain HTML, CSS, JavaScript | GitHub repo: `UCRCpres/UC-ROWING-SITE` |
 | Hosting | Netlify (free) | `mellow-nasturtium-c24034.netlify.app` |
 | Database + auth | Supabase (free) | Project ID: `rdwzgpcynydkpvkhandc` |
+| Payments | Blink Pay | Sandbox: `sandbox.debit.blinkpay.co.nz` / Production: `debit.blinkpay.co.nz` |
 | Forms | Google Forms (embedded) | Managed via forms.html edit mode |
 | Code editor | VS Code | Connected to GitHub via built-in Git |
 
@@ -39,9 +40,14 @@ All files live at the root level of the repo — no subfolders.
 | `login.html` | Standalone login page (legacy fallback — login is now a modal overlay) |
 | `dashboard.html` | Legacy member dashboard — currently unused |
 | `admin.html` | Admin panel — member management, fees, form requirements |
+| `fees.html` | My Fees — members-only, shows outstanding and paid fees, Blink Pay payment buttons |
+| `payment-success.html` | Payment confirmation — Blink Pay redirects here after payment, marks fee as paid |
+| `reset-password.html` | Password reset handler — receives Supabase PASSWORD_RECOVERY event, lets user set new password |
+| `privacy.html` | Privacy policy — required for Blink Pay onboarding and NZ Privacy Act 2020 |
 | `style.css` | All shared styles — edit this to change colours/fonts sitewide |
 | `nav.js` | Shared nav, footer, and login modal — ES module, runs on every page |
 | `supabase.js` | Supabase client config |
+| `netlify/functions/create-blink-payment.js` | Netlify serverless function — creates a Blink Pay quick payment and returns the redirect URL |
 
 ---
 
@@ -66,13 +72,19 @@ All files live at the root level of the repo — no subfolders.
 The site has a full members portal backed by Supabase.
 
 **Database tables:**
-- `members` — member profiles (id, full_name, email, phone, year_of_study, is_admin)
-- `fees` — fees assigned to each member (fee_name, amount, due_date, paid, paid_date, notes)
+- `members` — member profiles (id, full_name, email, phone, year_of_study, student_id, is_admin, is_active)
+- `fee_types` — fee templates (name, amount, due_date, description, is_optional) — used to assign fees to members
+- `fees` — fees assigned to each member (member_id, fee_type_id, fee_name, amount, due_date, paid, paid_date, notes, blink_payment_id, member_name)
 - `form_completions` — forms assigned to each member (form_name, completed, completed_date, notes)
 - `form_tabs` — config for the tabs on the forms page (tab_label, description, embed_url, embed_height, sort_order)
 - `news_posts` — club news articles (title, author, post_date, body)
 - `events` — club events (name, event_date, display_date, notes) — auto-split into upcoming/past by comparing event_date to today
 - `gallery_photos` — photo metadata (storage_path, url, caption) — actual files stored in Supabase Storage bucket `gallery`
+
+**Blink Pay integration:**
+- Netlify env vars: `BLINK_CLIENT_ID`, `BLINK_CLIENT_SECRET`, `BLINK_ENV` (`sandbox` or `production`), `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `URL`
+- Payment flow: member clicks Pay → `create-blink-payment.js` creates a quick payment → member redirected to Blink Pay gateway → on return, `payment-success.html` confirms payment status and marks fee paid
+- To go live: set `BLINK_ENV=production` in Netlify env vars and redeploy
 
 **How login works:**
 - A "Members Login" button in the nav opens a modal overlay on any page (not a separate login page)
@@ -136,7 +148,8 @@ Sam describes what he wants in plain English. Claude writes the code or tells Sa
 ## Things still to do / planned features
 
 - [ ] Add photo support to news posts (more complex — needs file storage)
-- [ ] Add student ID field to signup form and members table
+- [x] Add student ID field to members table (`student_id` column added)
+- [ ] Wire student ID into the signup form UI
 - [ ] Add more real photos to the gallery
 - [ ] Update committee names on about.html
 - [ ] Wire up real social media links in nav.js footer
