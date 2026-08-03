@@ -6,6 +6,7 @@
 <meta name="description" content="Photos from UC Rowing Club — regattas, training, and club events.">
 <title>Photo Gallery — UC Rowing Club</title>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="general_photos_and_logos/logo.png">
 <style>
   /* EDIT MODE STRIP */
   .btn-edit-page {
@@ -448,7 +449,13 @@ function buildUploadTile() {
 
 // ── EDIT MODE ─────────────────────────────────────────────────────────────────
 window.enterEditMode = function() { isEditMode = true;  renderTopBar(); renderGallery(); }
-window.exitEditMode  = function() { isEditMode = false; renderTopBar(); renderGallery(); }
+window.exitEditMode  = function() {
+  // Flush any caption still being typed — blur triggers onblur → saveCaption
+  document.querySelectorAll('.photo-caption-input input').forEach(el => el.blur())
+  isEditMode = false
+  renderTopBar()
+  renderGallery()
+}
 
 // ── UPLOAD ────────────────────────────────────────────────────────────────────
 document.getElementById('photo-file-input').addEventListener('change', async function() {
@@ -491,8 +498,8 @@ window.saveCaption = async function(id, value) {
   const caption = value.trim()
   const p = photos.find(x => x.id === id)
   if (!p || p.caption === caption) return // no change
+  p.caption = caption // update local state first so exitEditMode re-render has correct value
   await supabase.from('gallery_photos').update({ caption }).eq('id', id)
-  p.caption = caption // update local state silently
 }
 
 // ── DELETE ────────────────────────────────────────────────────────────────────

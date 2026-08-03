@@ -58,7 +58,7 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request' }) } }
 
   const { fee_id, fee_type_id } = body
-  const origin = 'https://ucrowing.com'
+  const origin = process.env.URL || 'https://ucrowing.com'
 
   let feeId, feeName, feeAmount
 

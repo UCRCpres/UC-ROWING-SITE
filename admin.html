@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel — UC Rowing Club</title>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="general_photos_and_logos/logo.png">
 <style>
   /* ADMIN TABS */
   .admin-tabs {
@@ -1424,9 +1425,10 @@ window.addMember = async function() {
   if (error) { err.textContent = error.message; err.style.display = 'block'; return }
 
   if (data.user) {
-    await supabase.from('members').insert({
+    const { error: insertError } = await supabase.from('members').insert({
       id: data.user.id, email, full_name: name, phone, student_id: studentId || null, year_of_study: year, is_admin: isAdmin
     })
+    if (insertError) { err.textContent = 'Auth account created but profile failed: ' + insertError.message; err.style.display = 'block'; return }
   }
   showToast('Member added!')
   document.getElementById('add-name').value      = ''

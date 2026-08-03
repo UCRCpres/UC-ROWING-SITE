@@ -6,6 +6,7 @@
 <meta name="description" content="UC Rowing Club race calendar — upcoming regattas, events, and results for the Canterbury rowing season.">
 <title>Events & Regattas — UC Rowing Club</title>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="general_photos_and_logos/logo.png">
 <style>
   /* SECTION HEADER */
   .section-separator {
@@ -403,8 +404,8 @@ function buildRow(e, isPast) {
 
   const actions = isEditMode ? `
     <div class="event-actions">
-      <button class="btn-ev-action" onclick="openEventModal('${e.id}')">Edit</button>
-      <button class="btn-ev-action delete" onclick="deleteEvent('${e.id}', '${esc(e.name)}')">Delete</button>
+      <button class="btn-ev-action" data-action="edit" data-id="${e.id}">Edit</button>
+      <button class="btn-ev-action delete" data-action="delete" data-id="${e.id}" data-name="${esc(e.name)}">Delete</button>
     </div>` : ''
 
   return `<div class="event-row${pastCls}">
@@ -485,6 +486,15 @@ window.deleteEvent = async function(id, name) {
 // Close modal on backdrop click
 document.getElementById('event-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeEventModal()
+})
+
+// Delegated listener for edit-mode row buttons — avoids apostrophe-in-name JS errors
+document.getElementById('events-content').addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-action]')
+  if (!btn) return
+  const { action, id, name } = btn.dataset
+  if (action === 'edit')   window.openEventModal(id)
+  if (action === 'delete') window.deleteEvent(id, name)
 })
 
 // ── INIT ──────────────────────────────────────────────────────────────────────

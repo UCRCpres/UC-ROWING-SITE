@@ -45,7 +45,8 @@ function buildNav(active, isLoggedIn, isAdmin = false) {
     links.push(`<li><a href="forms.html"${formsCls} style="color:var(--gold);">Forms</a></li>`)
     // Admins also see an Admin link
     if (isAdmin) {
-      links.push(`<li><a href="admin.html" style="color:var(--gold);">Admin</a></li>`)
+      const adminCls = active === 'Admin' ? ' class="active"' : ''
+      links.push(`<li><a href="admin.html"${adminCls} style="color:var(--gold);">Admin</a></li>`)
     }
     links.push(`<li><a href="#" id="nav-logout-btn" style="color:rgba(255,255,255,0.55);">Logout</a></li>`)
   } else {
@@ -232,16 +233,34 @@ window.modalHandleLogin = async function() {
 }
 
 window.modalHandleSignup = async function() {
-  const name     = document.getElementById('modal-signup-name').value
-  const email    = document.getElementById('modal-signup-email').value
-  const password = document.getElementById('modal-signup-password').value
-  const phone     = document.getElementById('modal-signup-phone').value
+  const name      = document.getElementById('modal-signup-name').value.trim()
+  const email     = document.getElementById('modal-signup-email').value.trim()
+  const password  = document.getElementById('modal-signup-password').value
+  const phone     = document.getElementById('modal-signup-phone').value.trim()
   const studentId = document.getElementById('modal-signup-studentid').value.trim()
   const year      = document.getElementById('modal-signup-year').value
-  const err      = document.getElementById('modal-signup-error')
-  const success  = document.getElementById('modal-signup-success')
-  const spinner  = document.getElementById('modal-signup-spinner')
+  const err       = document.getElementById('modal-signup-error')
+  const success   = document.getElementById('modal-signup-success')
+  const spinner   = document.getElementById('modal-signup-spinner')
+
   err.style.display = 'none'
+
+  if (!name) {
+    err.textContent = 'Please enter your full name.'
+    err.style.display = 'block'
+    return
+  }
+  if (!email) {
+    err.textContent = 'Please enter your email address.'
+    err.style.display = 'block'
+    return
+  }
+  if (password.length < 8) {
+    err.textContent = 'Password must be at least 8 characters.'
+    err.style.display = 'block'
+    return
+  }
+
   spinner.style.display = 'block'
 
   const { data, error } = await supabase.auth.signUp({
@@ -258,7 +277,7 @@ window.modalHandleSignup = async function() {
 
   // Create the member profile row in the database
   if (data.user) {
-    await supabase.from('members').insert({
+    const { error: insertError } = await supabase.from('members').insert({
       id: data.user.id,
       email,
       full_name: name,
@@ -266,6 +285,11 @@ window.modalHandleSignup = async function() {
       student_id: studentId || null,
       year_of_study: year
     })
+    if (insertError) {
+      err.textContent = 'Account created but your profile could not be saved — please contact the club admin.'
+      err.style.display = 'block'
+      return
+    }
   }
   success.style.display = 'block'
 }
@@ -279,7 +303,7 @@ window.modalHandleReset = async function() {
   spinner.style.display = 'block'
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/index.html'
+    redirectTo: window.location.origin + '/reset-password.html'
   })
   spinner.style.display = 'none'
 
@@ -330,6 +354,20 @@ document.querySelector('#nav-logout-btn')?.addEventListener('click', async e => 
   e.preventDefault()
   await supabase.auth.signOut()
   window.location.href = 'index.html'
+})
+
+// Catch unexpected session loss (e.g. Supabase refresh token rotation failure).
+// Without this listener, the session silently disappears from localStorage and
+// the next DB call fails or admin.html hard-redirects to home with no warning.
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_OUT') {
+    // Don't redirect on the reset-password page — SIGNED_OUT can fire there
+    // legitimately when the old session is swapped for a recovery session.
+    const page = window.location.pathname.split('/').pop() || ''
+    if (page !== 'reset-password.html') {
+      window.location.href = 'index.html'
+    }
+  }
 })
 
 // Hamburger menu (mobile)

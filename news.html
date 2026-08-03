@@ -6,6 +6,7 @@
 <meta name="description" content="Latest news and updates from the University of Canterbury Rowing Club.">
 <title>News — UC Rowing Club</title>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="general_photos_and_logos/logo.png">
 <style>
   .btn-edit-page {
     background: none;
@@ -436,9 +437,9 @@ function buildCard(p) {
 
   const actions = isEditMode ? `
     <div class="news-card-actions">
-      <button class="btn-card-action" onclick="openPostModal('${p.id}')">Edit</button>
-      <button class="btn-card-action" onclick="archivePost('${p.id}', '${esc(p.title)}')">Archive</button>
-      <button class="btn-card-action delete" onclick="deletePost('${p.id}', '${esc(p.title)}', '${esc(p.photo_path ?? '')}')">Delete</button>
+      <button class="btn-card-action" data-action="edit" data-id="${p.id}">Edit</button>
+      <button class="btn-card-action" data-action="archive" data-id="${p.id}" data-title="${esc(p.title)}">Archive</button>
+      <button class="btn-card-action delete" data-action="delete" data-id="${p.id}" data-title="${esc(p.title)}" data-photo="${esc(p.photo_path ?? '')}">Delete</button>
     </div>` : ''
 
   return `<div class="news-card">
@@ -622,6 +623,16 @@ window.deletePost = async function(id, title, photoPath) {
 
 document.getElementById('post-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closePostModal()
+})
+
+// Delegated listener for edit-mode card buttons — avoids apostrophe-in-title JS errors
+document.getElementById('news-content').addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-action]')
+  if (!btn) return
+  const { action, id, title, photo } = btn.dataset
+  if (action === 'edit')    window.openPostModal(id)
+  if (action === 'archive') window.archivePost(id, title)
+  if (action === 'delete')  window.deletePost(id, title, photo || '')
 })
 
 // ── INIT ──────────────────────────────────────────────────────────────────────

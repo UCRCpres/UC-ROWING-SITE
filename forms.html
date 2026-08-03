@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Member Forms — UC Rowing Club</title>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="general_photos_and_logos/logo.png">
 <style>
   /* ── TABS ─────────────────────────────────────────────────────────────────
      Uses .forms-tab-btn / .forms-tab-panel (not .tab-btn / .tab-panel) so
@@ -682,11 +683,7 @@ window.saveEdit = async function() {
     `<span style="font-family:Arial,sans-serif;font-size:13px;color:var(--gray-mid);">Saving…</span>`
 
   try {
-    // Delete all current rows then reinsert
-    if (liveTabs.length > 0) {
-      await supabase.from('form_tabs').delete().in('id', liveTabs.map(t => t.id))
-    }
-
+    // Insert new rows first — if this fails, old rows are untouched
     if (editTabs.length > 0) {
       const rows = editTabs.map((t, i) => ({
         tab_label:    (t.tab_label || 'Untitled').trim(),
@@ -697,6 +694,11 @@ window.saveEdit = async function() {
       }))
       const { error } = await supabase.from('form_tabs').insert(rows)
       if (error) throw error
+    }
+
+    // Only remove old rows after the insert succeeded
+    if (liveTabs.length > 0) {
+      await supabase.from('form_tabs').delete().in('id', liveTabs.map(t => t.id))
     }
 
     await loadTabs()
