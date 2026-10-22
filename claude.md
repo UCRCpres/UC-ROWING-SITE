@@ -13,7 +13,7 @@ The person giving instructions is **Sam Wilson**, current club president. Sam is
 | Thing | What it is | Where |
 |---|---|---|
 | Website files | Plain HTML, CSS, JavaScript | GitHub repo: `UCRCpres/UC-ROWING-SITE` |
-| Hosting | Netlify (free) | `mellow-nasturtium-c24034.netlify.app` |
+| Hosting | Netlify (free) | `ucrowing.com` (also `mellow-nasturtium-c24034.netlify.app`) |
 | Database + auth | Supabase (free) | Project ID: `rdwzgpcynydkpvkhandc` |
 | Payments | Blink Pay | Sandbox: `sandbox.debit.blinkpay.co.nz` / Production: `debit.blinkpay.co.nz` |
 | Forms | Google Forms (embedded) | Managed via forms.html edit mode |
