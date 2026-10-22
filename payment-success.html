@@ -132,7 +132,7 @@ async function checkPayment() {
       setStatus('success', 'Payment received',
         'Your payment has been confirmed and your fees have been updated.',
         `<a href="fees.html" class="btn-primary" style="text-decoration:none;">View my fees</a>
-         <a href="forms.html" class="btn-secondary" style="text-decoration:none;">Go to forms</a>`)
+         <a href="index.html" class="btn-secondary" style="text-decoration:none;">Go to home</a>`)
     } else if (result.status === 'Pending' || result.status === 'AcceptedSettlementInProcess') {
       setStatus('pending', 'Payment processing',
         'Your payment is being processed by your bank. Your fees page will update shortly — check back in a few minutes.',

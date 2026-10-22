@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account — UC Rowing Club</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="general_photos_and_logos/logo.png">
+<style>
+  .account-section { margin-bottom: 3rem; max-width: 640px; }
+
+  .account-section-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gray-mid);
+    margin-bottom: 1.1rem;
+  }
+
+  .account-card {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--maroon);
+    background: var(--white);
+    padding: 1.5rem;
+  }
+
+  .account-note {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: var(--gray-mid);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .form-group input[readonly] {
+    background: var(--off-white, #F7F7F7);
+    color: var(--gray-mid);
+    cursor: not-allowed;
+  }
+
+  .account-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .account-card p {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: var(--gray-dark);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .login-prompt { text-align: center; padding: 5rem 1rem; }
+  .login-prompt-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 1rem;
+  }
+  .login-prompt-text {
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    color: var(--gray-mid);
+    margin-bottom: 1.75rem;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--maroon);
+    color: var(--white);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    padding: 0.75rem 1.25rem;
+    z-index: 500;
+    display: none;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .account-card { padding: 1.25rem 1rem; }
+    .account-actions .btn-primary,
+    .account-actions .btn-secondary { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder" data-active="Account"></div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <p class="page-eyebrow">Members area</p>
+    <h1 class="page-title">My Account</h1>
+  </div>
+</div>
+
+<main id="account-logged-out" style="display:none;">
+  <div class="login-prompt">
+    <div class="login-prompt-title">Members only</div>
+    <p class="login-prompt-text">Please log in to view and update your account details.</p>
+    <button class="btn-primary" onclick="window.openLoginModal()">Log in</button>
+  </div>
+</main>
+
+<main id="account-content" style="display:none;">
+
+  <div class="account-section">
+    <div class="account-section-title">My details</div>
+    <div class="account-card">
+      <div class="error-msg" id="account-error"></div>
+      <div class="success-msg" id="account-success">Your details have been updated.</div>
+
+      <div class="form-group">
+        <label for="acc-name">Full name</label>
+        <input type="text" id="acc-name" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="acc-email">Email</label>
+        <input type="email" id="acc-email" readonly>
+        <p class="account-note">Your email is your login, so it can't be changed here. Contact the club if you need it updated.</p>
+      </div>
+      <div class="form-group">
+        <label for="acc-phone">Phone</label>
+        <input type="tel" id="acc-phone" placeholder="021 000 0000" autocomplete="tel">
+      </div>
+      <div class="form-group">
+        <label for="acc-studentid">Student ID</label>
+        <input type="text" id="acc-studentid" placeholder="e.g. 12345678">
+      </div>
+      <div class="form-group">
+        <label for="acc-year">Year of study</label>
+        <select id="acc-year">
+          <option value="">Select...</option>
+          <option>1st year</option>
+          <option>2nd year</option>
+          <option>3rd year</option>
+          <option>4th year</option>
+          <option>Postgraduate</option>
+          <option>Staff / other</option>
+        </select>
+      </div>
+
+      <div class="account-actions">
+        <button class="btn-primary" id="acc-save-btn" onclick="saveAccount()">Save changes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="account-section">
+    <div class="account-section-title">Password</div>
+    <div class="account-card">
+      <div class="error-msg" id="password-error"></div>
+      <div class="success-msg" id="password-success">We've emailed you a link to set a new password.</div>
+      <p>Want to change your password? We'll email you a secure link to set a new one.</p>
+      <button class="btn-secondary" id="acc-reset-btn" onclick="sendPasswordReset()">Email me a reset link</button>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+<div id="footer-placeholder"></div>
+<script type="module" src="nav.js"></script>
+
+<script type="module">
+import { supabase } from './supabase.js'
+
+let userId = null
+let userEmail = ''
+
+function showToast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.display = 'block'
+  setTimeout(() => t.style.display = 'none', 3500)
+}
+
+function showMsg(id, text) {
+  const el = document.getElementById(id)
+  if (text) el.textContent = text
+  el.style.display = 'block'
+}
+
+function hideMsgs(...ids) {
+  ids.forEach(id => { document.getElementById(id).style.display = 'none' })
+}
+
+window.saveAccount = async function() {
+  hideMsgs('account-error', 'account-success')
+
+  const name      = document.getElementById('acc-name').value.trim()
+  const phone     = document.getElementById('acc-phone').value.trim()
+  const studentId = document.getElementById('acc-studentid').value.trim()
+  const year      = document.getElementById('acc-year').value
+
+  if (!name) {
+    showMsg('account-error', 'Please enter your full name.')
+    return
+  }
+
+  const btn = document.getElementById('acc-save-btn')
+  btn.disabled = true
+  btn.textContent = 'Saving…'
+
+  // .select() lets us tell if the update actually changed a row (RLS blocks silently)
+  const { data, error } = await supabase
+    .from('members')
+    .update({
+      full_name: name,
+      phone: phone || null,
+      student_id: studentId || null,
+      year_of_study: year || null
+    })
+    .eq('id', userId)
+    .select()
+
+  btn.disabled = false
+  btn.textContent = 'Save changes'
+
+  if (error || !data || !data.length) {
+    showMsg('account-error', 'Could not save your details — please try again or contact the club.')
+    return
+  }
+
+  showMsg('account-success')
+  showToast('Details saved')
+}
+
+window.sendPasswordReset = async function() {
+  hideMsgs('password-error', 'password-success')
+
+  const btn = document.getElementById('acc-reset-btn')
+  btn.disabled = true
+
+  const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
+    redirectTo: window.location.origin + '/reset-password.html'
+  })
+
+  btn.disabled = false
+
+  if (error) {
+    showMsg('password-error', error.message)
+    return
+  }
+  showMsg('password-success')
+}
+
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (!session) {
+    document.getElementById('account-logged-out').style.display = 'block'
+    return
+  }
+
+  userId = session.user.id
+  userEmail = session.user.email
+
+  const { data: member, error } = await supabase
+    .from('members')
+    .select('full_name, email, phone, student_id, year_of_study')
+    .eq('id', userId)
+    .single()
+
+  document.getElementById('account-content').style.display = 'block'
+
+  if (error || !member) {
+    document.getElementById('acc-email').value = userEmail
+    showMsg('account-error', 'We couldn\'t load your details — please refresh or contact the club.')
+    return
+  }
+
+  document.getElementById('acc-name').value      = member.full_name || ''
+  document.getElementById('acc-email').value     = member.email || userEmail
+  document.getElementById('acc-phone').value     = member.phone || ''
+  document.getElementById('acc-studentid').value = member.student_id || ''
+  document.getElementById('acc-year').value      = member.year_of_study || ''
+}
+
+init()
+</script>
+</body>
+</html>

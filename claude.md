@@ -40,6 +40,7 @@ All files live at the root level of the repo — no subfolders.
 | `login.html` | Standalone login page (legacy fallback — login is now a modal overlay) |
 | `dashboard.html` | Legacy member dashboard — currently unused |
 | `admin.html` | Admin panel — member management, fees, form requirements |
+| `account.html` | My Account — members-only, edit own name/phone/student ID/year of study, send password reset email |
 | `fees.html` | My Fees — members-only, shows outstanding and paid fees, Blink Pay payment buttons |
 | `payment-success.html` | Payment confirmation — Blink Pay redirects here after payment, marks fee as paid |
 | `reset-password.html` | Password reset handler — receives Supabase PASSWORD_RECOVERY event, lets user set new password |

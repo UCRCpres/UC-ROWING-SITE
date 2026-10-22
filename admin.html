@@ -411,6 +411,88 @@
   .assign-amount-input { width: 80px; border: 1px solid var(--border); padding: 4px 7px; font-family: Arial, sans-serif; font-size: 13px; display: none; flex-shrink: 0; }
   .custom-amounts-on .assign-amount-input { display: block; }
 
+  /* ASSIGN MODAL — PRESET AMOUNTS (custom-amount fees) */
+  .assign-preset-title {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gray-mid);
+    margin-bottom: 0.6rem;
+  }
+  .preset-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+  .preset-chip { display: inline-flex; align-items: stretch; }
+  .preset-btn {
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--gray-dark);
+    padding: 7px 14px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .preset-btn:hover { border-color: var(--maroon); }
+  .preset-btn.active { background: var(--maroon); border-color: var(--maroon); color: var(--white); }
+  .preset-btn.dashed { border-style: dashed; color: var(--maroon); }
+  .preset-chip .preset-btn { border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .preset-x {
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--gray-mid);
+    padding: 0 8px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 0 2px 2px 0;
+  }
+  .preset-x:hover { color: #CC0000; border-color: #CC0000; }
+  .preset-input {
+    width: 90px;
+    border: 1px solid var(--maroon);
+    padding: 6px 8px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    border-radius: 2px;
+    outline: none;
+  }
+  .assign-row-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .assign-do-btn {
+    background: var(--white);
+    border: 1px solid var(--maroon);
+    color: var(--maroon);
+    padding: 5px 10px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .assign-do-btn:hover { background: var(--maroon); color: var(--white); }
+  .assign-remove-btn {
+    background: none;
+    border: none;
+    color: var(--gray-mid);
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+  }
+  .assign-remove-btn:hover { color: #CC0000; }
+  .assign-amount-tag { font-weight: 700; color: var(--maroon); font-size: 14px; }
+  .assign-member-item.has-amount { background: #FBF3F6; }
+  .assign-summary {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: var(--gray-mid);
+    margin-top: 0.75rem;
+    min-height: 1.2em;
+  }
+
   /* EMPTY STATE */
   .empty-state {
     text-align: center;
@@ -724,12 +806,17 @@
     <button class="modal-close" onclick="closeAssignModal()">✕</button>
     <div class="modal-title" id="assign-modal-title">Assign fee</div>
     <input type="hidden" id="assign-fee-type-id">
-    <p style="font-size:13px;color:var(--gray-mid);margin-bottom:1rem;font-family:Arial,sans-serif;line-height:1.5;">
+    <p id="assign-intro" style="font-size:13px;color:var(--gray-mid);margin-bottom:1rem;font-family:Arial,sans-serif;line-height:1.5;">
       Select members to assign this fee to. Already-assigned members are shown but locked — remove them from the Unpaid tab if needed.
     </p>
+    <div id="assign-preset-ui" style="display:none;">
+      <div class="assign-preset-title">Assignment amount</div>
+      <div class="preset-bar" id="preset-bar"></div>
+    </div>
     <div id="assign-members-list" style="max-height:320px;overflow-y:auto;border:1px solid var(--border);"></div>
+    <div class="assign-summary" id="assign-summary" style="display:none;"></div>
     <div class="modal-actions">
-      <button class="btn-primary" onclick="doAssign()">Assign to selected</button>
+      <button class="btn-primary" id="assign-submit-btn" onclick="doAssign()">Assign to selected</button>
     </div>
   </div>
 </div>
@@ -1101,8 +1188,17 @@ window.openAssignModal = function(feeTypeId) {
   document.getElementById('assign-modal-title').textContent = 'Assign — ' + ft.name
   document.getElementById('assign-fee-type-id').value = feeTypeId
 
+  // Custom-amount fees use the preset-amount assigner instead of the checkbox list
+  if (ft.custom_amounts) { openCustomAssign(ft); return }
+
+  assignState = null
+  document.getElementById('assign-preset-ui').style.display = 'none'
+  document.getElementById('assign-summary').style.display = 'none'
+  document.getElementById('assign-submit-btn').textContent = 'Assign to selected'
+  document.getElementById('assign-intro').textContent = 'Select members to assign this fee to. Already-assigned members are shown but locked — remove them from the Unpaid tab if needed.'
+
   const list = document.getElementById('assign-members-list')
-  list.classList.toggle('custom-amounts-on', !!ft.custom_amounts)
+  list.classList.remove('custom-amounts-on')
 
   const assignedFees     = allFees.filter(f => f.fee_type_id === feeTypeId)
   const assignedByMember = Object.fromEntries(assignedFees.map(f => [f.member_id, f]))
@@ -1137,12 +1233,209 @@ window.openAssignModal = function(feeTypeId) {
 
 window.closeAssignModal = function() {
   document.getElementById('assign-modal').classList.remove('open')
+  assignState = null   // unsaved amounts are dropped; presets are kept in assignPresets
+}
+
+// ── ASSIGN WITH PRESET AMOUNTS (custom-amount fees) ───────────────────────────
+// Pick a preset (or Add custom), then click "Assign $X" beside each member.
+// Nothing is saved until "Assign to selected" is clicked.
+const assignPresets = {}   // feeTypeId -> [20, 40, 52]; kept per fee while the page is open
+let assignState = null     // { feeTypeId, active, amounts: {memberId: amount}, addingPreset, customFor }
+
+function fmtMoney(n) { return 'NZ$' + Number(n).toFixed(2) }
+
+function openCustomAssign(ft) {
+  // Presets = any set earlier this session + amounts already assigned for this fee
+  const existing = allFees.filter(f => f.fee_type_id === ft.id).map(f => Number(f.amount)).filter(n => n > 0)
+  const merged = [...new Set([...(assignPresets[ft.id] || []), ...existing])].sort((a, b) => a - b)
+  assignPresets[ft.id] = merged
+
+  assignState = { feeTypeId: ft.id, active: null, amounts: {}, addingPreset: false, customFor: null }
+
+  document.getElementById('assign-intro').textContent = 'Choose an amount, then click Assign beside each member. Nothing is saved until you click Assign to selected. Already-assigned members are locked — remove them from the Unpaid tab if needed.'
+  document.getElementById('assign-preset-ui').style.display = 'block'
+  document.getElementById('assign-summary').style.display = 'block'
+  document.getElementById('assign-members-list').classList.remove('custom-amounts-on')
+
+  renderPresetBar()
+  renderAssignList()
+  document.getElementById('assign-modal').classList.add('open')
+}
+
+function renderPresetBar() {
+  const s = assignState
+  const presets = assignPresets[s.feeTypeId]
+  let html = presets.map(v => `<span class="preset-chip">
+      <button type="button" class="preset-btn${s.active === v ? ' active' : ''}" onclick="selectPreset(${v})">${fmtMoney(v)}</button>
+      <button type="button" class="preset-x" title="Remove preset" onclick="removePreset(${v})">×</button>
+    </span>`).join('')
+
+  if (s.addingPreset) {
+    html += `<input type="number" class="preset-input" id="new-preset-input" step="0.01" min="0.01" placeholder="0.00" onkeydown="presetKey(event)">
+      <button type="button" class="preset-btn active" onclick="confirmPreset()">Add</button>
+      <button type="button" class="preset-btn" onclick="cancelPreset()">Cancel</button>`
+  } else {
+    html += `<button type="button" class="preset-btn dashed" onclick="startAddPreset()">+ Add preset</button>`
+  }
+  html += `<button type="button" class="preset-btn dashed${s.active === 'custom' ? ' active' : ''}" onclick="selectPreset('custom')">+ Add custom</button>`
+
+  document.getElementById('preset-bar').innerHTML = html
+  if (s.addingPreset) document.getElementById('new-preset-input')?.focus()
+}
+
+function renderAssignList() {
+  const s = assignState
+  const list = document.getElementById('assign-members-list')
+  const scroll = list.scrollTop
+
+  const assignedByMember = Object.fromEntries(
+    allFees.filter(f => f.fee_type_id === s.feeTypeId).map(f => [f.member_id, f])
+  )
+  const activeMembers = allMembers.filter(m => m.is_active !== false)
+
+  if (!activeMembers.length) {
+    list.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--gray-mid);font-family:Arial,sans-serif;font-size:13px;">No active members.</div>'
+  } else {
+    list.innerHTML = activeMembers.map(m => {
+      const existing = assignedByMember[m.id]
+      const name = esc(m.full_name || m.email)
+      if (existing) {
+        const status = existing.paid
+          ? '<span style="color:#2D8C2D;font-size:11px;font-weight:700;">Paid ✓</span>'
+          : '<span style="color:var(--gray-mid);font-size:11px;">Assigned</span>'
+        return `<div class="assign-member-item already-assigned">
+          <span style="flex:1;">${name}</span>
+          <span class="assign-row-right">${status}<span style="font-weight:700;">${fmtMoney(existing.amount)}</span></span>
+        </div>`
+      }
+
+      const amount = s.amounts[m.id]
+      let right = ''
+      if (amount !== undefined) {
+        right = `<span class="assign-amount-tag">${fmtMoney(amount)}</span>
+          <button type="button" class="assign-remove-btn" onclick="clearAssignment('${m.id}')">Remove assignment</button>`
+      } else if (s.customFor === m.id) {
+        right = `<input type="number" class="preset-input" id="custom-amount-input" step="0.01" min="0.01" placeholder="0.00" onkeydown="customKey(event, '${m.id}')">
+          <button type="button" class="assign-do-btn" onclick="confirmCustom('${m.id}')">Set</button>
+          <button type="button" class="assign-remove-btn" onclick="cancelCustom()">Cancel</button>`
+      } else if (typeof s.active === 'number') {
+        right = `<button type="button" class="assign-do-btn" onclick="assignTo('${m.id}')">Assign ${fmtMoney(s.active)}</button>`
+      } else if (s.active === 'custom') {
+        right = `<button type="button" class="assign-do-btn" onclick="assignTo('${m.id}')">Assign custom</button>`
+      }
+      return `<div class="assign-member-item${amount !== undefined ? ' has-amount' : ''}">
+        <span style="flex:1;">${name}</span>
+        <span class="assign-row-right">${right}</span>
+      </div>`
+    }).join('')
+  }
+  list.scrollTop = scroll
+  if (s.customFor) document.getElementById('custom-amount-input')?.focus()
+  updateAssignSummary()
+}
+
+function updateAssignSummary() {
+  const amounts = Object.values(assignState.amounts)
+  const btn = document.getElementById('assign-submit-btn')
+  const summary = document.getElementById('assign-summary')
+  btn.textContent = amounts.length ? `Assign to selected (${amounts.length})` : 'Assign to selected'
+  if (!amounts.length) {
+    summary.textContent = 'No members selected yet.'
+    return
+  }
+  const counts = {}
+  amounts.forEach(a => { counts[a] = (counts[a] || 0) + 1 })
+  const parts = Object.keys(counts).map(Number).sort((a, b) => a - b).map(a => `${counts[a]} × ${fmtMoney(a)}`)
+  const total = amounts.reduce((t, a) => t + a, 0)
+  summary.textContent = `${parts.join('  ·  ')}  —  total ${fmtMoney(total)}`
+}
+
+function parseAmount(raw) {
+  const n = Math.round(parseFloat(raw) * 100) / 100
+  return n > 0 ? n : null
+}
+
+window.selectPreset = function(v) {
+  const s = assignState
+  s.active = s.active === v ? null : v
+  s.customFor = null
+  renderPresetBar()
+  renderAssignList()
+}
+window.startAddPreset = function() { assignState.addingPreset = true; renderPresetBar() }
+window.cancelPreset = function() { assignState.addingPreset = false; renderPresetBar() }
+window.presetKey = function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); window.confirmPreset() }
+  if (e.key === 'Escape') window.cancelPreset()
+}
+window.confirmPreset = function() {
+  const s = assignState
+  const v = parseAmount(document.getElementById('new-preset-input').value)
+  if (v === null) { showToast('Enter an amount greater than 0'); return }
+  const list = assignPresets[s.feeTypeId]
+  if (!list.includes(v)) { list.push(v); list.sort((a, b) => a - b) }
+  s.addingPreset = false
+  s.active = v
+  s.customFor = null
+  renderPresetBar()
+  renderAssignList()
+}
+window.removePreset = function(v) {
+  const s = assignState
+  assignPresets[s.feeTypeId] = assignPresets[s.feeTypeId].filter(p => p !== v)
+  if (s.active === v) s.active = null
+  renderPresetBar()
+  renderAssignList()
+}
+window.assignTo = function(memberId) {
+  const s = assignState
+  if (s.active === 'custom') { s.customFor = memberId; renderAssignList(); return }
+  if (typeof s.active !== 'number') return
+  s.amounts[memberId] = s.active
+  renderAssignList()
+}
+window.customKey = function(e, memberId) {
+  if (e.key === 'Enter') { e.preventDefault(); window.confirmCustom(memberId) }
+  if (e.key === 'Escape') window.cancelCustom()
+}
+window.confirmCustom = function(memberId) {
+  const v = parseAmount(document.getElementById('custom-amount-input').value)
+  if (v === null) { showToast('Enter an amount greater than 0'); return }
+  assignState.amounts[memberId] = v
+  assignState.customFor = null
+  renderAssignList()
+}
+window.cancelCustom = function() { assignState.customFor = null; renderAssignList() }
+window.clearAssignment = function(memberId) {
+  delete assignState.amounts[memberId]
+  renderAssignList()
 }
 
 window.doAssign = async function() {
   const feeTypeId = document.getElementById('assign-fee-type-id').value
   const ft = allFeeTypes.find(f => f.id === feeTypeId)
   if (!ft) return
+
+  // Custom-amount fees: use the amounts picked with the presets
+  if (ft.custom_amounts && assignState) {
+    const entries = Object.entries(assignState.amounts)
+    if (!entries.length) { showToast('No new members selected'); return }
+    const records = entries.map(([memberId, amount]) => ({
+      member_id:   memberId,
+      member_name: allMembers.find(m => m.id === memberId)?.full_name || null,
+      fee_type_id: feeTypeId,
+      fee_name:    ft.name,
+      amount,
+      due_date:    ft.due_date || null,
+      paid:        false,
+    }))
+    const { error } = await supabase.from('fees').insert(records)
+    if (error) { showToast('Error: ' + error.message); return }
+    window.closeAssignModal()
+    showToast(`Fee assigned to ${records.length} member${records.length > 1 ? 's' : ''} ✓`)
+    loadAll()
+    return
+  }
 
   const selected = [...document.querySelectorAll('.assign-member-cb:checked:not(:disabled)')]
   if (!selected.length) { showToast('No new members selected'); return }

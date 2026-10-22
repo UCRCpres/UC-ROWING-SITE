@@ -13,7 +13,7 @@
 // the footer, and a hidden login modal that pops up when needed.
 //
 // LOGGED OUT NAV:  Home · About · Join · Events · Gallery · Contact · Members Login
-// LOGGED IN NAV:   Home · About · Join · Events · Gallery · Contact · Forms · Logout
+// LOGGED IN NAV:   Home · About · Join · Events · Gallery · Contact · Fees · Forms · Account · Logout
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { supabase } from './supabase.js'
@@ -41,8 +41,10 @@ function buildNav(active, isLoggedIn, isAdmin = false) {
     // Logged-in members see Fees and Forms links (gold) and a Logout button
     const feesCls  = active === 'Fees'  ? ' class="active"' : ''
     const formsCls = active === 'Forms' ? ' class="active"' : ''
+    const accountCls = active === 'Account' ? ' class="active"' : ''
     links.push(`<li><a href="fees.html"${feesCls} style="color:var(--gold);">Fees</a></li>`)
     links.push(`<li><a href="forms.html"${formsCls} style="color:var(--gold);">Forms</a></li>`)
+    links.push(`<li><a href="account.html"${accountCls} style="color:var(--gold);">Account</a></li>`)
     // Admins also see an Admin link
     if (isAdmin) {
       const adminCls = active === 'Admin' ? ' class="active"' : ''

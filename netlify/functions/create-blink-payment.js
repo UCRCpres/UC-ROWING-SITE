@@ -142,6 +142,20 @@ exports.handler = async (event) => {
   // PCR fields — these appear on the bank statement
   const pcrCode = feeName.replace(/[^a-zA-Z0-9 ]/g, '').substring(0, 12)
 
+  // Reference is the member's name so the treasurer can see who paid.
+  // Bank PCR fields are limited to 12 characters, so long names become "F Surname".
+  const { data: member } = await supabase
+    .from('members')
+    .select('full_name')
+    .eq('id', user.id)
+    .single()
+  const cleanName = (member?.full_name || '').replace(/[^a-zA-Z0-9 ]/g, '').replace(/\s+/g, ' ').trim()
+  const nameParts = cleanName.split(' ')
+  const shortName = cleanName.length <= 12 || nameParts.length < 2
+    ? cleanName
+    : `${nameParts[0][0]} ${nameParts[nameParts.length - 1]}`
+  const pcrReference = shortName.substring(0, 12) || 'Fee payment'
+
   const blinkRes = await fetch(`${BLINK_BASE}/payments/v1/quick-payments`, {
     method: 'POST',
     headers: {
@@ -162,7 +176,7 @@ exports.handler = async (event) => {
       pcr: {
         particulars: 'UC Rowing',
         code:        pcrCode,
-        reference:   'Fee payment',
+        reference:   pcrReference,
       },
     }),
   })

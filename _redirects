@@ -13,6 +13,7 @@
 /dashboard.html        /dashboard       301!
 /fees.html             /fees            301!
 /payment-success.html  /payment-success 301!
+/account.html         /account       301!
 
 # Rewrite clean URLs to serve the .html files (no redirect, just serve)
 /about               /about.html    200
@@ -28,3 +29,4 @@
 /dashboard           /dashboard.html      200
 /fees                /fees.html           200
 /payment-success     /payment-success.html 200
+/account             /account.html        200
